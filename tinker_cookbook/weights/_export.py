@@ -70,14 +70,17 @@ def build_hf_model(
 
         logger.info("Saving merged model to: %s", out)
         if _is_deepseek_model(hf_model):
+            logger.info("Detected DeepSeek model; using DeepSeek-specific save path")
             _save_deepseek_model(hf_model=hf_model, base_model=base_model, output_path=out)
         else:
             hf_model.save_pretrained(out)
 
+        logger.info("Saving tokenizer")
         tokenizer = AutoTokenizer.from_pretrained(base_model)
         tokenizer.save_pretrained(out)
 
         try:
+            logger.info("Saving processor")
             processor = AutoProcessor.from_pretrained(base_model)
             processor.save_pretrained(out)
         except Exception:
