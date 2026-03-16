@@ -19,7 +19,7 @@ from transformers import (
 )
 
 from tinker_cookbook.weights._deepseek import (
-    is_deepseek_model as _is_deepseek_model,
+    is_deepseek_config as _is_deepseek_config,
 )
 from tinker_cookbook.weights._deepseek import (
     save_deepseek_model as _save_deepseek_model,
@@ -55,26 +55,30 @@ def build_hf_model(
         KeyError: If adapter config is malformed.
         ValueError: If tensor shapes are incompatible during merge.
     """
-    # Validate adapter exists before loading the (potentially huge) base model
-    adapter_weights, adapter_config = _load_adapter_weights(Path(adapter_path))
-
     out = Path(output_path)
-    out.mkdir(parents=True, exist_ok=False)
-    preserve_partial_output = False
+    preserve_partial_output = _is_deepseek_model_path(base_model)
+    out.mkdir(parents=True, exist_ok=preserve_partial_output)
 
     try:
-        logger.info("Loading base model: %s", base_model)
-        hf_model = _load_model(base_model)
-        preserve_partial_output = _is_deepseek_model(hf_model)
-
-        logger.info("Merging adapter weights")
-        merge_adapter_weights(hf_model, adapter_weights, adapter_config)
-
-        logger.info("Saving merged model to: %s", out)
-        if _is_deepseek_model(hf_model):
+        if preserve_partial_output:
             logger.info("Detected DeepSeek model; using DeepSeek-specific save path")
-            _save_deepseek_model(hf_model=hf_model, base_model=base_model, output_path=out)
+            logger.info("Saving merged model to: %s", out)
+            _save_deepseek_model(
+                base_model=base_model,
+                adapter_path=adapter_path,
+                output_path=out,
+            )
         else:
+            # Validate adapter exists before loading the (potentially huge) base model
+            adapter_weights, adapter_config = _load_adapter_weights(Path(adapter_path))
+
+            logger.info("Loading base model: %s", base_model)
+            hf_model = _load_model(base_model)
+
+            logger.info("Merging adapter weights")
+            merge_adapter_weights(hf_model, adapter_weights, adapter_config)
+
+            logger.info("Saving merged model to: %s", out)
             hf_model.save_pretrained(out)
 
         logger.info("Saving tokenizer")
@@ -107,6 +111,11 @@ def _load_model(model_path: str) -> PreTrainedModel:
     config = AutoConfig.from_pretrained(model_path)
     auto_cls = AutoModelForImageTextToText if "vision_config" in config else AutoModelForCausalLM
     return auto_cls.from_pretrained(model_path, dtype=torch.bfloat16)
+
+
+def _is_deepseek_model_path(model_path: str) -> bool:
+    config = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
+    return _is_deepseek_config(config)
 
 
 def _load_adapter_weights(adapter_dir: Path) -> tuple[dict[str, torch.Tensor], dict]:
