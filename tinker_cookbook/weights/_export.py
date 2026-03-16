@@ -60,10 +60,12 @@ def build_hf_model(
 
     out = Path(output_path)
     out.mkdir(parents=True, exist_ok=False)
+    preserve_partial_output = False
 
     try:
         logger.info("Loading base model: %s", base_model)
         hf_model = _load_model(base_model)
+        preserve_partial_output = _is_deepseek_model(hf_model)
 
         logger.info("Merging adapter weights")
         merge_adapter_weights(hf_model, adapter_weights, adapter_config)
@@ -90,8 +92,13 @@ def build_hf_model(
 
         logger.info("Done — merged model saved to %s", out)
     except Exception:
+        if out.exists() and preserve_partial_output:
+            logger.warning(
+                "DeepSeek export failed; preserving partial output at %s for inspection or resume",
+                out,
+            )
         # Clean up partial output so the user can retry without manual deletion
-        if out.exists():
+        elif out.exists():
             shutil.rmtree(out)
         raise
 
