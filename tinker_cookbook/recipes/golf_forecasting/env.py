@@ -87,22 +87,37 @@ def build_messages(
     n_total = len(example.players)
     n_shown = min(max_candidates, n_total) if max_candidates > 0 else n_total
 
+    # Round-specific calibration guidance
+    round_num = example.round_number
+    if round_num <= 2:
+        calibration_hint = (
+            "After round 2, the leader wins roughly 25-35% of the time. "
+            "Comebacks are common — spread probability across 5-10 contenders and the 'other' bucket."
+        )
+    else:
+        calibration_hint = (
+            "After round 3, the leader wins roughly 45-60% of the time. "
+            "The top 3-5 players cover most outcomes, but upsets still happen."
+        )
+
     instructions = (
         f"Tournament: {example.tournament_name}\n"
         f"Course: {example.course_name or 'Unknown'}\n"
-        f"Round: {example.round_number}\n"
+        f"Round: {round_num}\n"
         f"Event day: {example.event_day or 'Unknown'}\n"
         f"Snapshot time: {example.snapshot_timestamp}\n\n"
         f"Leaderboard snapshot (top {n_shown} of {n_total} players):\n"
         f"{leaderboard_table(example, max_players=max_candidates)}\n\n"
         "Extra context:\n"
         f"{extra_context}\n\n"
+        f"Calibration guidance: {calibration_hint}\n\n"
         "Return a JSON object with a single key `winner_probs`. "
         "Each key must be one of the candidate labels below and the probabilities must sum to 1. "
-        "Use `other` for all players not listed individually.\n"
+        "Use `other` for all players not listed individually. "
+        "Assign non-zero probability to at least 5 candidates.\n"
         f"Candidate labels: {', '.join(candidates)}\n"
         "Do not include explanations, markdown fences, or extra keys.\n"
-        'Example: {"winner_probs": {"Player A": 0.35, "Player B": 0.25, "Player C": 0.15, "other": 0.25}}'
+        'Example: {"winner_probs": {"Player A": 0.30, "Player B": 0.20, "Player C": 0.15, "Player D": 0.10, "Player E": 0.08, "other": 0.17}}'
     )
     return [
         {"role": "system", "content": FORECAST_SYSTEM_PROMPT},
