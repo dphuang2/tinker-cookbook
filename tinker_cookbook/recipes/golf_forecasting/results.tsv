@@ -26,3 +26,7 @@ exp21-deepseek-top2	0.9804	0.5856	1.0194	kept	model	DeepSeek-V3.1 top-2, good ba
 exp22-qwen4b-top3	1.4538	0.7619	N/A	kept	model	Qwen3-4B-Instruct top-3, 100% format valid with CoT, between 70B and 8B+RL
 exp24-r2n3-r3n1	0.9910	0.5983	N/A	kept	prompt	Round-dependent: R2=top3, R3=top1, good balance of resolution and metrics
 exp24-r2n2-r3n1	0.8524	0.5513	N/A	kept	prompt	Round-dependent: R2=top2, R3=top1, strong all-around
+exp25-moredata-8b	1.4311	0.7428	1.2644	not-kept	data+training	316 examples (2022-2026), 8B+RL anchor regressed, needs hyperparams tuning
+exp26-qwen30b-top3	1.3248	0.7109	N/A	kept	model	Qwen3-30B-A3B-Instruct top-3, surprisingly beats larger 235B model
+exp26-qwen235b-top3	1.3508	0.7202	1.2557	kept	model	Qwen3-235B-A22B-Instruct top-3, 100% format, 47% research top1
+exp26-kimi-top3	1.5460	0.6816	N/A	kept	model	Kimi-K2-Thinking top-3, good brier but higher log_loss, 97% format
