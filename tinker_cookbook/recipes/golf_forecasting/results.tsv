@@ -53,3 +53,4 @@ exp46-qwen35-4b-sft	13.8155	2.0000	N/A	not-kept	model+training	Qwen3.5-4B base +
 exp46-kimi-top1	6.8878	1.1678	N/A	not-kept	model	Kimi-K2-Thinking top-1, 53% format valid, thinking model can't follow constraints
 exp47-mega-sft	1.2714	0.6827	1.1625	kept	data+training	PGA+EUR+LPGA 735 train, best research ll=1.16, 54% top1, anchor slightly regressed
 exp48-pga5ep	1.2612	0.6803	1.1570	kept	training	PGA-only SFT 5 epochs (474 PGA examples), anchor improving toward 1.23
+exp49-qwen32b-sft	1.2808	0.6843	N/A	not-kept	model+training	Qwen3-32B SFT, same quality as 8B SFT — again confirms teacher is bottleneck
