@@ -87,6 +87,21 @@ def build_messages(
     n_total = len(example.players)
     n_shown = min(max_candidates, n_total) if max_candidates > 0 else n_total
 
+    # Compute field analysis from leaderboard
+    scores = [p.score_to_par for p in example.players]
+    leader_score = scores[0] if scores else 0
+    field_analysis_parts = []
+    if len(scores) >= 2:
+        gap_to_2nd = scores[1] - leader_score
+        field_analysis_parts.append(f"Leader's margin: {gap_to_2nd:.0f} stroke(s) over 2nd place")
+    if len(scores) >= 5:
+        within_3 = sum(1 for s in scores if s - leader_score <= 3)
+        field_analysis_parts.append(f"Players within 3 strokes of lead: {within_3}")
+    if len(scores) >= 10:
+        within_5 = sum(1 for s in scores if s - leader_score <= 5)
+        field_analysis_parts.append(f"Players within 5 strokes: {within_5}")
+    field_analysis = "\n".join(f"- {p}" for p in field_analysis_parts) if field_analysis_parts else ""
+
     # Round-specific calibration guidance
     round_num = example.round_number
     if round_num <= 2:
@@ -110,7 +125,8 @@ def build_messages(
         f"{leaderboard_table(example, max_players=max_candidates)}\n\n"
         "Extra context:\n"
         f"{extra_context}\n\n"
-        f"Calibration guidance: {calibration_hint}\n\n"
+        + (f"Field analysis:\n{field_analysis}\n\n" if field_analysis else "")
+        + f"Calibration guidance: {calibration_hint}\n\n"
         "Return a JSON object with a single key `winner_probs`. "
         "Each key must be one of the candidate labels below and the probabilities must sum to 1. "
         "Use `other` for all players not listed individually. "

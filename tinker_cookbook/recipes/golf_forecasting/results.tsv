@@ -11,3 +11,4 @@ exp7-bugfix-floor	1.8978	0.7648	1.7885	kept	evaluation	Fixed target_label bug fo
 exp8-8b-rl-fixed	2.2222	0.7971	2.0961	kept	training	8B+RL retrained with bugfix, better than heuristic but 70B zero-shot still wins on anchor
 exp9-baserates	1.9229	0.7671	1.8457	reverted	prompt	Explicit historical base rates in prompt, slightly worse than exp7, reverted
 exp10-moredata	2.1271	0.7858	1.9765	kept	data	Added 2023 season (274 total examples), 8B+RL improved but 70B still best on anchor
+exp11-fieldanalysis	1.8809	0.7664	1.8699	kept	prompt	Added field analysis (margin, within-3/5 strokes), small anchor log_loss improvement
