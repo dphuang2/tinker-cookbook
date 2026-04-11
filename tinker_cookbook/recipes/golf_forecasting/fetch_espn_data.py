@@ -218,8 +218,8 @@ def fetch_season(season_year: int) -> list[dict]:
             logger.warning("Could not fetch event %s", event_id)
             continue
 
-        # Create snapshots after round 2 and round 3
-        for snap_round in [2, 3]:
+        # Create snapshots after round 1, 2, and 3
+        for snap_round in [1, 2, 3]:
             record = _build_snapshot_after_round(event_data, snap_round)
             if record is not None:
                 records.append(record)
