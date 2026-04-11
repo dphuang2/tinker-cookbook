@@ -60,3 +60,4 @@ exp52-sft-top2	0.9863	0.5891	0.9507	kept	training	SFT distill top-2, excellent b
 exp52-70b-base-sft	1.2781	0.6863	N/A	not-kept	model+training	70B base SFT, same as 8B instruct — base vs instruct doesn't matter
 exp53-sft-rl-top2	0.9863	0.5891	0.9463	not-kept	training	SFT+RL top-2 (2e-6 LR), identical to SFT-only — RL too weak
 exp54-sft-rl-top2-hi	1.0173	0.6110	N/A	not-kept	training	SFT+RL top-2 (1e-5 LR), worse than SFT — RL degrades calibration again
+exp56-qwen8b-sft	1.2801	0.6855	N/A	not-kept	model+training	Qwen3-8B-Base SFT, same as Llama-8B — 4th proof student size/arch doesn't matter
