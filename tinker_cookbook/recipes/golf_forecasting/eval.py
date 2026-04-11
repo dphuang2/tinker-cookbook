@@ -46,6 +46,8 @@ class GolfForecastEvalConfig:
     n_eval: int | None = None
     include_other_bucket: bool = True
     max_candidates: int = 20
+    include_scorecard: bool = False
+    include_pressure: bool = True
 
 
 @dataclass(frozen=True)
@@ -103,6 +105,8 @@ class GolfForecastEvaluator(SamplingClientEvaluator):
             example,
             include_other_bucket=self.config.include_other_bucket,
             max_candidates=self.config.max_candidates,
+            include_scorecard=self.config.include_scorecard,
+            include_pressure=self.config.include_pressure,
         )
         return self.renderer.build_generation_prompt(messages)
 

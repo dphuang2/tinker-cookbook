@@ -6,6 +6,7 @@ import math
 import re
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
+from pathlib import Path
 
 import tinker
 from pydantic import BaseModel, ConfigDict, ValidationError, field_validator
@@ -15,9 +16,42 @@ from tinker_cookbook.completers import StopCondition
 from tinker_cookbook.recipes.golf_forecasting.data import (
     GolfForecastExample,
     candidate_labels,
+    format_compact_scorecard,
     leaderboard_table,
     normalize_player_name,
+    scorecard_momentum,
 )
+
+# ---------------------------------------------------------------------------
+# Pressure profile: cached player lead-hold statistics.
+# Loaded lazily from artifacts/pressure_profiles.json relative to this file.
+# ---------------------------------------------------------------------------
+_PRESSURE_PROFILES: dict[str, dict] | None = None
+_PRESSURE_PROFILES_NORMALIZED: dict[str, dict] | None = None
+
+
+def _load_pressure_profiles() -> dict[str, dict]:
+    global _PRESSURE_PROFILES, _PRESSURE_PROFILES_NORMALIZED
+    if _PRESSURE_PROFILES is not None:
+        return _PRESSURE_PROFILES_NORMALIZED  # type: ignore[return-value]
+    artifacts_dir = Path(__file__).parent / "artifacts"
+    profiles_path = artifacts_dir / "pressure_profiles.json"
+    if not profiles_path.exists():
+        _PRESSURE_PROFILES = {}
+        _PRESSURE_PROFILES_NORMALIZED = {}
+        return {}
+    raw = json.loads(profiles_path.read_text())
+    # Handle both formats: flat dict or nested {_metadata, profiles}
+    if "_metadata" in raw:
+        profiles_dict = raw.get("profiles", {})
+    else:
+        profiles_dict = raw
+    _PRESSURE_PROFILES = profiles_dict
+    # Build a normalized-name -> profile lookup for fuzzy matching
+    _PRESSURE_PROFILES_NORMALIZED = {
+        normalize_player_name(name): profile for name, profile in profiles_dict.items()
+    }
+    return _PRESSURE_PROFILES_NORMALIZED
 from tinker_cookbook.rl.types import (
     Action,
     ActionExtra,
@@ -55,11 +89,98 @@ class WinnerForecast(BaseModel):
         return value
 
 
+def _build_pressure_section(
+    top_names: list[str],
+    *,
+    round_num: int,
+    max_players: int = 5,
+) -> str:
+    """Build a compact pressure profile section for the top players.
+
+    Only shows data for R2/R3 snapshots (where lead-hold stats are relevant).
+    Only includes players for whom we have at least 2 R3 leads on record.
+    """
+    if round_num not in (2, 3):
+        return ""
+
+    profiles = _load_pressure_profiles()
+    if not profiles:
+        return ""
+
+    lines = []
+    for name in top_names[:max_players]:
+        normalized = normalize_player_name(name)
+        profile = profiles.get(normalized)
+        if profile is None:
+            continue
+        r3_rate = profile.get("r3_lead_hold_rate")
+        r3_leads = profile.get("r3_leads", 0)
+        r3_blown = profile.get("r3_blown_leads", 0)
+        if r3_leads < 2:
+            continue  # Too little data to be meaningful
+        rate_str = f"{r3_rate:.0%}" if r3_rate is not None else "?"
+        lines.append(
+            f"  {name}: R3 lead→win={rate_str} ({r3_leads} leads, {r3_blown} blown)"
+        )
+
+    if not lines:
+        return ""
+
+    return "Lead-hold pressure profiles (historical, from R3 leading position):\n" + "\n".join(lines)
+
+
+def _build_scorecard_section(
+    example: GolfForecastExample,
+    *,
+    top_names: list[str],
+    max_scorecard_players: int = 5,
+    r3_only: bool = True,
+) -> str:
+    """Build a compact hole-by-hole scorecard section for the top players.
+
+    Only includes players that have per-hole data. Keeps tokens compact by
+    using the format: 'E -1 +1 -1 E E -1 E -2' (one token per hole).
+    Also shows the last-5-hole momentum summary.
+
+    r3_only: If True, only include scorecard data for R3 snapshots.
+    Empirical finding: scorecard data helps for R3 (heading into final round)
+    but slightly hurts for R2 (adds noise when 2+ rounds remain).
+    """
+    # A/B test showed scorecard data hurts R2 predictions — skip if r3_only
+    if r3_only and example.round_number != 3:
+        return ""
+
+    # Build a name->player lookup
+    player_map = {p.name: p for p in example.players}
+    lines = []
+    for name in top_names[:max_scorecard_players]:
+        player = player_map.get(name)
+        if player is None or not player.holes:
+            continue
+        compact = player.scorecard_compact or format_compact_scorecard(player.holes)
+        momentum = scorecard_momentum(player.holes, last_n=5)
+        lines.append(f"  {name}: {compact}  [{momentum}]")
+
+    if not lines:
+        return ""
+
+    # Determine which round the scorecard covers
+    round_label = f"Round {example.round_number}"
+    header = (
+        f"Hole-by-hole scoring (holes 1-18, {round_label}; "
+        f"negative=under par, +positive=over par, E=even; "
+        f"shows scoring momentum heading into the final round):"
+    )
+    return header + "\n" + "\n".join(lines)
+
+
 def build_messages(
     example: GolfForecastExample,
     *,
     include_other_bucket: bool = True,
     max_candidates: int = 20,
+    include_scorecard: bool = False,
+    include_pressure: bool = True,
 ) -> list[renderers.Message]:
     # Limit to top N players by position to keep prompt manageable
     if max_candidates > 0 and len(example.players) > max_candidates:
@@ -120,6 +241,21 @@ def build_messages(
             "The top 3-5 players cover most outcomes, but upsets still happen."
         )
 
+    # Build hole-by-hole scorecard section (R3 only, when enabled)
+    # A/B testing shows scorecard adds noise; disable by default, pressure profiles are more helpful.
+    scorecard_section = (
+        _build_scorecard_section(example, top_names=top_names[:max_candidates])
+        if include_scorecard
+        else ""
+    )
+
+    # Build pressure profile section for R2/R3 snapshots (enabled by default)
+    pressure_section = (
+        _build_pressure_section(top_names[:max_candidates], round_num=round_num)
+        if include_pressure
+        else ""
+    )
+
     instructions = (
         f"Tournament: {example.tournament_name}\n"
         f"Course: {example.course_name or 'Unknown'}\n"
@@ -128,7 +264,9 @@ def build_messages(
         f"Snapshot time: {example.snapshot_timestamp}\n\n"
         f"Leaderboard snapshot (top {n_shown} of {n_total} players):\n"
         f"{leaderboard_table(example, max_players=max_candidates)}\n\n"
-        "Extra context:\n"
+        + (scorecard_section + "\n\n" if scorecard_section else "")
+        + (pressure_section + "\n\n" if pressure_section else "")
+        + "Extra context:\n"
         f"{extra_context}\n\n"
         + (f"Field analysis:\n{field_analysis}\n\n" if field_analysis else "")
         + f"Calibration guidance: {calibration_hint}\n\n"
@@ -251,6 +389,8 @@ class GolfForecastEnv(Env):
         include_other_bucket: bool = True,
         format_coef: float = 0.1,
         max_candidates: int = 20,
+        include_scorecard: bool = False,
+        include_pressure: bool = True,
     ):
         self.example = example
         self.renderer = renderer
@@ -261,6 +401,8 @@ class GolfForecastEnv(Env):
             example,
             include_other_bucket=include_other_bucket,
             max_candidates=max_candidates,
+            include_scorecard=include_scorecard,
+            include_pressure=include_pressure,
         )
         # Build allowed labels to match what build_messages uses
         if max_candidates > 0 and len(example.players) > max_candidates:

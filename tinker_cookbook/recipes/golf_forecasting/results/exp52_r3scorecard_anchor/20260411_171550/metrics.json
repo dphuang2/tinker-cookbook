@@ -1,0 +1,7 @@
+{
+  "eval/log_loss": 1.2783674291653688,
+  "eval/brier": 0.6936704847625644,
+  "eval/top1_accuracy": 0.39473684210526316,
+  "eval/top3_recall": 0.868421052631579,
+  "n_examples": 38
+}

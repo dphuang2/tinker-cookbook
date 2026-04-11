@@ -174,6 +174,9 @@ def _normalize_player(player: dict[str, Any], priors: dict[str, float]) -> Playe
     name = str(_lookup(player, "name", "player_name"))
     normalized_name = normalize_player_name(name)
     prior = _lookup(player, "prior_win_prob", "win_probability", default=priors.get(normalized_name))
+    # Pass through hole-by-hole data if present
+    holes = _lookup(player, "holes", default=[])
+    scorecard_compact = _lookup(player, "scorecard_compact", default=None)
     return PlayerSnapshot.from_dict(
         {
             "name": name,
@@ -187,6 +190,8 @@ def _normalize_player(player: dict[str, Any], priors: dict[str, float]) -> Playe
             "tee_time": _lookup(player, "tee_time"),
             "prior_win_prob": prior,
             "recent_form_score": _lookup(player, "recent_form_score", "recent_form"),
+            "holes": holes,
+            "scorecard_compact": scorecard_compact,
             "metadata": cast(dict[str, Any], _lookup(player, "metadata", default={})),
         }
     )
@@ -231,6 +236,14 @@ def normalize_records(
             example_id = str(
                 _lookup(record, "example_id", default=f"{tournament_id}-{snapshot_timestamp}-{index}")
             )
+            # Parse course_scorecard if present
+            from tinker_cookbook.recipes.golf_forecasting.data import CourseHole
+            scorecard_raw = _lookup(record, "course_scorecard", default=[])
+            course_scorecard = (
+                tuple(CourseHole.from_dict(h) for h in scorecard_raw)
+                if scorecard_raw
+                else ()
+            )
             examples.append(
                 GolfForecastExample(
                     example_id=example_id,
@@ -254,6 +267,7 @@ def normalize_records(
                         if _lookup(record, "other_field_prior") is not None
                         else None
                     ),
+                    course_scorecard=course_scorecard,
                 )
             )
     return examples

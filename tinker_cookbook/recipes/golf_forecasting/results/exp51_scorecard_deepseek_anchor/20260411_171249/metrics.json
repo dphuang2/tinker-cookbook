@@ -1,0 +1,9 @@
+{
+  "eval/log_loss": 1.2723064796227368,
+  "eval/brier": 0.6864097395279442,
+  "eval/top1_accuracy": 0.42105263157894735,
+  "eval/top3_recall": 0.8421052631578947,
+  "n_examples": 38,
+  "model": "deepseek-ai/DeepSeek-V3.1",
+  "max_candidates": 3
+}

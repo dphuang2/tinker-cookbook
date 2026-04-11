@@ -40,6 +40,23 @@ def _maybe_int(value: Any) -> int | None:
 
 
 @dataclass(frozen=True)
+class HoleScore:
+    """Per-hole score for a single round."""
+
+    hole: int
+    score: int  # raw strokes
+    to_par: int  # relative to par (negative = under par)
+
+    @staticmethod
+    def from_dict(data: dict[str, Any]) -> "HoleScore":
+        return HoleScore(
+            hole=int(data["hole"]),
+            score=int(data["score"]),
+            to_par=int(data["to_par"]),
+        )
+
+
+@dataclass(frozen=True)
 class PlayerSnapshot:
     name: str
     position: str
@@ -52,10 +69,16 @@ class PlayerSnapshot:
     tee_time: str | None = None
     prior_win_prob: float | None = None
     recent_form_score: float | None = None
+    # Hole-by-hole scoring for the current (latest) round
+    holes: tuple[HoleScore, ...] = ()
+    # Compact scorecard representation (e.g., "-1 E +1 -1 E E E -1 E")
+    scorecard_compact: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
 
     @staticmethod
     def from_dict(data: dict[str, Any]) -> "PlayerSnapshot":
+        holes_raw = data.get("holes", [])
+        holes = tuple(HoleScore.from_dict(h) for h in holes_raw) if holes_raw else ()
         return PlayerSnapshot(
             name=str(data["name"]),
             position=str(data.get("position", "")),
@@ -68,7 +91,28 @@ class PlayerSnapshot:
             tee_time=data.get("tee_time"),
             prior_win_prob=_maybe_float(data.get("prior_win_prob")),
             recent_form_score=_maybe_float(data.get("recent_form_score")),
+            holes=holes,
+            scorecard_compact=data.get("scorecard_compact"),
             metadata=cast(dict[str, Any], data.get("metadata", {})),
+        )
+
+
+@dataclass(frozen=True)
+class CourseHole:
+    """Per-hole course info (scorecard)."""
+
+    hole: int
+    par: int
+    yards: int | None = None
+    handicap_rank: int | None = None
+
+    @staticmethod
+    def from_dict(data: dict[str, Any]) -> "CourseHole":
+        return CourseHole(
+            hole=int(data["hole"]),
+            par=int(data["par"]),
+            yards=_maybe_int(data.get("yards")),
+            handicap_rank=_maybe_int(data.get("handicap_rank")),
         )
 
 
@@ -86,10 +130,14 @@ class GolfForecastExample:
     system_context: dict[str, Any] = field(default_factory=dict)
     source_urls: tuple[str, ...] = ()
     other_field_prior: float | None = None
+    # Course scorecard: par/yards per hole
+    course_scorecard: tuple[CourseHole, ...] = ()
 
     @staticmethod
     def from_dict(data: dict[str, Any]) -> "GolfForecastExample":
         players = tuple(PlayerSnapshot.from_dict(player) for player in data["players"])
+        scorecard_raw = data.get("course_scorecard", [])
+        course_scorecard = tuple(CourseHole.from_dict(h) for h in scorecard_raw) if scorecard_raw else ()
         return GolfForecastExample(
             example_id=str(data["example_id"]),
             tournament_id=str(data.get("tournament_id") or _slugify(str(data["tournament_name"]))),
@@ -103,6 +151,7 @@ class GolfForecastExample:
             system_context=cast(dict[str, Any], data.get("system_context", {})),
             source_urls=tuple(str(url) for url in data.get("source_urls", [])),
             other_field_prior=_maybe_float(data.get("other_field_prior")),
+            course_scorecard=course_scorecard,
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -206,30 +255,100 @@ def load_dataset_manifest(path: str) -> DatasetManifest:
     return DatasetManifest.from_dict(json.loads(manifest_path.read_text()))
 
 
+def format_compact_scorecard(holes: tuple[HoleScore, ...]) -> str:
+    """Format hole scores as a compact string, e.g., 'E -1 -1 +1 E E -1 E -2'.
+
+    Negative = under par (birdie/eagle), positive = over par (bogey).
+    E = even par.
+    """
+    parts = []
+    for h in sorted(holes, key=lambda x: x.hole):
+        if h.to_par == 0:
+            parts.append("E")
+        elif h.to_par > 0:
+            parts.append(f"+{h.to_par}")
+        else:
+            parts.append(str(h.to_par))
+    return " ".join(parts)
+
+
+def scorecard_momentum(holes: tuple[HoleScore, ...], *, last_n: int = 5) -> str:
+    """Summarize scoring momentum over the last N holes played."""
+    if not holes:
+        return ""
+    sorted_holes = sorted(holes, key=lambda x: x.hole)
+    recent = sorted_holes[-last_n:]
+    total = sum(h.to_par for h in recent)
+    if total == 0:
+        trend = "E"
+    elif total > 0:
+        trend = f"+{total}"
+    else:
+        trend = str(total)
+    return f"Last {len(recent)} holes: {trend}"
+
+
 def leaderboard_table(example: GolfForecastExample, *, max_players: int | None = None) -> str:
+    """Render the leaderboard as a markdown table.
+
+    For R2+ snapshots shows This Rnd + Prev Rnds columns so the model can see
+    per-round scoring trajectory, not just the cumulative total.
+    """
     players = example.players[:max_players] if max_players is not None else example.players
-    header = (
-        "| Player | Pos | To Par | Behind | Hole | Done | Remaining | Prior | Recent |\n"
-        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"
-    )
+    is_r1 = example.round_number == 1
+
+    if is_r1:
+        header = (
+            "| Player | Pos | Total | This Rnd | Behind | Hole | Done | Remaining | Prior | Recent |\n"
+            "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"
+        )
+    else:
+        header = (
+            "| Player | Pos | Total | This Rnd | Prev Rnds | Behind | Hole | Done | Remaining | Prior | Recent |\n"
+            "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"
+        )
+
     rows = []
     for player in players:
-        rows.append(
-            "| {name} | {position} | {score_to_par:+.0f} | {strokes_behind:.1f} | {current_hole} | "
-            "{holes_completed} | {holes_remaining} | {prior} | {recent} |".format(
-                name=player.name,
-                position=player.position or "-",
-                score_to_par=player.score_to_par,
-                strokes_behind=player.strokes_behind,
-                current_hole=player.current_hole if player.current_hole is not None else "-",
-                holes_completed=player.holes_completed if player.holes_completed is not None else "-",
-                holes_remaining=player.holes_remaining if player.holes_remaining is not None else "-",
-                prior=f"{player.prior_win_prob:.3f}" if player.prior_win_prob is not None else "-",
-                recent=f"{player.recent_form_score:.2f}"
-                if player.recent_form_score is not None
-                else "-",
+        rnd_str = f"{player.round_score:+.0f}" if player.round_score is not None else "-"
+        if not is_r1 and player.round_score is not None:
+            prev_str = f"{player.score_to_par - player.round_score:+.0f}"
+        else:
+            prev_str = "-"
+
+        if is_r1:
+            rows.append(
+                "| {name} | {pos} | {total:+.0f} | {rnd} | {behind:.1f} | {hole} | "
+                "{done} | {rem} | {prior} | {recent} |".format(
+                    name=player.name,
+                    pos=player.position or "-",
+                    total=player.score_to_par,
+                    rnd=rnd_str,
+                    behind=player.strokes_behind,
+                    hole=player.current_hole if player.current_hole is not None else "-",
+                    done=player.holes_completed if player.holes_completed is not None else "-",
+                    rem=player.holes_remaining if player.holes_remaining is not None else "-",
+                    prior=f"{player.prior_win_prob:.3f}" if player.prior_win_prob is not None else "-",
+                    recent=f"{player.recent_form_score:.2f}" if player.recent_form_score is not None else "-",
+                )
             )
-        )
+        else:
+            rows.append(
+                "| {name} | {pos} | {total:+.0f} | {rnd} | {prev} | {behind:.1f} | {hole} | "
+                "{done} | {rem} | {prior} | {recent} |".format(
+                    name=player.name,
+                    pos=player.position or "-",
+                    total=player.score_to_par,
+                    rnd=rnd_str,
+                    prev=prev_str,
+                    behind=player.strokes_behind,
+                    hole=player.current_hole if player.current_hole is not None else "-",
+                    done=player.holes_completed if player.holes_completed is not None else "-",
+                    rem=player.holes_remaining if player.holes_remaining is not None else "-",
+                    prior=f"{player.prior_win_prob:.3f}" if player.prior_win_prob is not None else "-",
+                    recent=f"{player.recent_form_score:.2f}" if player.recent_form_score is not None else "-",
+                )
+            )
     return "\n".join([header, *rows])
 
 

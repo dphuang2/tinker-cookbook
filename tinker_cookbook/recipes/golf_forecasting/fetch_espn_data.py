@@ -69,6 +69,52 @@ def _parse_score_to_par(score_str: str) -> int | None:
         return None
 
 
+def _parse_hole_scores(round_linescore: dict) -> list[dict]:
+    """Extract hole-by-hole scores from a round's linescore object.
+
+    The ESPN API stores per-hole data in the nested `linescores` list within
+    each round's linescore. Each hole entry has:
+      - period: hole number (1-18)
+      - value: raw strokes taken
+      - scoreType.displayValue: relative score ("E", "-1", "+1", etc.)
+
+    Returns a list of dicts with {hole, score, to_par}.
+    """
+    hole_linescores = round_linescore.get("linescores", [])
+    holes = []
+    for h in hole_linescores:
+        period = h.get("period")
+        if period is None or not (1 <= int(period) <= 18):
+            continue
+        raw_score = h.get("value")
+        if raw_score is None:
+            continue
+        score_type_str = h.get("scoreType", {}).get("displayValue", "E")
+        to_par = _parse_score_to_par(score_type_str)
+        if to_par is None:
+            to_par = 0
+        holes.append({
+            "hole": int(period),
+            "score": int(raw_score),
+            "to_par": to_par,
+        })
+    return sorted(holes, key=lambda x: x["hole"])
+
+
+def _format_compact_scorecard(holes: list[dict]) -> str:
+    """Format hole scores as compact string, e.g. 'E -1 +1 E -2'."""
+    parts = []
+    for h in sorted(holes, key=lambda x: x["hole"]):
+        tp = h["to_par"]
+        if tp == 0:
+            parts.append("E")
+        elif tp > 0:
+            parts.append(f"+{tp}")
+        else:
+            parts.append(str(tp))
+    return " ".join(parts)
+
+
 def _build_snapshot_after_round(
     event_data: dict,
     snapshot_round: int,
@@ -77,6 +123,8 @@ def _build_snapshot_after_round(
 
     Returns a record dict in the format expected by normalize_records, or None
     if the data is insufficient.
+
+    Now includes hole-by-hole scoring for the latest round (scorecard data).
     """
     event_name = event_data["name"]
     event_id = event_data["id"]
@@ -120,6 +168,7 @@ def _build_snapshot_after_round(
         cumulative_score = 0
         round_scores = []
         skip_player = False
+        last_round_holes: list[dict] = []
         for r_idx in range(snapshot_round):
             ls = linescores[r_idx]
             round_display = ls.get("displayValue", "E")
@@ -129,14 +178,20 @@ def _build_snapshot_after_round(
                 break
             cumulative_score += round_val
             round_scores.append(round_val)
+            # Capture hole-by-hole for the last (snapshot) round
+            if r_idx == snapshot_round - 1:
+                last_round_holes = _parse_hole_scores(ls)
         if skip_player:
             continue
 
+        compact = _format_compact_scorecard(last_round_holes) if last_round_holes else None
         player_records.append({
             "name": athlete["displayName"],
             "cumulative_to_par": cumulative_score,
             "round_scores": round_scores,
             "last_round_score": round_scores[-1] if round_scores else 0,
+            "holes": last_round_holes,
+            "scorecard_compact": compact,
         })
 
     if len(player_records) < 5:
@@ -154,7 +209,7 @@ def _build_snapshot_after_round(
         holes_completed = snapshot_round * holes_per_round
         holes_remaining = (total_rounds - snapshot_round) * holes_per_round
 
-        players.append({
+        player_entry = {
             "name": p["name"],
             "position": str(pos_idx + 1),
             "score_to_par": p["cumulative_to_par"],
@@ -162,7 +217,12 @@ def _build_snapshot_after_round(
             "holes_completed": holes_completed,
             "holes_remaining": holes_remaining,
             "round_score": p["last_round_score"],
-        })
+        }
+        if p["holes"]:
+            player_entry["holes"] = p["holes"]
+        if p["scorecard_compact"]:
+            player_entry["scorecard_compact"] = p["scorecard_compact"]
+        players.append(player_entry)
 
     day_map = {2: "Saturday", 3: "Sunday"}
     snapshot_ts = event_date  # approximate

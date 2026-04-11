@@ -1,0 +1,910 @@
+{
+  "_metadata": {
+    "_description": "Per-player lead-hold rates from R3 leading position. Computed from train+val+heldout splits.",
+    "_generated_at": "2026-04-11T17:22:59.439335+00:00",
+    "_n_players": 100,
+    "_source": "Computed from PGA Tour + LPGA + EUR Tour dataset (849 examples, 2022-2026)"
+  },
+  "profiles": {
+    "A Lim Kim": {
+      "r2_lead_hold_rate": 0.667,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 2,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 2
+    },
+    "Aaron Rai": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Adam Schenk": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.333,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 1
+    },
+    "Adam Scott": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": null,
+      "r3_leads": 0,
+      "r3_wins_from_lead": 0
+    },
+    "Akie Iwai": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Akshay Bhatia": {
+      "r2_lead_hold_rate": 0.333,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Aldrich Potgieter": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.333,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 1
+    },
+    "Alex Noren": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Andrea Lee": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 0
+    },
+    "Austin Eckroat": {
+      "r2_lead_hold_rate": null,
+      "r2_leads": 0,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Beau Hossler": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": null,
+      "r3_leads": 0,
+      "r3_wins_from_lead": 0
+    },
+    "Ben Griffin": {
+      "r2_lead_hold_rate": 0.25,
+      "r2_leads": 4,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.333,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 1
+    },
+    "Billy Horschel": {
+      "r2_lead_hold_rate": null,
+      "r2_leads": 0,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.333,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 1
+    },
+    "Brian Harman": {
+      "r2_lead_hold_rate": 1.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 2,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 2
+    },
+    "Brooks Koepka": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.333,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 1
+    },
+    "Byeong Hun An": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 1
+    },
+    "Cameron Smith": {
+      "r2_lead_hold_rate": 0.667,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 2,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 1
+    },
+    "Cameron Young": {
+      "r2_lead_hold_rate": 0.333,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Carlota Ciganda": {
+      "r2_lead_hold_rate": 1.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Chanettee Wannasaen": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 1
+    },
+    "Charley Hull": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Chris Gotterup": {
+      "r2_lead_hold_rate": 1.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 2,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 2
+    },
+    "Chris Kirk": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 2
+    },
+    "Collin Morikawa": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 4,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 3,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 0
+    },
+    "Connor Syme": {
+      "r2_lead_hold_rate": null,
+      "r2_leads": 0,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Daniel Berger": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 0
+    },
+    "Daniel Brown": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Davis Riley": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.333,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 1
+    },
+    "Davis Thompson": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Dylan Naidoo": {
+      "r2_lead_hold_rate": null,
+      "r2_leads": 0,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Ewen Ferguson": {
+      "r2_lead_hold_rate": 0.333,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Garrick Higgo": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 0
+    },
+    "Grace Kim": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 0
+    },
+    "Haeran Ryu": {
+      "r2_lead_hold_rate": 1.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 2,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.333,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 1
+    },
+    "Hannah Green": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 2
+    },
+    "Haotong Li": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Hideki Matsuyama": {
+      "r2_lead_hold_rate": 0.75,
+      "r2_leads": 4,
+      "r2_wins_from_lead": 3,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.667,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 2
+    },
+    "J.J. Spaun": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 3,
+      "r3_lead_hold_rate": 0.25,
+      "r3_leads": 4,
+      "r3_wins_from_lead": 1
+    },
+    "J.T. Poston": {
+      "r2_lead_hold_rate": 0.667,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 2,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 2
+    },
+    "Jacob Bridgeman": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 1
+    },
+    "Jake Knapp": {
+      "r2_lead_hold_rate": 0.333,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Jeeno Thitikul": {
+      "r2_lead_hold_rate": 0.25,
+      "r2_leads": 4,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.75,
+      "r3_leads": 4,
+      "r3_wins_from_lead": 3
+    },
+    "Jesper Svensson": {
+      "r2_lead_hold_rate": null,
+      "r2_leads": 0,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 0
+    },
+    "Joakim Lagergren": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": null,
+      "r3_leads": 0,
+      "r3_wins_from_lead": 0
+    },
+    "Jon Rahm": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 3
+    },
+    "Justin Lower": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 0
+    },
+    "Justin Rose": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 2
+    },
+    "Justin Suh": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 0
+    },
+    "Keegan Bradley": {
+      "r2_lead_hold_rate": 1.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.667,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 2
+    },
+    "Keita Nakajima": {
+      "r2_lead_hold_rate": 1.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Keith Mitchell": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 0
+    },
+    "Kurt Kitayama": {
+      "r2_lead_hold_rate": 0.333,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 1
+    },
+    "Lanto Griffin": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": null,
+      "r3_leads": 0,
+      "r3_wins_from_lead": 0
+    },
+    "Lee Hodges": {
+      "r2_lead_hold_rate": 1.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Lucas Glover": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 2
+    },
+    "Ludvig \u00c5berg": {
+      "r2_lead_hold_rate": 0.2,
+      "r2_leads": 5,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.333,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 1
+    },
+    "Lydia Ko": {
+      "r2_lead_hold_rate": 1.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 2
+    },
+    "Mackenzie Hughes": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": null,
+      "r3_leads": 0,
+      "r3_wins_from_lead": 0
+    },
+    "Mao Saigo": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Marco Penge": {
+      "r2_lead_hold_rate": 1.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 2
+    },
+    "Marcus Armitage": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": null,
+      "r3_leads": 0,
+      "r3_wins_from_lead": 0
+    },
+    "Matt Fitzpatrick": {
+      "r2_lead_hold_rate": null,
+      "r2_leads": 0,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.667,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 2
+    },
+    "Matt Wallace": {
+      "r2_lead_hold_rate": 1.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 2,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 1
+    },
+    "Matteo Manassero": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Matti Schmid": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 0
+    },
+    "Max Greyserman": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 0
+    },
+    "Max Homa": {
+      "r2_lead_hold_rate": 0.333,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": null,
+      "r3_leads": 0,
+      "r3_wins_from_lead": 0
+    },
+    "Minami Katsu": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 0
+    },
+    "Nacho Elvira": {
+      "r2_lead_hold_rate": 1.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Nelly Korda": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 2
+    },
+    "Nico Echavarria": {
+      "r2_lead_hold_rate": 1.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 2
+    },
+    "Patrick Cantlay": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Patrick Fishburn": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": null,
+      "r3_leads": 0,
+      "r3_wins_from_lead": 0
+    },
+    "Patrick Rodgers": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 3,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 0
+    },
+    "Rasmus H\u00f8jgaard": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 0
+    },
+    "Rasmus Neergaard-Petersen": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 1
+    },
+    "Rickie Fowler": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Rio Takeda": {
+      "r2_lead_hold_rate": null,
+      "r2_leads": 0,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 2
+    },
+    "Robert MacIntyre": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 4,
+      "r2_wins_from_lead": 2,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.333,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 1
+    },
+    "Rory McIlroy": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 3,
+      "r3_lead_hold_rate": 0.667,
+      "r3_leads": 9,
+      "r3_wins_from_lead": 6
+    },
+    "Russell Henley": {
+      "r2_lead_hold_rate": 0.333,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Sahith Theegala": {
+      "r2_lead_hold_rate": 0.333,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Sam Burns": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 0
+    },
+    "Scottie Scheffler": {
+      "r2_lead_hold_rate": 0.667,
+      "r2_leads": 15,
+      "r2_wins_from_lead": 10,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.857,
+      "r3_leads": 14,
+      "r3_wins_from_lead": 12
+    },
+    "Sebastian S\u00f6derberg": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 0
+    },
+    "Sei Young Kim": {
+      "r2_lead_hold_rate": 0.333,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 1
+    },
+    "Sepp Straka": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 4,
+      "r3_wins_from_lead": 2
+    },
+    "Shane Lowry": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 0
+    },
+    "Shaun Norris": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 0
+    },
+    "Si Woo Kim": {
+      "r2_lead_hold_rate": null,
+      "r2_leads": 0,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 3,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 0
+    },
+    "Stephan Jaeger": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Sungjae Im": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.0,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 0
+    },
+    "Taylor Pendrith": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 1,
+      "r3_wins_from_lead": 1
+    },
+    "Thorbj\u00f8rn Olesen": {
+      "r2_lead_hold_rate": 0.0,
+      "r2_leads": 1,
+      "r2_wins_from_lead": 0,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 2,
+      "r3_wins_from_lead": 1
+    },
+    "Tom Kim": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 1,
+      "r3_lead_hold_rate": 0.667,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 2
+    },
+    "Tommy Fleetwood": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 4,
+      "r2_wins_from_lead": 2,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.5,
+      "r3_leads": 4,
+      "r3_wins_from_lead": 2
+    },
+    "Tony Finau": {
+      "r2_lead_hold_rate": 0.667,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 2,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 3
+    },
+    "Viktor Hovland": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 2,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 3
+    },
+    "Wyndham Clark": {
+      "r2_lead_hold_rate": 0.333,
+      "r2_leads": 3,
+      "r2_wins_from_lead": 1,
+      "r3_blown_leads": 0,
+      "r3_lead_hold_rate": 1.0,
+      "r3_leads": 3,
+      "r3_wins_from_lead": 3
+    },
+    "Xander Schauffele": {
+      "r2_lead_hold_rate": 0.5,
+      "r2_leads": 4,
+      "r2_wins_from_lead": 2,
+      "r3_blown_leads": 2,
+      "r3_lead_hold_rate": 0.667,
+      "r3_leads": 6,
+      "r3_wins_from_lead": 4
+    }
+  }
+}
