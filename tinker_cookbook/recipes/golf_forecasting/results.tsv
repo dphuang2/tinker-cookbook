@@ -40,3 +40,4 @@ exp32-sft-top1	0.5940	0.4054	0.6283	kept	training	SFT distill top-1, matches Dee
 exp33-sft-mixed	0.8342	0.5397	0.8563	kept	training	SFT distill R2=top2/R3=top1, great balance: ll=0.83, 58% top1, multi-cand for R2
 exp34-multi-teacher	1.2548	0.6805	1.2550	not-kept	training	DeepSeek+70B multi-teacher SFT, marginally worse than single teacher
 exp35-eur-data-sft	1.2358	0.6671	1.2386	kept	data+training	Added EUR Tour (532 total), SFT on 456 train examples, slightly better brier
+exp36-mixed-expanded	0.8256	0.5321	0.8687	kept	data+training	SFT mixed R2=2/R3=1 on expanded EUR+PGA data, best balanced config
