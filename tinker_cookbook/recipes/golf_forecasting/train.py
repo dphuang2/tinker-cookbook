@@ -13,7 +13,7 @@ from tinker_cookbook.rl import train
 @chz.chz
 class CLIConfig:
     # Model configuration
-    model_name: str = "meta-llama/Llama-3.2-1B-Instruct"
+    model_name: str = "meta-llama/Llama-3.1-8B-Instruct"
     lora_rank: int = 32
     renderer_name: str | None = None
     load_checkpoint_path: str | None = None
