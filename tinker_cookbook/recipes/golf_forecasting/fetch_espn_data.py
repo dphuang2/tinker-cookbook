@@ -32,6 +32,8 @@ SKIP_KEYWORDS = {
     "ryder cup",
     "q-school",
     "showdown",
+    "match play",           # match play format
+    "wgc-dell",             # match play
 }
 
 
@@ -51,7 +53,7 @@ def _get_event(event_id: str) -> dict | None:
     """Fetch full scoreboard for a single event."""
     url = f"{ESPN_BASE}/scoreboard/{event_id}"
     resp = requests.get(url, timeout=60)
-    if resp.status_code == 404:
+    if resp.status_code in (404, 500):
         return None
     resp.raise_for_status()
     return resp.json()
@@ -88,16 +90,28 @@ def _build_snapshot_after_round(
     # Determine the winner (order=1 in final standings)
     winner = None
     for c in competitors:
+        athlete = c.get("athlete", {})
+        if not athlete.get("displayName"):
+            continue
         if c.get("order") == 1:
-            winner = c["athlete"]["displayName"]
+            winner = athlete["displayName"]
             break
     if winner is None:
-        # fallback: first competitor
-        winner = competitors[0]["athlete"]["displayName"]
+        # fallback: first competitor with a name
+        for c in competitors:
+            athlete = c.get("athlete", {})
+            if athlete.get("displayName"):
+                winner = athlete["displayName"]
+                break
+    if winner is None:
+        return None
 
     # Build cumulative scores through snapshot_round
     player_records = []
     for c in competitors:
+        athlete = c.get("athlete", {})
+        if not athlete.get("displayName"):
+            continue
         linescores = c.get("linescores", [])
         # linescores are round-level objects; each has a displayValue (score relative to par)
         if len(linescores) < snapshot_round:
@@ -119,7 +133,7 @@ def _build_snapshot_after_round(
             continue
 
         player_records.append({
-            "name": c["athlete"]["displayName"],
+            "name": athlete["displayName"],
             "cumulative_to_par": cumulative_score,
             "round_scores": round_scores,
             "last_round_score": round_scores[-1] if round_scores else 0,

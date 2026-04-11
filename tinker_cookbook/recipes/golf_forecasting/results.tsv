@@ -8,3 +8,6 @@ exp4-prob-floor	2.7635	0.7531	2.3106	superseded	evaluation	0.5% probability floo
 exp5-calibrated	2.6058	0.7385	2.2018	superseded	prompt+training	Calibration guidance in prompt, RL retrained, new best on all metrics
 exp6-70b-zeroshot	2.4790	0.7206	2.1198	superseded	model	Llama-3.3-70B-Instruct zero-shot, new best anchor log_loss and brier
 exp7-bugfix-floor	1.8978	0.7648	1.7885	kept	evaluation	Fixed target_label bug for out-of-top-N winners, floor=0.001, massive log_loss improvement
+exp8-8b-rl-fixed	2.2222	0.7971	2.0961	kept	training	8B+RL retrained with bugfix, better than heuristic but 70B zero-shot still wins on anchor
+exp9-baserates	1.9229	0.7671	1.8457	reverted	prompt	Explicit historical base rates in prompt, slightly worse than exp7, reverted
+exp10-moredata	2.1271	0.7858	1.9765	kept	data	Added 2023 season (274 total examples), 8B+RL improved but 70B still best on anchor
