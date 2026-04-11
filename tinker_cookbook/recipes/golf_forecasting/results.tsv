@@ -49,3 +49,5 @@ exp41-sft-mixed5ep	0.8176	0.5270	0.8549	kept	training	SFT mixed 5 epochs, slight
 exp42-r1-data-sft	1.2478	0.6753	1.2146	kept	data+training	Added R1 snapshots (728 total, 614 train), similar anchor, research eval expanded to 57 examples
 exp43-70b-sft	1.2430	0.6709	1.2013	not-kept	model+training	70B SFT same quality as 8B SFT — confirms student capacity is not the bottleneck
 exp44-r1mixed-sft	0.9467	0.5668	0.9208	not-kept	training	R1=3/R2=2/R3=1 SFT, R1 data dilutes R2/R3 anchor quality (0.95 vs 0.83)
+exp46-qwen35-4b-sft	13.8155	2.0000	N/A	not-kept	model+training	Qwen3.5-4B base + SFT, 0% format valid (base model incompatible)
+exp46-kimi-top1	6.8878	1.1678	N/A	not-kept	model	Kimi-K2-Thinking top-1, 53% format valid, thinking model can't follow constraints
