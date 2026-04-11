@@ -28,6 +28,7 @@ from tinker_cookbook.recipes.golf_forecasting.data import (
 # ---------------------------------------------------------------------------
 _PRESSURE_PROFILES: dict[str, dict] | None = None
 _PRESSURE_PROFILES_NORMALIZED: dict[str, dict] | None = None
+_TOURNAMENT_HISTORY: dict[str, list] | None = None
 
 
 def _load_pressure_profiles() -> dict[str, dict]:
@@ -89,6 +90,74 @@ class WinnerForecast(BaseModel):
         return value
 
 
+def _load_tournament_history() -> dict[str, list]:
+    """Load historical tournament winners from artifacts/tournament_history.json."""
+    global _TOURNAMENT_HISTORY
+    if _TOURNAMENT_HISTORY is not None:
+        return _TOURNAMENT_HISTORY
+    history_path = Path(__file__).parent / "artifacts" / "tournament_history.json"
+    if not history_path.exists():
+        _TOURNAMENT_HISTORY = {}
+        return {}
+    raw = json.loads(history_path.read_text())
+    _TOURNAMENT_HISTORY = raw.get("tournaments", {})
+    return _TOURNAMENT_HISTORY
+
+
+def _build_tournament_history_section(
+    tournament_name: str,
+    top_names: list[str],
+    *,
+    current_year: str | None = None,
+    max_past_winners: int = 4,
+) -> str:
+    """Build a compact tournament history section showing past winners.
+
+    Only shows winners from BEFORE the current snapshot year to avoid
+    anachronistic data leakage. Also highlights which of the current
+    top candidates have won here before.
+    """
+    history = _load_tournament_history()
+    records = history.get(tournament_name, [])
+    if not records:
+        return ""
+
+    # Filter to only show past winners from before the current year
+    if current_year:
+        records = [r for r in records if r.get("year", "9999") < current_year]
+
+    if not records:
+        return ""
+
+    # Sort by year (most recent first)
+    sorted_records = sorted(records, key=lambda x: x.get("year", ""), reverse=True)
+    recent = sorted_records[:max_past_winners]
+
+    past_winners = [r["winner"] for r in recent]
+    winner_years = {r["winner"]: r["year"] for r in recent}
+
+    # Check if any current top candidates have won here before
+    normalized_candidates = {normalize_player_name(n): n for n in top_names}
+    course_specialists = []
+    for pw in past_winners:
+        norm_pw = normalize_player_name(pw)
+        canonical = normalized_candidates.get(norm_pw)
+        if canonical:
+            year = winner_years.get(pw, "?")
+            course_specialists.append(f"{canonical} (won {year})")
+
+    lines = []
+    past_winners_str = ", ".join(
+        f"{r['winner']} ({r['year']})" for r in recent
+    )
+    lines.append(f"Recent winners: {past_winners_str}")
+
+    if course_specialists:
+        lines.append(f"Current contenders who have won here: {', '.join(course_specialists)}")
+
+    return f"Tournament history ({tournament_name}):\n" + "\n".join(f"  {l}" for l in lines)
+
+
 def _build_pressure_section(
     top_names: list[str],
     *,
@@ -98,7 +167,8 @@ def _build_pressure_section(
     """Build a compact pressure profile section for the top players.
 
     Only shows data for R2/R3 snapshots (where lead-hold stats are relevant).
-    Only includes players for whom we have at least 2 R3 leads on record.
+    Includes both lead-hold rates (for leaders) and within-3 conversion rates
+    (for all players within 3 strokes of the lead).
     """
     if round_num not in (2, 3):
         return ""
@@ -113,20 +183,23 @@ def _build_pressure_section(
         profile = profiles.get(normalized)
         if profile is None:
             continue
+
         r3_rate = profile.get("r3_lead_hold_rate")
         r3_leads = profile.get("r3_leads", 0)
         r3_blown = profile.get("r3_blown_leads", 0)
-        if r3_leads < 2:
-            continue  # Too little data to be meaningful
-        rate_str = f"{r3_rate:.0%}" if r3_rate is not None else "?"
-        lines.append(
-            f"  {name}: R3 lead→win={rate_str} ({r3_leads} leads, {r3_blown} blown)"
-        )
+
+        # Only show players with at least 2 R3 leads — minimum for meaningful signal
+        if r3_leads < 2 or r3_rate is None:
+            continue
+
+        rate_str = f"{r3_rate:.0%}"
+        lines.append(f"  {name}: R3 lead→win={rate_str} ({r3_leads} leads, {r3_blown} blown)")
 
     if not lines:
         return ""
 
-    return "Lead-hold pressure profiles (historical, from R3 leading position):\n" + "\n".join(lines)
+    label = "R3" if round_num == 3 else "R2"
+    return f"Historical pressure profiles (entering {label}):\n" + "\n".join(lines)
 
 
 def _build_scorecard_section(
@@ -181,6 +254,7 @@ def build_messages(
     max_candidates: int = 20,
     include_scorecard: bool = False,
     include_pressure: bool = True,
+    include_tournament_history: bool = False,
 ) -> list[renderers.Message]:
     # Limit to top N players by position to keep prompt manageable
     if max_candidates > 0 and len(example.players) > max_candidates:
@@ -256,6 +330,19 @@ def build_messages(
         else ""
     )
 
+    # Build tournament history section (disabled by default, opt-in)
+    # Filter to only show winners before the current year to avoid anachronistic data
+    current_year = example.snapshot_timestamp[:4] if example.snapshot_timestamp else None
+    tournament_history_section = (
+        _build_tournament_history_section(
+            example.tournament_name,
+            top_names[:max_candidates],
+            current_year=current_year,
+        )
+        if include_tournament_history
+        else ""
+    )
+
     instructions = (
         f"Tournament: {example.tournament_name}\n"
         f"Course: {example.course_name or 'Unknown'}\n"
@@ -266,6 +353,7 @@ def build_messages(
         f"{leaderboard_table(example, max_players=max_candidates)}\n\n"
         + (scorecard_section + "\n\n" if scorecard_section else "")
         + (pressure_section + "\n\n" if pressure_section else "")
+        + (tournament_history_section + "\n\n" if tournament_history_section else "")
         + "Extra context:\n"
         f"{extra_context}\n\n"
         + (f"Field analysis:\n{field_analysis}\n\n" if field_analysis else "")

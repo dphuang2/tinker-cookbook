@@ -1,0 +1,1602 @@
+{
+  "tournaments": {
+    "3M Open": [
+      {
+        "winner": "Tony Finau",
+        "year": "2022"
+      },
+      {
+        "winner": "Lee Hodges",
+        "year": "2023"
+      },
+      {
+        "winner": "Kurt Kitayama",
+        "year": "2025"
+      },
+      {
+        "winner": "Jhonattan Vegas",
+        "year": "2024"
+      }
+    ],
+    "AIG Women's Open": [
+      {
+        "winner": "Lydia Ko",
+        "year": "2024"
+      },
+      {
+        "winner": "Miyu Yamashita",
+        "year": "2025"
+      }
+    ],
+    "AT&T Byron Nelson": [
+      {
+        "winner": "K.H. Lee",
+        "year": "2022"
+      },
+      {
+        "winner": "Jason Day",
+        "year": "2023"
+      }
+    ],
+    "AT&T Pebble Beach Pro-Am": [
+      {
+        "winner": "Tom Hoge",
+        "year": "2022"
+      },
+      {
+        "winner": "Justin Rose",
+        "year": "2023"
+      },
+      {
+        "winner": "Wyndham Clark",
+        "year": "2024"
+      },
+      {
+        "winner": "Collin Morikawa",
+        "year": "2026"
+      },
+      {
+        "winner": "Rory McIlroy",
+        "year": "2025"
+      }
+    ],
+    "Abu Dhabi HSBC Championship": [
+      {
+        "winner": "Paul Waring",
+        "year": "2024"
+      },
+      {
+        "winner": "Aaron Rai",
+        "year": "2025"
+      }
+    ],
+    "AfrAsia Bank Mauritius Open": [
+      {
+        "winner": "John Parry",
+        "year": "2024"
+      },
+      {
+        "winner": "Jayden Schaper",
+        "year": "2025"
+      }
+    ],
+    "Alfred Dunhill Championship": [
+      {
+        "winner": "Shaun Norris",
+        "year": "2024"
+      }
+    ],
+    "Alfred Dunhill Links Championship": [
+      {
+        "winner": "Tyrrell Hatton",
+        "year": "2024"
+      },
+      {
+        "winner": "Robert MacIntyre",
+        "year": "2025"
+      }
+    ],
+    "Amgen Irish Open": [
+      {
+        "winner": "Rasmus H\u00f8jgaard",
+        "year": "2024"
+      },
+      {
+        "winner": "Rory McIlroy",
+        "year": "2025"
+      }
+    ],
+    "Arnold Palmer Invitational pres. by Mastercard": [
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2022"
+      },
+      {
+        "winner": "Kurt Kitayama",
+        "year": "2023"
+      },
+      {
+        "winner": "Russell Henley",
+        "year": "2025"
+      },
+      {
+        "winner": "Akshay Bhatia",
+        "year": "2026"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2024"
+      }
+    ],
+    "Austrian Alpine Open pres. by SalzburgerLand": [
+      {
+        "winner": "Nicolai von Dellingshausen",
+        "year": "2025"
+      }
+    ],
+    "BMW Australian PGA Championship": [
+      {
+        "winner": "Elvis Smylie",
+        "year": "2024"
+      },
+      {
+        "winner": "David Puig",
+        "year": "2025"
+      }
+    ],
+    "BMW Championship": [
+      {
+        "winner": "Patrick Cantlay",
+        "year": "2022"
+      },
+      {
+        "winner": "Viktor Hovland",
+        "year": "2023"
+      },
+      {
+        "winner": "Keegan Bradley",
+        "year": "2024"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2025"
+      }
+    ],
+    "BMW International Open": [
+      {
+        "winner": "Ewen Ferguson",
+        "year": "2024"
+      },
+      {
+        "winner": "Daniel Brown",
+        "year": "2025"
+      }
+    ],
+    "BMW Ladies Championship": [
+      {
+        "winner": "Hannah Green",
+        "year": "2024"
+      },
+      {
+        "winner": "Sei Young Kim",
+        "year": "2025"
+      }
+    ],
+    "BMW PGA Championship": [
+      {
+        "winner": "Billy Horschel",
+        "year": "2024"
+      },
+      {
+        "winner": "Alex Noren",
+        "year": "2025"
+      }
+    ],
+    "Bahrain Championship": [
+      {
+        "winner": "Dylan Frittelli",
+        "year": "2024"
+      }
+    ],
+    "Bank of Utah Championship": [
+      {
+        "winner": "Michael Brennan",
+        "year": "2025"
+      }
+    ],
+    "Bapco Energies Bahrain Championship": [
+      {
+        "winner": "Laurie Canter",
+        "year": "2025"
+      }
+    ],
+    "Barbasol Championship": [
+      {
+        "winner": "Trey Mullinax",
+        "year": "2022"
+      },
+      {
+        "winner": "Vincent Norrman",
+        "year": "2023"
+      }
+    ],
+    "Barracuda Championship": [
+      {
+        "winner": "Chez Reavie",
+        "year": "2022"
+      },
+      {
+        "winner": "Akshay Bhatia",
+        "year": "2023"
+      },
+      {
+        "winner": "Nick Dunlap",
+        "year": "2024"
+      },
+      {
+        "winner": "Ryan Gerard",
+        "year": "2025"
+      }
+    ],
+    "Baycurrent Classic": [
+      {
+        "winner": "Xander Schauffele",
+        "year": "2025"
+      }
+    ],
+    "Betfred British Masters hosted by Sir Nick Faldo": [
+      {
+        "winner": "Niklas Norgaard",
+        "year": "2024"
+      },
+      {
+        "winner": "Alex Noren",
+        "year": "2025"
+      }
+    ],
+    "Black Desert Championship": [
+      {
+        "winner": "Haeran Ryu",
+        "year": "2025"
+      },
+      {
+        "winner": "Matt McCarty",
+        "year": "2024"
+      }
+    ],
+    "Blue Bay LPGA": [
+      {
+        "winner": "Bailey Tardy",
+        "year": "2024"
+      },
+      {
+        "winner": "Rio Takeda",
+        "year": "2025"
+      }
+    ],
+    "Buick LPGA Shanghai": [
+      {
+        "winner": "Ruoning Yin",
+        "year": "2024"
+      },
+      {
+        "winner": "Jeeno Thitikul",
+        "year": "2025"
+      }
+    ],
+    "Butterfield Bermuda Championship": [
+      {
+        "winner": "S\u00e9amus Power",
+        "year": "2022"
+      },
+      {
+        "winner": "Camilo Villegas",
+        "year": "2023"
+      },
+      {
+        "winner": "Rafael Campos",
+        "year": "2024"
+      },
+      {
+        "winner": "Adam Schenk",
+        "year": "2025"
+      }
+    ],
+    "CME Group Tour Championship": [
+      {
+        "winner": "Jeeno Thitikul",
+        "year": "2024"
+      },
+      {
+        "winner": "Jeeno Thitikul",
+        "year": "2025"
+      }
+    ],
+    "CPKC Women's Open": [
+      {
+        "winner": "Lauren Coughlin",
+        "year": "2024"
+      },
+      {
+        "winner": "Brooke M. Henderson",
+        "year": "2025"
+      }
+    ],
+    "Cadence Bank Houston Open": [
+      {
+        "winner": "Tony Finau",
+        "year": "2022"
+      }
+    ],
+    "Charles Schwab Challenge": [
+      {
+        "winner": "Sam Burns",
+        "year": "2022"
+      },
+      {
+        "winner": "Emiliano Grillo",
+        "year": "2023"
+      },
+      {
+        "winner": "Davis Riley",
+        "year": "2024"
+      },
+      {
+        "winner": "Ben Griffin",
+        "year": "2025"
+      }
+    ],
+    "Cognizant Classic": [
+      {
+        "winner": "Austin Eckroat",
+        "year": "2024"
+      }
+    ],
+    "Cognizant Classic in The Palm Beaches": [
+      {
+        "winner": "Nico Echavarria",
+        "year": "2026"
+      },
+      {
+        "winner": "Joe Highsmith",
+        "year": "2025"
+      }
+    ],
+    "Cognizant Founders Cup": [
+      {
+        "winner": "Rose Zhang",
+        "year": "2024"
+      }
+    ],
+    "Commercial Bank Qatar Masters": [
+      {
+        "winner": "Rikuya Hoshino",
+        "year": "2024"
+      },
+      {
+        "winner": "Haotong Li",
+        "year": "2025"
+      }
+    ],
+    "Corales Puntacana Championship": [
+      {
+        "winner": "Chad Ramey",
+        "year": "2022"
+      },
+      {
+        "winner": "Matt Wallace",
+        "year": "2023"
+      },
+      {
+        "winner": "Billy Horschel",
+        "year": "2024"
+      },
+      {
+        "winner": "Garrick Higgo",
+        "year": "2025"
+      }
+    ],
+    "Crown Australian Open": [
+      {
+        "winner": "Rasmus Neergaard-Petersen",
+        "year": "2025"
+      }
+    ],
+    "D+D REAL Czech Masters": [
+      {
+        "winner": "David Ravetto",
+        "year": "2024"
+      }
+    ],
+    "DP World India Championship": [
+      {
+        "winner": "Tommy Fleetwood",
+        "year": "2025"
+      }
+    ],
+    "DP World Tour Championship": [
+      {
+        "winner": "Rory McIlroy",
+        "year": "2024"
+      },
+      {
+        "winner": "Matt Fitzpatrick",
+        "year": "2025"
+      }
+    ],
+    "Dana Open": [
+      {
+        "winner": "Chanettee Wannasaen",
+        "year": "2024"
+      }
+    ],
+    "Danish Golf Championship": [
+      {
+        "winner": "Frederic LaCroix",
+        "year": "2024"
+      },
+      {
+        "winner": "Marco Penge",
+        "year": "2025"
+      }
+    ],
+    "Dubai Invitational": [
+      {
+        "winner": "Tommy Fleetwood",
+        "year": "2024"
+      }
+    ],
+    "Estrella Damm N.A. Andaluc\u00eda Masters": [
+      {
+        "winner": "Julien Guerrier",
+        "year": "2024"
+      }
+    ],
+    "European Open": [
+      {
+        "winner": "Laurie Canter",
+        "year": "2024"
+      }
+    ],
+    "FIR HILLS SERI PAK Championship": [
+      {
+        "winner": "Nelly Korda",
+        "year": "2024"
+      }
+    ],
+    "FM Championship": [
+      {
+        "winner": "Haeran Ryu",
+        "year": "2024"
+      },
+      {
+        "winner": "Miranda Wang",
+        "year": "2025"
+      }
+    ],
+    "Farmers Insurance Open": [
+      {
+        "winner": "Luke List",
+        "year": "2022"
+      },
+      {
+        "winner": "Max Homa",
+        "year": "2023"
+      },
+      {
+        "winner": "Harris English",
+        "year": "2025"
+      },
+      {
+        "winner": "Justin Rose",
+        "year": "2026"
+      },
+      {
+        "winner": "Matthieu Pavon",
+        "year": "2024"
+      }
+    ],
+    "FedEx Open de France": [
+      {
+        "winner": "Dan Bradbury",
+        "year": "2024"
+      },
+      {
+        "winner": "Michael Kim",
+        "year": "2025"
+      }
+    ],
+    "FedEx St. Jude Championship": [
+      {
+        "winner": "Will Zalatoris",
+        "year": "2022"
+      },
+      {
+        "winner": "Lucas Glover",
+        "year": "2023"
+      },
+      {
+        "winner": "Hideki Matsuyama",
+        "year": "2024"
+      },
+      {
+        "winner": "Justin Rose",
+        "year": "2025"
+      }
+    ],
+    "Ford Championship pres. by KCC": [
+      {
+        "winner": "Nelly Korda",
+        "year": "2024"
+      }
+    ],
+    "Ford Championship pres. by Wild Horse Pass": [
+      {
+        "winner": "Hyo Joo Kim",
+        "year": "2025"
+      }
+    ],
+    "Fortinet Championship": [
+      {
+        "winner": "Max Homa",
+        "year": "2022"
+      },
+      {
+        "winner": "Sahith Theegala",
+        "year": "2023"
+      }
+    ],
+    "Founders Cup pres. by U.S. Virgin Islands": [
+      {
+        "winner": "Yealimi Noh",
+        "year": "2025"
+      }
+    ],
+    "Genesis Championship": [
+      {
+        "winner": "Byeong Hun An",
+        "year": "2024"
+      },
+      {
+        "winner": "Junghwan Lee",
+        "year": "2025"
+      }
+    ],
+    "Genesis Scottish Open": [
+      {
+        "winner": "Xander Schauffele",
+        "year": "2022"
+      },
+      {
+        "winner": "Rory McIlroy",
+        "year": "2023"
+      },
+      {
+        "winner": "Robert MacIntyre",
+        "year": "2024"
+      },
+      {
+        "winner": "Chris Gotterup",
+        "year": "2025"
+      }
+    ],
+    "HSBC Women's World Championship": [
+      {
+        "winner": "Hannah Green",
+        "year": "2024"
+      },
+      {
+        "winner": "Lydia Ko",
+        "year": "2025"
+      }
+    ],
+    "Hainan Classic": [
+      {
+        "winner": "Marco Penge",
+        "year": "2025"
+      }
+    ],
+    "Hero Dubai Desert Classic": [
+      {
+        "winner": "Rory McIlroy",
+        "year": "2024"
+      },
+      {
+        "winner": "Tyrrell Hatton",
+        "year": "2025"
+      }
+    ],
+    "Hero Indian Open": [
+      {
+        "winner": "Keita Nakajima",
+        "year": "2024"
+      },
+      {
+        "winner": "Eugenio Chacarra",
+        "year": "2025"
+      }
+    ],
+    "Hero World Challenge": [
+      {
+        "winner": "Viktor Hovland",
+        "year": "2022"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2023"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2024"
+      },
+      {
+        "winner": "Hideki Matsuyama",
+        "year": "2025"
+      }
+    ],
+    "Hilton Grand Vacations Tournament of Champions": [
+      {
+        "winner": "Lydia Ko",
+        "year": "2024"
+      },
+      {
+        "winner": "A Lim Kim",
+        "year": "2025"
+      }
+    ],
+    "Honda LPGA Thailand": [
+      {
+        "winner": "Patty Tavatanakit",
+        "year": "2024"
+      },
+      {
+        "winner": "Angel Yin",
+        "year": "2025"
+      }
+    ],
+    "ISCO Championship": [
+      {
+        "winner": "Harry Hall",
+        "year": "2024"
+      },
+      {
+        "winner": "William Mouw",
+        "year": "2025"
+      }
+    ],
+    "ISPS HANDA - CHAMPIONSHIP": [
+      {
+        "winner": "Yuto Katsuragawa",
+        "year": "2024"
+      }
+    ],
+    "ISPS HANDA Women's Scottish Open": [
+      {
+        "winner": "Lottie Woad",
+        "year": "2025"
+      }
+    ],
+    "ISPS Handa Australian Open": [
+      {
+        "winner": "Ryggs Johnston",
+        "year": "2024"
+      }
+    ],
+    "ISPS Handa Women's Scottish Open": [
+      {
+        "winner": "Lauren Coughlin",
+        "year": "2024"
+      }
+    ],
+    "Investec SA Open Championship": [
+      {
+        "winner": "Dylan Naidoo",
+        "year": "2025"
+      }
+    ],
+    "Italian Open": [
+      {
+        "winner": "Marcel Siem",
+        "year": "2024"
+      },
+      {
+        "winner": "Adrien Saddier",
+        "year": "2025"
+      }
+    ],
+    "JM Eagle LA Championship pres. by Plastpro": [
+      {
+        "winner": "Hannah Green",
+        "year": "2024"
+      },
+      {
+        "winner": "Ingrid Lindblad",
+        "year": "2025"
+      }
+    ],
+    "Joburg Open": [
+      {
+        "winner": "Calum Hill",
+        "year": "2025"
+      }
+    ],
+    "John Deere Classic": [
+      {
+        "winner": "J.T. Poston",
+        "year": "2022"
+      },
+      {
+        "winner": "Sepp Straka",
+        "year": "2023"
+      },
+      {
+        "winner": "Brian Campbell",
+        "year": "2025"
+      },
+      {
+        "winner": "Davis Thompson",
+        "year": "2024"
+      }
+    ],
+    "Jonsson Workwear Open": [
+      {
+        "winner": "Matteo Manassero",
+        "year": "2024"
+      }
+    ],
+    "KLM Open": [
+      {
+        "winner": "Guido Migliozzi",
+        "year": "2024"
+      },
+      {
+        "winner": "Connor Syme",
+        "year": "2025"
+      }
+    ],
+    "KPMG Women's PGA Championship": [
+      {
+        "winner": "Amy Yang",
+        "year": "2024"
+      },
+      {
+        "winner": "Minjee Lee",
+        "year": "2025"
+      }
+    ],
+    "Kroger Queen City Championship pres by P&G": [
+      {
+        "winner": "Charley Hull",
+        "year": "2025"
+      }
+    ],
+    "Kroger Queen City Championship pres. by P&G": [
+      {
+        "winner": "Lydia Ko",
+        "year": "2024"
+      }
+    ],
+    "LOTTE Championship pres. by Hoakalei": [
+      {
+        "winner": "A Lim Kim",
+        "year": "2024"
+      },
+      {
+        "winner": "Youmin Hwang",
+        "year": "2025"
+      }
+    ],
+    "LPGA Drive On Championship": [
+      {
+        "winner": "Nelly Korda",
+        "year": "2024"
+      }
+    ],
+    "MEXICO Riviera Maya Open at Mayakoba": [
+      {
+        "winner": "Chizzy Iwai",
+        "year": "2025"
+      }
+    ],
+    "Magical Kenya Open": [
+      {
+        "winner": "Darius Van Driel",
+        "year": "2024"
+      },
+      {
+        "winner": "Jacques Kruyswijk",
+        "year": "2025"
+      }
+    ],
+    "Masters Tournament": [
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2022"
+      },
+      {
+        "winner": "Jon Rahm",
+        "year": "2023"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2024"
+      },
+      {
+        "winner": "Rory McIlroy",
+        "year": "2025"
+      }
+    ],
+    "Maybank Championship": [
+      {
+        "winner": "Ruoning Yin",
+        "year": "2024"
+      },
+      {
+        "winner": "Miyu Yamashita",
+        "year": "2025"
+      }
+    ],
+    "Meijer LPGA Classic for Simply Give": [
+      {
+        "winner": "Lilia Vu",
+        "year": "2024"
+      },
+      {
+        "winner": "Carlota Ciganda",
+        "year": "2025"
+      }
+    ],
+    "Mexico Open": [
+      {
+        "winner": "Jon Rahm",
+        "year": "2022"
+      },
+      {
+        "winner": "Tony Finau",
+        "year": "2023"
+      }
+    ],
+    "Mexico Open at Vidanta": [
+      {
+        "winner": "Jake Knapp",
+        "year": "2024"
+      }
+    ],
+    "Mexico Open at VidantaWorld": [
+      {
+        "winner": "Brian Campbell",
+        "year": "2025"
+      }
+    ],
+    "Mizuho Americas Open": [
+      {
+        "winner": "Nelly Korda",
+        "year": "2024"
+      },
+      {
+        "winner": "Jeeno Thitikul",
+        "year": "2025"
+      }
+    ],
+    "Myrtle Beach Classic": [
+      {
+        "winner": "Chris Gotterup",
+        "year": "2024"
+      }
+    ],
+    "Nedbank Golf Challenge": [
+      {
+        "winner": "Johannes Veerman",
+        "year": "2024"
+      },
+      {
+        "winner": "Kristoffer Reitan",
+        "year": "2025"
+      }
+    ],
+    "Nexo Championship": [
+      {
+        "winner": "Grant Forrest",
+        "year": "2025"
+      }
+    ],
+    "ONEflight Myrtle Beach Classic": [
+      {
+        "winner": "Ryan Fox",
+        "year": "2025"
+      }
+    ],
+    "Omega European Masters": [
+      {
+        "winner": "Matt Wallace",
+        "year": "2024"
+      },
+      {
+        "winner": "Thriston Lawrence",
+        "year": "2025"
+      }
+    ],
+    "Open de Espa\u00f1a pres. by Madrid": [
+      {
+        "winner": "Marco Penge",
+        "year": "2025"
+      }
+    ],
+    "PGA Championship": [
+      {
+        "winner": "Justin Thomas",
+        "year": "2022"
+      },
+      {
+        "winner": "Brooks Koepka",
+        "year": "2023"
+      },
+      {
+        "winner": "Xander Schauffele",
+        "year": "2024"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2025"
+      }
+    ],
+    "Porsche Singapore Classic": [
+      {
+        "winner": "Jesper Svensson",
+        "year": "2024"
+      },
+      {
+        "winner": "Richard Mansell",
+        "year": "2025"
+      }
+    ],
+    "Portland Classic": [
+      {
+        "winner": "Moriya Jutanugarn",
+        "year": "2024"
+      }
+    ],
+    "Procore Championship": [
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2025"
+      },
+      {
+        "winner": "Patton Kizzire",
+        "year": "2024"
+      }
+    ],
+    "Puerto Rico Open": [
+      {
+        "winner": "Ryan Brehm",
+        "year": "2022"
+      },
+      {
+        "winner": "Nico Echavarria",
+        "year": "2023"
+      },
+      {
+        "winner": "Brice Garnett",
+        "year": "2024"
+      },
+      {
+        "winner": "Karl Vilips",
+        "year": "2025"
+      },
+      {
+        "winner": "Ricky Castillo",
+        "year": "2026"
+      }
+    ],
+    "RBC Canadian Open": [
+      {
+        "winner": "Rory McIlroy",
+        "year": "2022"
+      },
+      {
+        "winner": "Nick Taylor",
+        "year": "2023"
+      },
+      {
+        "winner": "Robert MacIntyre",
+        "year": "2024"
+      },
+      {
+        "winner": "Ryan Fox",
+        "year": "2025"
+      }
+    ],
+    "RBC Heritage": [
+      {
+        "winner": "Jordan Spieth",
+        "year": "2022"
+      },
+      {
+        "winner": "Matt Fitzpatrick",
+        "year": "2023"
+      },
+      {
+        "winner": "Justin Thomas",
+        "year": "2025"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2024"
+      }
+    ],
+    "Ras al Khaimah Championship": [
+      {
+        "winner": "Thorbj\u00f8rn Olesen",
+        "year": "2024"
+      },
+      {
+        "winner": "Alejandro Del Rey",
+        "year": "2025"
+      }
+    ],
+    "Rocket Classic": [
+      {
+        "winner": "Aldrich Potgieter",
+        "year": "2025"
+      }
+    ],
+    "Rocket Mortgage Classic": [
+      {
+        "winner": "Tony Finau",
+        "year": "2022"
+      },
+      {
+        "winner": "Rickie Fowler",
+        "year": "2023"
+      },
+      {
+        "winner": "Cam Davis",
+        "year": "2024"
+      }
+    ],
+    "SDC Championship": [
+      {
+        "winner": "Jordan Gumberg",
+        "year": "2024"
+      }
+    ],
+    "Sanderson Farms Championship": [
+      {
+        "winner": "Mackenzie Hughes",
+        "year": "2022"
+      },
+      {
+        "winner": "Luke List",
+        "year": "2023"
+      },
+      {
+        "winner": "Steven Fisk",
+        "year": "2025"
+      },
+      {
+        "winner": "Kevin Yu",
+        "year": "2024"
+      }
+    ],
+    "Sentry Tournament of Champions": [
+      {
+        "winner": "Cameron Smith",
+        "year": "2022"
+      },
+      {
+        "winner": "Jon Rahm",
+        "year": "2023"
+      }
+    ],
+    "ShopRite LPGA Classic pres. by Acer": [
+      {
+        "winner": "Linnea Strom",
+        "year": "2024"
+      },
+      {
+        "winner": "Jennifer Kupcho",
+        "year": "2025"
+      }
+    ],
+    "Shriners Children's Open": [
+      {
+        "winner": "Tom Kim",
+        "year": "2022"
+      },
+      {
+        "winner": "Tom Kim",
+        "year": "2023"
+      },
+      {
+        "winner": "J.T. Poston",
+        "year": "2024"
+      }
+    ],
+    "Sony Open in Hawaii": [
+      {
+        "winner": "Hideki Matsuyama",
+        "year": "2022"
+      },
+      {
+        "winner": "Si Woo Kim",
+        "year": "2023"
+      },
+      {
+        "winner": "Grayson Murray",
+        "year": "2024"
+      },
+      {
+        "winner": "Nick Taylor",
+        "year": "2025"
+      },
+      {
+        "winner": "Chris Gotterup",
+        "year": "2026"
+      }
+    ],
+    "Soudal Open": [
+      {
+        "winner": "Nacho Elvira",
+        "year": "2024"
+      },
+      {
+        "winner": "Kristoffer Reitan",
+        "year": "2025"
+      }
+    ],
+    "THE CJ CUP Byron Nelson": [
+      {
+        "winner": "Taylor Pendrith",
+        "year": "2024"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2025"
+      }
+    ],
+    "THE CJ CUP in South Carolina": [
+      {
+        "winner": "Rory McIlroy",
+        "year": "2022"
+      }
+    ],
+    "THE PLAYERS Championship": [
+      {
+        "winner": "Cameron Smith",
+        "year": "2022"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2023"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2024"
+      },
+      {
+        "winner": "Rory McIlroy",
+        "year": "2025"
+      },
+      {
+        "winner": "Cameron Young",
+        "year": "2026"
+      }
+    ],
+    "TOTO Japan Classic": [
+      {
+        "winner": "Rio Takeda",
+        "year": "2024"
+      },
+      {
+        "winner": "Nasa Hataoka",
+        "year": "2025"
+      }
+    ],
+    "TOUR Championship": [
+      {
+        "winner": "Rory McIlroy",
+        "year": "2022"
+      },
+      {
+        "winner": "Viktor Hovland",
+        "year": "2023"
+      },
+      {
+        "winner": "Tommy Fleetwood",
+        "year": "2025"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2024"
+      }
+    ],
+    "Texas Children's Houston Open": [
+      {
+        "winner": "Stephan Jaeger",
+        "year": "2024"
+      },
+      {
+        "winner": "Gary Woodland",
+        "year": "2026"
+      },
+      {
+        "winner": "Min Woo Lee",
+        "year": "2025"
+      }
+    ],
+    "The ANNIKA driven by Gainbridge at Pelican": [
+      {
+        "winner": "Nelly Korda",
+        "year": "2024"
+      },
+      {
+        "winner": "Linn Grant",
+        "year": "2025"
+      }
+    ],
+    "The American Express": [
+      {
+        "winner": "Hudson Swafford",
+        "year": "2022"
+      },
+      {
+        "winner": "Jon Rahm",
+        "year": "2023"
+      },
+      {
+        "winner": "Nick Dunlap",
+        "year": "2024"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2026"
+      },
+      {
+        "winner": "Sepp Straka",
+        "year": "2025"
+      }
+    ],
+    "The Amundi Evian Championship": [
+      {
+        "winner": "Ayaka Furue",
+        "year": "2024"
+      },
+      {
+        "winner": "Grace Kim",
+        "year": "2025"
+      }
+    ],
+    "The Chevron Championship": [
+      {
+        "winner": "Nelly Korda",
+        "year": "2024"
+      },
+      {
+        "winner": "Mao Saigo",
+        "year": "2025"
+      }
+    ],
+    "The Genesis Invitational": [
+      {
+        "winner": "Joaqu\u00edn Niemann",
+        "year": "2022"
+      },
+      {
+        "winner": "Jon Rahm",
+        "year": "2023"
+      },
+      {
+        "winner": "Hideki Matsuyama",
+        "year": "2024"
+      },
+      {
+        "winner": "Jacob Bridgeman",
+        "year": "2026"
+      },
+      {
+        "winner": "Ludvig \u00c5berg",
+        "year": "2025"
+      }
+    ],
+    "The Honda Classic": [
+      {
+        "winner": "Sepp Straka",
+        "year": "2022"
+      },
+      {
+        "winner": "Chris Kirk",
+        "year": "2023"
+      }
+    ],
+    "The Memorial Tournament pres. by Workday": [
+      {
+        "winner": "Viktor Hovland",
+        "year": "2023"
+      }
+    ],
+    "The Open": [
+      {
+        "winner": "Cameron Smith",
+        "year": "2022"
+      },
+      {
+        "winner": "Brian Harman",
+        "year": "2023"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2025"
+      },
+      {
+        "winner": "Xander Schauffele",
+        "year": "2024"
+      }
+    ],
+    "The RSM Classic": [
+      {
+        "winner": "Adam Svensson",
+        "year": "2022"
+      },
+      {
+        "winner": "Ludvig \u00c5berg",
+        "year": "2023"
+      },
+      {
+        "winner": "Sami V\u00e4lim\u00e4ki",
+        "year": "2025"
+      },
+      {
+        "winner": "Maverick McNealy",
+        "year": "2024"
+      }
+    ],
+    "The Sentry": [
+      {
+        "winner": "Chris Kirk",
+        "year": "2024"
+      },
+      {
+        "winner": "Hideki Matsuyama",
+        "year": "2025"
+      }
+    ],
+    "The Standard Portland Classic": [
+      {
+        "winner": "Akie Iwai",
+        "year": "2025"
+      }
+    ],
+    "Travelers Championship": [
+      {
+        "winner": "Xander Schauffele",
+        "year": "2022"
+      },
+      {
+        "winner": "Keegan Bradley",
+        "year": "2023"
+      },
+      {
+        "winner": "Keegan Bradley",
+        "year": "2025"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2024"
+      }
+    ],
+    "Truist Championship": [
+      {
+        "winner": "Sepp Straka",
+        "year": "2025"
+      }
+    ],
+    "Turkish Airlines Open": [
+      {
+        "winner": "Martin Couvra",
+        "year": "2025"
+      }
+    ],
+    "U.S. Open": [
+      {
+        "winner": "Matt Fitzpatrick",
+        "year": "2022"
+      },
+      {
+        "winner": "Wyndham Clark",
+        "year": "2023"
+      },
+      {
+        "winner": "Bryson DeChambeau",
+        "year": "2024"
+      },
+      {
+        "winner": "J.J. Spaun",
+        "year": "2025"
+      }
+    ],
+    "U.S. Women's Open pres. by Ally": [
+      {
+        "winner": "Yuka Saso",
+        "year": "2024"
+      },
+      {
+        "winner": "Maja Stark",
+        "year": "2025"
+      }
+    ],
+    "Valero Texas Open": [
+      {
+        "winner": "J.J. Spaun",
+        "year": "2022"
+      },
+      {
+        "winner": "Corey Conners",
+        "year": "2023"
+      },
+      {
+        "winner": "Akshay Bhatia",
+        "year": "2024"
+      },
+      {
+        "winner": "J.J. Spaun",
+        "year": "2026"
+      },
+      {
+        "winner": "Brian Harman",
+        "year": "2025"
+      }
+    ],
+    "Valspar Championship": [
+      {
+        "winner": "Sam Burns",
+        "year": "2022"
+      },
+      {
+        "winner": "Taylor Moore",
+        "year": "2023"
+      },
+      {
+        "winner": "Viktor Hovland",
+        "year": "2025"
+      },
+      {
+        "winner": "Matt Fitzpatrick",
+        "year": "2026"
+      },
+      {
+        "winner": "Peter Malnati",
+        "year": "2024"
+      }
+    ],
+    "Volvo Car Scandinavian Mixed": [
+      {
+        "winner": "Linn Grant",
+        "year": "2024"
+      }
+    ],
+    "Volvo China Open": [
+      {
+        "winner": "Adrian Otaegui",
+        "year": "2024"
+      },
+      {
+        "winner": "Ashun Wu",
+        "year": "2025"
+      }
+    ],
+    "WM Phoenix Open": [
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2022"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2023"
+      },
+      {
+        "winner": "Thomas Detry",
+        "year": "2025"
+      },
+      {
+        "winner": "Chris Gotterup",
+        "year": "2026"
+      },
+      {
+        "winner": "Nick Taylor",
+        "year": "2024"
+      }
+    ],
+    "Walmart NW Arkansas Championship pres. by P&G": [
+      {
+        "winner": "Jasmine Suwannapura",
+        "year": "2024"
+      }
+    ],
+    "Wells Fargo Championship": [
+      {
+        "winner": "Max Homa",
+        "year": "2022"
+      },
+      {
+        "winner": "Wyndham Clark",
+        "year": "2023"
+      },
+      {
+        "winner": "Rory McIlroy",
+        "year": "2024"
+      }
+    ],
+    "World Wide Technology Championship": [
+      {
+        "winner": "Erik van Rooyen",
+        "year": "2023"
+      },
+      {
+        "winner": "Austin Eckroat",
+        "year": "2024"
+      },
+      {
+        "winner": "Ben Griffin",
+        "year": "2025"
+      }
+    ],
+    "World Wide Technology Championship at Mayakoba": [
+      {
+        "winner": "Russell Henley",
+        "year": "2022"
+      }
+    ],
+    "Wyndham Championship": [
+      {
+        "winner": "Tom Kim",
+        "year": "2022"
+      },
+      {
+        "winner": "Lucas Glover",
+        "year": "2023"
+      },
+      {
+        "winner": "Cameron Young",
+        "year": "2025"
+      },
+      {
+        "winner": "Aaron Rai",
+        "year": "2024"
+      }
+    ],
+    "ZOZO CHAMPIONSHIP": [
+      {
+        "winner": "Keegan Bradley",
+        "year": "2022"
+      },
+      {
+        "winner": "Collin Morikawa",
+        "year": "2023"
+      },
+      {
+        "winner": "Nico Echavarria",
+        "year": "2024"
+      }
+    ],
+    "acciona Open de Espa\u00f1a pres. by Madrid": [
+      {
+        "winner": "Angel Hidalgo",
+        "year": "2024"
+      }
+    ],
+    "the Memorial Tournament pres. by Workday": [
+      {
+        "winner": "Billy Horschel",
+        "year": "2022"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2024"
+      },
+      {
+        "winner": "Scottie Scheffler",
+        "year": "2025"
+      }
+    ]
+  }
+}

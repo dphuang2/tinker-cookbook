@@ -59,3 +59,13 @@ exp51-scorecard-deepseek	1.2723	0.6864	1.2158	partial	data+prompt	Hole-by-hole s
 exp52-r3scorecard	1.2784	0.6937	1.2132	not-kept	prompt	R3-only scorecard; scorecard alone hurts R2 predictions, no net anchor improvement
 exp53-scorecard-pressure	1.2337	0.6648	1.1728	partial	prompt	R3 scorecard + pressure profiles; strong research improvement but scorecard adds noise
 exp54-pressure-only	1.2177	0.6541	1.1717	kept	data+prompt	Pressure profiles only (no scorecard); NEW BEST anchor for DeepSeek! ll=1.22 vs prior 1.24
+exp55-enhanced-pressure	1.2414	0.6723	1.1893	not-kept	data+prompt	Enhanced pressure profiles (within-3-strokes context), slightly worse than simple profiles
+exp56-pressure-sft	1.2612	0.6797	1.1566	kept	training	8B SFT distill from DeepSeek with pressure profiles; 100% format, 51% top1, 87% top3
+exp57-mixed-pressure-sft	0.8271	0.5344	0.8591	kept	training	Mixed SFT R2=top2/R3=top1 with pressure; anchored avg ll=0.83, matches exp36
+exp58-pressure-sft-7ep	1.2792	0.6883	1.1431	not-kept	training	7 epochs pressure SFT, anchor worse than 5ep, research better — overfitting
+exp59-empirical-rates	1.2793	0.6854	N/A	not-kept	prompt	Explicit empirical base rates (1st=25/36%, 2nd=14/15%) in hints, over-spread
+exp60-sft-nopressure-7ep	1.2770	0.6854	1.1456	not-kept	training	7ep SFT w/pressure-trained labels but eval w/o pressure — all runs post-exp30 worse
+exp61-nopressure-sft-735	1.2793	0.6914	1.1347	partial	training	SFT no-pressure all 735 examples; research BEST (1.135), anchor still 1.28
+exp62-pga-r2r3-sft	1.3129	0.7071	1.1553	not-kept	data+training	PGA R2+R3 only 316 examples, less data hurts anchor (1.31)
+exp63-pga-all-sft	1.2899	0.6928	1.1449	not-kept	data+training	PGA all rounds 474 examples; anchor 1.29, research 1.14 — more data needs all rounds
+exp64-tournament-history	1.2464	0.6749	1.1013	kept	data+prompt	Tournament past-winners in prompt; research -0.025 improvement, anchor within noise (±0.14)
