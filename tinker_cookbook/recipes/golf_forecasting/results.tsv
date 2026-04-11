@@ -19,3 +19,4 @@ exp15-top5	1.6340	0.7675	1.5698	superseded	prompt	Top-5 candidates, new best on 
 exp16-top3	1.2714	0.6876	1.2524	kept	prompt	Top-3 candidates, massive improvement! 55% better than heuristic, 87% top3_recall
 exp17-top1	0.5874	0.3988	0.6253	kept	prompt	Top-1 (leader+other), best log_loss but binary prediction only, loses multi-candidate resolution
 exp18-8b-top3	1.2869	0.6947	1.1922	kept	model+training	8B+RL with top-3, matches 70B on anchor, beats it on research! Best research log_loss
+exp19-8b-top1	0.7851	0.5019	0.9802	kept	model+training	8B+RL with top-1, decent but 70B still better on binary prediction
