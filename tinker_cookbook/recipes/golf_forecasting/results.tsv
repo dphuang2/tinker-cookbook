@@ -69,3 +69,5 @@ exp61-1b-mixed	0.8345	0.5399	0.8093	kept	model+training	1B SFT mixed R2=2/R3=1, 
 exp62-1b-top2	0.9941	0.5938	N/A	kept	model+training	1B SFT top-2, matches 8B (0.99). 1B = optimal for ALL configs
 exp63-4model-ensemble	1.3034	0.7051	N/A	not-kept	training	4-model weighted ensemble labels, not better than DeepSeek alone
 exp64-ultimate-1b	1.2460	0.6763	1.1698	kept	data+training	972 train examples (2020-2026), 1B SFT, similar anchor, good research diversity
+exp65-qwen4b-inst-sft	1.2673	0.6843	N/A	not-kept	model+training	Qwen3-4B-Instruct SFT, same quality as other students
+exp66-1b-sft-rl	1.6218	0.7765	N/A	not-kept	training	1B SFT+RL, RL catastrophically worsens 1B model (1.23->1.62)
