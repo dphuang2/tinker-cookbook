@@ -125,6 +125,7 @@ def parse_forecast_response(
     text: str,
     *,
     allowed_labels: Sequence[str],
+    prob_floor: float = 0.005,
 ) -> tuple[dict[str, float], dict[str, float]]:
     raw = WinnerForecast.model_validate_json(_extract_json_blob(text))
     allowed_lookup = {normalize_player_name(label): label for label in allowed_labels}
@@ -141,6 +142,20 @@ def parse_forecast_response(
     if total <= 0:
         raise ValueError("Total forecast probability must be positive")
     normalized = {label: prob / total for label, prob in output.items()}
+
+    # Apply probability floor to prevent catastrophic log-loss on zero-probability labels.
+    if prob_floor > 0:
+        n_labels = len(normalized)
+        floor_total = prob_floor * n_labels
+        if floor_total < 1.0:
+            scale = (1.0 - floor_total) / max(1.0 - floor_total, 1e-12)
+            floored = {}
+            for label, prob in normalized.items():
+                floored[label] = prob_floor + prob * scale
+            # Re-normalize to ensure sum=1
+            ftotal = sum(floored.values())
+            normalized = {label: prob / ftotal for label, prob in floored.items()}
+
     diagnostics = {
         "raw_total_probability": total,
         "unknown_probability_mass": unknown_mass,
@@ -249,7 +264,7 @@ class GolfForecastEnv(Env):
             )
 
         scores = score_forecast(forecast, target_label=self.example.target_label)
-        reward = self.format_coef * (1.0 - 1.0) + scores["brier_reward"]
+        reward = scores["brier_reward"]
         metrics = {
             **base_metrics,
             **scores,
