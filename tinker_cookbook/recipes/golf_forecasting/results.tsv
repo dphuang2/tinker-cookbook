@@ -73,3 +73,5 @@ exp65-qwen4b-inst-sft	1.2673	0.6843	N/A	not-kept	model+training	Qwen3-4B-Instruc
 exp66-1b-sft-rl	1.6218	0.7765	N/A	not-kept	training	1B SFT+RL, RL catastrophically worsens 1B model (1.23->1.62)
 exp67-deepseek-structured	1.2087	0.6467	N/A	kept	prompt	DeepSeek with simplified structured prompt, new best teacher output (ll=1.21)
 exp67-1b-structured	1.2668	0.6962	1.2129	kept	prompt+training	1B SFT from structured DeepSeek, student doesn't fully capture teacher improvement
+exp69-70b-structured	1.3732	0.7220	N/A	not-kept	prompt	70B with structured prompt, WORSE (prompt format matters per-model)
+exp70-deepseek-base	1.2608	0.6815	N/A	kept	model	DeepSeek-V3.1-Base, 100% format valid, ll=1.26 (instruct slightly better at 1.24)
