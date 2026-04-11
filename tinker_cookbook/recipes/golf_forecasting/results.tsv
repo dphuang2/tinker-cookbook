@@ -75,3 +75,5 @@ exp67-deepseek-structured	1.2087	0.6467	N/A	kept	prompt	DeepSeek with simplified
 exp67-1b-structured	1.2668	0.6962	1.2129	kept	prompt+training	1B SFT from structured DeepSeek, student doesn't fully capture teacher improvement
 exp69-70b-structured	1.3732	0.7220	N/A	not-kept	prompt	70B with structured prompt, WORSE (prompt format matters per-model)
 exp70-deepseek-base	1.2608	0.6815	N/A	kept	model	DeepSeek-V3.1-Base, 100% format valid, ll=1.26 (instruct slightly better at 1.24)
+exp71-1b-dsbase	1.2940	0.6970	N/A	not-kept	training	1B from DeepSeek-Base teacher, slightly worse than Instruct teacher
+exp72-bestof3	1.2637	0.6842	N/A	not-kept	training	Best-of-3 teacher labels, overfit to hindsight — not better than deterministic
