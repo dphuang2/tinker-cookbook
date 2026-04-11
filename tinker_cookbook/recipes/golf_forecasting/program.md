@@ -55,6 +55,9 @@ You are explicitly allowed to:
 - replace RL with SFT, DPO, distillation, prompt optimization, or hybrids
 - add retrieval, tools, or external priors
 - redefine the research benchmark
+- add hole-by-hole scorecard data for current and historical rounds
+- add tournament-specific historical statistics (course history per player)
+- add player pressure profiles (leading-by-X hold/collapse rates)
 
 You must:
 
@@ -64,6 +67,7 @@ You must:
 - prefer reproducible public sources over brittle ad hoc scraping
 - log what changed and why
 - log whether each change affected data, model, prompt, training, evaluation, or overall system design
+- when adding scorecard, tournament-history, or pressure data, cache the raw responses under `artifacts/raw/` by source+date so reruns are reproducible
 
 ## Two Evaluation Tracks
 
@@ -162,6 +166,136 @@ Prefer hypotheses with a clear reason they might help:
 - a different training objective
 - retrieval or tool-augmented forecasting
 - ensemble strategies
+- hole-by-hole scorecard data for the current round (see below)
+- tournament-specific historical statistics (see below)
+- leading-by-X pressure data per player (see below)
+
+### Hole-by-Hole Scorecard Data
+
+Including the full per-hole scorecard for every player in the snapshot is a high-value feature because:
+
+- A player at -10 who birdied the last 4 holes is in very different shape from one who bogeyed the last 4 and is riding a lucky eagle from hole 3.
+- Scoring momentum (streaks, recent struggles) is invisible in a summary `score_to_par` number.
+- Remaining holes have different difficulty profiles; knowing which holes are left lets the model apply implicit course knowledge.
+
+**Schema extension** — add a `holes` list to each player entry:
+
+```json
+{
+  "name": "Scottie Scheffler",
+  "score_to_par": -11,
+  "holes_completed": 10,
+  "holes": [
+    {"hole": 1, "par": 4, "score": 4, "to_par": 0},
+    {"hole": 2, "par": 5, "score": 4, "to_par": -1},
+    {"hole": 3, "par": 4, "score": 3, "to_par": -1},
+    {"hole": 4, "par": 3, "score": 2, "to_par": -1},
+    {"hole": 5, "par": 4, "score": 5, "to_par": 1},
+    {"hole": 6, "par": 4, "score": 4, "to_par": 0},
+    {"hole": 7, "par": 4, "score": 4, "to_par": 0},
+    {"hole": 8, "par": 5, "score": 4, "to_par": -1},
+    {"hole": 9, "par": 4, "score": 3, "to_par": -1},
+    {"hole": 10, "par": 4, "score": 4, "to_par": 0}
+  ]
+}
+```
+
+Also include the `course_scorecard` at the snapshot level so the model knows par, yardage, and difficulty rank for every hole:
+
+```json
+"course_scorecard": [
+  {"hole": 1, "par": 4, "yards": 445, "handicap_rank": 11},
+  {"hole": 2, "par": 5, "yards": 575, "handicap_rank": 15},
+  ...
+]
+```
+
+**Data sources:** Most public golf APIs (DataGolf, ESPN, PGA Tour JSON feeds) expose hole-by-hole scoring at the round level. Fetch the per-round scorecard for each player alongside the leaderboard snapshot.
+
+**Prompt design:** Represent the scorecard compactly — e.g., a comma-separated list like `E -1 -1 -1 +1 E E -1 -1 E` rather than full JSON — to save tokens. Always include the remaining-holes count and par values so the model can reason about what is left.
+
+### Tournament-Specific Historical Statistics
+
+Course history at a specific venue is strongly predictive. A player with five top-10 finishes at Augusta is a very different prospect from a player with five missed cuts. Key data to include:
+
+**Per-player tournament history** in each example:
+
+```json
+"tournament_history": {
+  "Scottie Scheffler": {
+    "years_played": 4,
+    "best_finish": 1,
+    "avg_finish": 8.2,
+    "made_cut_rate": 1.0,
+    "avg_score_to_par_r4": -1.3,
+    "win_count": 1,
+    "top5_count": 2,
+    "top10_count": 3,
+    "scoring_avg_this_course": 69.4
+  }
+}
+```
+
+**Course-level historical norms** at the snapshot level:
+
+```json
+"tournament_historical_context": {
+  "typical_winning_score": -12,
+  "avg_r4_scoring": 71.2,
+  "largest_r4_comeback_to_win": 5,
+  "avg_leader_after_r3_wins": 0.68,
+  "course_style": "precision iron play, penalty for distance off fairway"
+}
+```
+
+**Data sources:** DataGolf historical results API, ESPN historical results pages, PGA Tour stats portal. Fetch once per tournament type and cache under `artifacts/tournament_history/<tournament_id>.json`. Normalize player names consistently across years using a canonical name map.
+
+**Why it helps:** Models without this context treat a first-time major starter the same as a five-time champion. Historical tournament records correct that blind spot at essentially zero label cost.
+
+### Leading-by-X Pressure Data
+
+A player leading by 5 strokes with 18 holes to play sounds comfortable, but some players consistently collapse large leads while others extend them. Encoding "how does this player perform when holding a lead" is a direct proxy for clutch performance.
+
+**Per-player pressure profile** (add to player entries or to a global `player_profiles` dict in the snapshot):
+
+```json
+"pressure_profile": {
+  "Scottie Scheffler": {
+    "lead_hold_rate": 0.82,
+    "win_pct_leading_after_r3": 0.79,
+    "avg_r4_score_when_leading_by_1_3": 69.1,
+    "avg_r4_score_when_leading_by_4_plus": 68.6,
+    "blown_leads_last_5_years": 1,
+    "comebacks_from_deficit_last_5_years": 3,
+    "strokes_gained_pressure_situations": 0.41
+  },
+  "Rory McIlroy": {
+    "lead_hold_rate": 0.61,
+    "win_pct_leading_after_r3": 0.58,
+    "avg_r4_score_when_leading_by_1_3": 70.2,
+    "avg_r4_score_when_leading_by_4_plus": 72.1,
+    "blown_leads_last_5_years": 4,
+    "comebacks_from_deficit_last_5_years": 2,
+    "strokes_gained_pressure_situations": -0.14
+  }
+}
+```
+
+Key fields:
+
+| Field | Description |
+|---|---|
+| `lead_hold_rate` | Fraction of final-round leads converted to wins |
+| `win_pct_leading_after_r3` | Win % when holding 54-hole lead |
+| `avg_r4_score_when_leading_by_X` | Scoring average in final round, stratified by lead size |
+| `blown_leads_last_5_years` | Count of 54-hole leads not converted |
+| `strokes_gained_pressure_situations` | SG differential vs. field in head-to-head final-round duels |
+
+**Data sources:** Compute from historical PGA Tour round-by-round results (DataGolf, ESPN, or ShotLink derivatives). Build a script under `artifacts/pressure_profiles/` that ingests historical final-round results and emits a per-player JSON. Refresh annually or when adding new seasons.
+
+**Prompt design:** Summarize concisely — e.g., `"Rory: leads after R3 = 58% win rate, has blown 4 leads in 5 years"` — rather than dumping the full profile JSON. Let the model use it as context when interpreting the current leaderboard.
+
+**Why it helps:** Aggregate scoring stats are symmetric and don't distinguish between players who clutch up and those who wilt. Lead-hold data directly captures the asymmetry and should improve calibration in tight final-round scenarios.
 
 ## Acceptance Rule
 
