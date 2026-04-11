@@ -1,4 +1,5 @@
 commit	anchor_log_loss	anchor_brier	research_score	status	change_type	description
 baseline-heuristic	2.8116	0.8051	2.3449	baseline	data	Position-weighted heuristic baseline
 baseline-llm-8b	7.3636	1.3028	8.3788	baseline	model	Llama-3.1-8B-Instruct zero-shot, 55% format valid
-exp1-rl-8b	6.2908	0.9239	5.2002	kept	training	RL 1 epoch, 4e-5 lr, rank32, 100% format valid, beats zero-shot but not heuristic on log_loss
+exp1-rl-8b	6.2908	0.9239	5.2002	superseded	training	RL 1 epoch, 4e-5 lr, rank32, 100% format valid, beats zero-shot but not heuristic on log_loss
+exp2-top20-rl	4.0563	0.7716	3.6108	kept	prompt	Top-20 candidates, RL 1 epoch, brier beats heuristic (0.77 vs 0.81)

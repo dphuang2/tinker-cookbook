@@ -45,6 +45,7 @@ class GolfForecastEvalConfig:
     max_parallel_tasks: int = 32
     n_eval: int | None = None
     include_other_bucket: bool = True
+    max_candidates: int = 20
 
 
 @dataclass(frozen=True)
@@ -98,7 +99,11 @@ class GolfForecastEvaluator(SamplingClientEvaluator):
             self.examples = self.examples[: self.config.n_eval]
 
     def _build_prompt(self, example: GolfForecastExample) -> tinker.ModelInput:
-        messages = build_messages(example, include_other_bucket=self.config.include_other_bucket)
+        messages = build_messages(
+            example,
+            include_other_bucket=self.config.include_other_bucket,
+            max_candidates=self.config.max_candidates,
+        )
         return self.renderer.build_generation_prompt(messages)
 
     async def _evaluate_one(
@@ -113,7 +118,13 @@ class GolfForecastEvaluator(SamplingClientEvaluator):
             sampling_params=sampling_params,
         )
         text = renderers.get_text_content(self.renderer.parse_response(response.sequences[0].tokens)[0])
-        allowed = candidate_labels(example) if self.config.include_other_bucket else example.candidate_names
+        # Build allowed labels matching the prompt's candidate list
+        max_c = self.config.max_candidates
+        if max_c > 0 and len(example.players) > max_c:
+            top_names = [p.name for p in example.players[:max_c]]
+        else:
+            top_names = example.candidate_names
+        allowed = [*top_names, "other"] if self.config.include_other_bucket else top_names
         try:
             forecast, diagnostics = parse_forecast_response(text, allowed_labels=allowed)
             scores = score_forecast(forecast, target_label=example.target_label)

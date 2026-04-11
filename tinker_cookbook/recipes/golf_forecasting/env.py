@@ -55,8 +55,23 @@ class WinnerForecast(BaseModel):
         return value
 
 
-def build_messages(example: GolfForecastExample, *, include_other_bucket: bool = True) -> list[renderers.Message]:
-    candidates = candidate_labels(example) if include_other_bucket else example.candidate_names
+def build_messages(
+    example: GolfForecastExample,
+    *,
+    include_other_bucket: bool = True,
+    max_candidates: int = 20,
+) -> list[renderers.Message]:
+    # Limit to top N players by position to keep prompt manageable
+    if max_candidates > 0 and len(example.players) > max_candidates:
+        top_names = [p.name for p in example.players[:max_candidates]]
+    else:
+        top_names = example.candidate_names
+
+    if include_other_bucket:
+        candidates = [*top_names, "other"]
+    else:
+        candidates = top_names
+
     weather = example.system_context.get("weather_summary")
     course = example.system_context.get("course_difficulty")
     field_strength = example.system_context.get("field_strength")
@@ -68,21 +83,26 @@ def build_messages(example: GolfForecastExample, *, include_other_bucket: bool =
     if field_strength:
         extras.append(f"- Field strength: {field_strength}")
     extra_context = "\n".join(extras) if extras else "- No extra context provided."
+
+    n_total = len(example.players)
+    n_shown = min(max_candidates, n_total) if max_candidates > 0 else n_total
+
     instructions = (
         f"Tournament: {example.tournament_name}\n"
         f"Course: {example.course_name or 'Unknown'}\n"
         f"Round: {example.round_number}\n"
         f"Event day: {example.event_day or 'Unknown'}\n"
         f"Snapshot time: {example.snapshot_timestamp}\n\n"
-        "Leaderboard snapshot:\n"
-        f"{leaderboard_table(example)}\n\n"
+        f"Leaderboard snapshot (top {n_shown} of {n_total} players):\n"
+        f"{leaderboard_table(example, max_players=max_candidates)}\n\n"
         "Extra context:\n"
         f"{extra_context}\n\n"
         "Return a JSON object with a single key `winner_probs`. "
-        "Each key must be one of the candidate labels below and the probabilities must sum to 1.\n"
+        "Each key must be one of the candidate labels below and the probabilities must sum to 1. "
+        "Use `other` for all players not listed individually.\n"
         f"Candidate labels: {', '.join(candidates)}\n"
         "Do not include explanations, markdown fences, or extra keys.\n"
-        'Example: {"winner_probs": {"Player A": 0.45, "other": 0.55}}'
+        'Example: {"winner_probs": {"Player A": 0.35, "Player B": 0.25, "Player C": 0.15, "other": 0.25}}'
     )
     return [
         {"role": "system", "content": FORECAST_SYSTEM_PROMPT},
@@ -179,13 +199,24 @@ class GolfForecastEnv(Env):
         renderer: renderers.Renderer,
         include_other_bucket: bool = True,
         format_coef: float = 0.1,
+        max_candidates: int = 20,
     ):
         self.example = example
         self.renderer = renderer
         self.include_other_bucket = include_other_bucket
         self.format_coef = format_coef
-        self.messages = build_messages(example, include_other_bucket=include_other_bucket)
-        self.allowed_labels = candidate_labels(example) if include_other_bucket else example.candidate_names
+        self.max_candidates = max_candidates
+        self.messages = build_messages(
+            example,
+            include_other_bucket=include_other_bucket,
+            max_candidates=max_candidates,
+        )
+        # Build allowed labels to match what build_messages uses
+        if max_candidates > 0 and len(example.players) > max_candidates:
+            top_names = [p.name for p in example.players[:max_candidates]]
+        else:
+            top_names = example.candidate_names
+        self.allowed_labels = [*top_names, "other"] if include_other_bucket else top_names
 
     @property
     def stop_condition(self) -> StopCondition:
