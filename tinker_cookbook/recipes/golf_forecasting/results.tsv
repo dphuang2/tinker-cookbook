@@ -13,4 +13,6 @@ exp9-baserates	1.9229	0.7671	1.8457	reverted	prompt	Explicit historical base rat
 exp10-moredata	2.1271	0.7858	1.9765	kept	data	Added 2023 season (274 total examples), 8B+RL improved but 70B still best on anchor
 exp11-fieldanalysis	1.8809	0.7664	1.8699	superseded	prompt	Added field analysis (margin, within-3/5 strokes), small anchor log_loss improvement
 exp12-sysprompt	1.9403	0.7699	N/A	reverted	prompt	Enhanced system prompt, slightly worse, reverted
-exp13-top10	1.8268	0.7775	1.8652	kept	prompt	Top-10 candidates instead of 20, new best anchor log_loss
+exp13-top10	1.8268	0.7775	1.8652	superseded	prompt	Top-10 candidates instead of 20, new best anchor log_loss
+exp14-8b-top10	1.9370	0.7742	2.1877	kept	training	8B+RL with top-10, close to 70B but not better
+exp15-top5	1.6340	0.7675	1.5698	kept	prompt	Top-5 candidates, new best on all log_loss metrics! 42% better than heuristic
