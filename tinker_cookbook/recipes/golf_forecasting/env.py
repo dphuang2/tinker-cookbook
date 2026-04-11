@@ -104,14 +104,19 @@ def build_messages(
 
     # Round-specific calibration guidance
     round_num = example.round_number
-    if round_num <= 2:
+    if round_num == 1:
         calibration_hint = (
-            "After round 2, the leader wins roughly 25-35% of the time. "
-            "Comebacks are common — spread probability across 5-10 contenders and the 'other' bucket."
+            "After round 1, the leader wins only about 15-20% of the time. "
+            "The field is very wide open — give significant probability to 'other'."
+        )
+    elif round_num == 2:
+        calibration_hint = (
+            "After round 2, the leader wins roughly 30-35% of the time. "
+            "Comebacks are common — spread probability across multiple contenders and 'other'."
         )
     else:
         calibration_hint = (
-            "After round 3, the leader wins roughly 45-60% of the time. "
+            "After round 3, the leader wins roughly 50-60% of the time. "
             "The top 3-5 players cover most outcomes, but upsets still happen."
         )
 

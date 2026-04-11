@@ -48,3 +48,4 @@ exp40-deepseek-mixed	0.8079	0.5168	0.8349	kept	model	DeepSeek R2=top2/R3=top1, b
 exp41-sft-mixed5ep	0.8176	0.5270	0.8549	kept	training	SFT mixed 5 epochs, slight improvement over 3ep (0.826->0.818), close to DeepSeek 0.808
 exp42-r1-data-sft	1.2478	0.6753	1.2146	kept	data+training	Added R1 snapshots (728 total, 614 train), similar anchor, research eval expanded to 57 examples
 exp43-70b-sft	1.2430	0.6709	1.2013	not-kept	model+training	70B SFT same quality as 8B SFT — confirms student capacity is not the bottleneck
+exp44-r1mixed-sft	0.9467	0.5668	0.9208	not-kept	training	R1=3/R2=2/R3=1 SFT, R1 data dilutes R2/R3 anchor quality (0.95 vs 0.83)
