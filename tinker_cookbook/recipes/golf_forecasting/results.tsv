@@ -30,3 +30,4 @@ exp25-moredata-8b	1.4311	0.7428	1.2644	not-kept	data+training	316 examples (2022
 exp26-qwen30b-top3	1.3248	0.7109	N/A	kept	model	Qwen3-30B-A3B-Instruct top-3, surprisingly beats larger 235B model
 exp26-qwen235b-top3	1.3508	0.7202	1.2557	kept	model	Qwen3-235B-A22B-Instruct top-3, 100% format, 47% research top1
 exp26-kimi-top3	1.5460	0.6816	N/A	kept	model	Kimi-K2-Thinking top-3, good brier but higher log_loss, 97% format
+exp27-lowlr-8b	1.3157	0.7066	1.1811	kept	training	8B+RL lr=1.5e-5, 316 examples, best 8B research (1.18), top3_recall=94.7%
