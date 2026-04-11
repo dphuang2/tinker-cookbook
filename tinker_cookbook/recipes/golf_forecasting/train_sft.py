@@ -133,8 +133,18 @@ async def generate_teacher_labels(
     include_player_history: bool = False,
     include_tournament_history: bool = False,
     include_player_quality: bool = False,
+    teacher_include_pressure: bool | None = None,
+    teacher_include_player_history: bool | None = None,
+    teacher_include_tournament_history: bool | None = None,
+    teacher_include_player_quality: bool | None = None,
 ) -> None:
-    """Run the teacher model on training examples and write (messages, completion) pairs."""
+    """Run the teacher model on training examples and write (messages, completion) pairs.
+
+    The student messages (saved as training context) use include_* flags.
+    The teacher prompt (used to generate labels) uses teacher_include_* if provided,
+    otherwise falls back to the student flags. This enables "rich teacher → plain student"
+    distillation where the teacher sees extra features but the student learns from plain prompts.
+    """
     output_file = Path(output_path)
     if output_file.exists():
         count = sum(1 for l in output_file.read_text().splitlines() if l.strip())
@@ -158,11 +168,25 @@ async def generate_teacher_labels(
     examples = load_examples(train_examples_path)
     logger.info("Generating teacher labels for %d examples (max_candidates=%d)...", len(examples), max_candidates)
 
+    # Determine teacher vs student feature flags
+    t_pressure = teacher_include_pressure if teacher_include_pressure is not None else include_pressure
+    t_history = teacher_include_player_history if teacher_include_player_history is not None else include_player_history
+    t_tournament = teacher_include_tournament_history if teacher_include_tournament_history is not None else include_tournament_history
+    t_quality = teacher_include_player_quality if teacher_include_player_quality is not None else include_player_quality
+    teacher_differs = (t_pressure != include_pressure or t_history != include_player_history or
+                       t_tournament != include_tournament_history or t_quality != include_player_quality)
+    if teacher_differs:
+        logger.info(
+            "Rich teacher → plain student: teacher(pressure=%s,quality=%s) student(pressure=%s,quality=%s)",
+            t_pressure, t_quality, include_pressure, include_player_quality,
+        )
+
     semaphore = asyncio.Semaphore(max_parallel)
 
     async def gen_one(ex):
         async with semaphore:
-            messages = build_messages(
+            # Student messages (what model sees at inference)
+            student_messages = build_messages(
                 ex,
                 include_other_bucket=True,
                 max_candidates=max_candidates,
@@ -171,11 +195,24 @@ async def generate_teacher_labels(
                 include_tournament_history=include_tournament_history,
                 include_player_quality=include_player_quality,
             )
-            prompt = renderer.build_generation_prompt(messages)
+            if teacher_differs:
+                # Teacher gets richer context for label generation
+                teacher_messages = build_messages(
+                    ex,
+                    include_other_bucket=True,
+                    max_candidates=max_candidates,
+                    include_pressure=t_pressure,
+                    include_player_history=t_history,
+                    include_tournament_history=t_tournament,
+                    include_player_quality=t_quality,
+                )
+            else:
+                teacher_messages = student_messages
+            prompt = renderer.build_generation_prompt(teacher_messages)
             try:
                 resp = await sc.sample_async(prompt=prompt, num_samples=1, sampling_params=params)
                 text = renderers.get_text_content(renderer.parse_response(resp.sequences[0].tokens)[0])
-                return {"messages": messages, "completion": text, "example_id": ex.example_id}
+                return {"messages": student_messages, "completion": text, "example_id": ex.example_id}
             except Exception as exc:
                 logger.warning("Failed to generate for %s: %s", ex.example_id, exc)
                 return None
@@ -328,6 +365,10 @@ class ExpConfig:
     include_player_quality: bool = False
     n_consistency_samples: int = 1  # 1 = greedy, >1 = self-consistency averaging
     sample_temperature: float = 0.3  # temperature for self-consistency samples
+    # Teacher-specific feature overrides (None = same as student include_* flags)
+    # Set these to True while keeping student flags False for "rich teacher → plain student" distillation
+    teacher_include_pressure: bool | None = None
+    teacher_include_player_quality: bool | None = None
 
 
 async def run(config: ExpConfig) -> None:
@@ -361,6 +402,8 @@ async def run(config: ExpConfig) -> None:
             include_player_history=config.include_player_history,
             include_tournament_history=config.include_tournament_history,
             include_player_quality=config.include_player_quality,
+            teacher_include_pressure=config.teacher_include_pressure,
+            teacher_include_player_quality=config.teacher_include_player_quality,
         )
 
     # 2. Build dataset and train

@@ -461,35 +461,28 @@ def build_messages(
             margin = int(scores[1] - scores[0])  # strokes leader is ahead
         else:
             margin = 0
-        # Empirical position win rates from 288 R3 training examples, by margin:
-        # margin=0: leader 64%, 3rd 13%, other 23% (2nd co-leader rarely wins; first-listed usually has edge)
-        # margin=1: leader 43%, 2nd 32%, 3rd 6%, other 20% (very volatile!)
-        # margin=2: leader 48%, 2nd 27%, 3rd 4%, other 21%
-        # margin=3+: leader 68-85%, 2nd 9%, 3rd 5%, other 14%
         if margin == 0:
             calibration_hint = (
-                "After round 3 tied for the lead: the first-listed co-leader historically wins ~64%; "
-                "3rd place wins ~13%; outside top-3 wins ~23%. The second co-leader rarely wins "
-                "(they are typically tied on score but have worse countback). "
-                "Give the first-listed co-leader most probability (~50-60%), minimal to 2nd, ~13% to 3rd, ~23% to 'other'."
+                "After round 3 with players tied for the lead: historically ~66% of the time "
+                "one of the co-leaders wins. 2nd place wins 18%, top-3 cover 81%. "
+                "Assign substantial probability to co-leaders and closely-trailing players."
             )
         elif margin == 1:
             calibration_hint = (
-                "After round 3 with leader +1 over 2nd: VERY VOLATILE — leader wins only ~43%; "
-                "2nd place wins ~32% (major comeback potential!); 3rd wins ~6%; outside top-3 wins ~20%. "
-                "Split nearly equally: leader ~43%, 2nd ~30%, 3rd ~6%, 'other' ~20%."
+                "After round 3 with the leader ahead by 1 stroke: historically the leader "
+                "wins only ~42% of the time — leads of just 1 stroke are volatile. "
+                "2nd place wins 18%, outside top-3 wins 19%. Spread probability widely."
             )
         elif margin <= 2:
             calibration_hint = (
-                "After round 3 with leader +2 over 2nd: leader wins ~48%; "
-                "2nd place wins ~27% (still dangerous); 3rd wins ~4%; outside top-3 wins ~21%. "
-                "Assign probabilities: leader ~48%, 2nd ~27%, 3rd ~4%, 'other' ~21%."
+                "After round 3 with the leader ahead by 2 strokes: historically the leader "
+                "wins ~52% of the time. Still significant probability for 2nd/3rd place."
             )
         else:
             calibration_hint = (
-                f"After round 3 with leader +{margin} strokes ahead: leaders with 3+ strokes "
-                "win ~68-85% of the time. 2nd place wins ~9%; 3rd wins ~5%; other ~14%. "
-                "Give the leader dominant probability but maintain some for 2nd and 'other'."
+                f"After round 3 with the leader ahead by {margin} strokes: historically "
+                "leaders with 3+ stroke leads win 70-75% of the time. "
+                "Give the leader strong but not overwhelming probability."
             )
 
     # Build hole-by-hole scorecard section (R3 only, when enabled)
