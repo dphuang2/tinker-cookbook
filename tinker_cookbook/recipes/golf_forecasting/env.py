@@ -60,6 +60,7 @@ def build_messages(
     *,
     include_other_bucket: bool = True,
     max_candidates: int = 20,
+    player_strength: dict[str, float] | None = None,
 ) -> list[renderers.Message]:
     # Limit to top N players by position to keep prompt manageable
     if max_candidates > 0 and len(example.players) > max_candidates:

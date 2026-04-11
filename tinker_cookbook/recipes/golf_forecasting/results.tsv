@@ -55,3 +55,6 @@ exp47-mega-sft	1.2714	0.6827	1.1625	kept	data+training	PGA+EUR+LPGA 735 train, b
 exp48-pga5ep	1.2612	0.6803	1.1570	kept	training	PGA-only SFT 5 epochs (474 PGA examples), anchor improving toward 1.23
 exp49-qwen32b-sft	1.2808	0.6843	N/A	not-kept	model+training	Qwen3-32B SFT, same quality as 8B SFT — again confirms teacher is bottleneck
 exp50-avg-teacher	1.2937	0.6957	1.1878	not-kept	training	Averaged DeepSeek+70B labels, no improvement — teachers agree, averaging redundant
+exp51-qwen30b-teacher	1.5856	0.7954	1.3339	not-kept	training	Qwen30B teacher SFT, worse than DeepSeek teacher
+exp52-sft-top2	0.9863	0.5891	0.9507	kept	training	SFT distill top-2, excellent balance: ll=0.99, 55% top1
+exp52-70b-base-sft	1.2781	0.6863	N/A	not-kept	model+training	70B base SFT, same as 8B instruct — base vs instruct doesn't matter
