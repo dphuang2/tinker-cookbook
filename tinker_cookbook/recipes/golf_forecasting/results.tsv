@@ -24,3 +24,5 @@ exp20-deepseek-top3	1.2385	0.6684	1.1883	kept	model	DeepSeek-V3.1 top-3, new bes
 exp20-deepseek-top1	0.5882	0.3996	N/A	kept	model	DeepSeek-V3.1 top-1, identical to 70B on binary
 exp21-deepseek-top2	0.9804	0.5856	1.0194	kept	model	DeepSeek-V3.1 top-2, good balance of resolution and calibration, 55% top1
 exp22-qwen4b-top3	1.4538	0.7619	N/A	kept	model	Qwen3-4B-Instruct top-3, 100% format valid with CoT, between 70B and 8B+RL
+exp24-r2n3-r3n1	0.9910	0.5983	N/A	kept	prompt	Round-dependent: R2=top3, R3=top1, good balance of resolution and metrics
+exp24-r2n2-r3n1	0.8524	0.5513	N/A	kept	prompt	Round-dependent: R2=top2, R3=top1, strong all-around
