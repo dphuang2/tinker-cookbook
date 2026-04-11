@@ -1,0 +1,35 @@
+{
+  "heuristic": {
+    "anchor": {
+      "eval/log_loss": 2.8116223049172855,
+      "eval/brier": 0.8051383085036558,
+      "eval/top1_accuracy": 0.34210526315789475,
+      "eval/top3_recall": 0.6578947368421053,
+      "eval/format_valid_rate": 1.0
+    },
+    "research": {
+      "eval/log_loss": 2.3448791609777544,
+      "eval/brier": 0.8350390758546171,
+      "eval/top1_accuracy": 0.4473684210526316,
+      "eval/top3_recall": 0.7368421052631579,
+      "eval/format_valid_rate": 1.0
+    }
+  },
+  "llm_baseline": {
+    "model": "meta-llama/Llama-3.1-8B-Instruct",
+    "anchor": {
+      "eval/log_loss": 7.36361302440037,
+      "eval/brier": 1.3028186393913792,
+      "eval/top1_accuracy": 0.23684210526315788,
+      "eval/top3_recall": 0.42105263157894735,
+      "eval/format_valid_rate": 0.5526315789473685
+    },
+    "research": {
+      "eval/log_loss": 8.378769308303424,
+      "eval/brier": 1.4360513984932817,
+      "eval/top1_accuracy": 0.23684210526315788,
+      "eval/top3_recall": 0.39473684210526316,
+      "eval/format_valid_rate": 0.4473684210526316
+    }
+  }
+}

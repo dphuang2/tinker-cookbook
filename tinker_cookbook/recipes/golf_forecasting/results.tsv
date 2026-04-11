@@ -1,0 +1,3 @@
+commit	anchor_log_loss	anchor_brier	research_score	status	change_type	description
+baseline-heuristic	2.8116	0.8051	2.3449	baseline	data	Position-weighted heuristic baseline
+baseline-llm-8b	7.3636	1.3028	8.3788	baseline	model	Llama-3.1-8B-Instruct zero-shot, 55% format valid
