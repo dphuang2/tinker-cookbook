@@ -23,6 +23,8 @@ class CLIConfig:
     train_jsonl_path: str | None = None
     val_jsonl_path: str | None = None
     include_other_bucket: bool = True
+    include_player_history: bool = False
+    include_tournament_history: bool = False
 
     # Training hyperparameters
     group_size: int = 8
@@ -61,6 +63,8 @@ async def cli_main(cli_config: CLIConfig) -> None:
         train_jsonl_path=cli_config.train_jsonl_path,
         val_jsonl_path=cli_config.val_jsonl_path,
         include_other_bucket=cli_config.include_other_bucket,
+        include_player_history=cli_config.include_player_history,
+        include_tournament_history=cli_config.include_tournament_history,
     )
 
     short_model_name = cli_config.model_name.replace("/", "-")

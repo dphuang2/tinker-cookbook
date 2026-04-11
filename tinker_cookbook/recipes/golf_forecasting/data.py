@@ -365,12 +365,16 @@ class GolfForecastDataset(RLDataset):
         renderer: renderers.Renderer,
         split: Literal["train", "val"] = "train",
         include_other_bucket: bool = True,
+        include_player_history: bool = False,
+        include_tournament_history: bool = False,
     ):
         self.examples = list(examples)
         self.batch_size = batch_size
         self.group_size = group_size if split == "train" else 1
         self.renderer = renderer
         self.include_other_bucket = include_other_bucket
+        self.include_player_history = include_player_history
+        self.include_tournament_history = include_tournament_history
 
     def __len__(self) -> int:
         return math.ceil(len(self.examples) / self.batch_size)
@@ -388,6 +392,8 @@ class GolfForecastDataset(RLDataset):
                     example=example,
                     renderer=self.renderer,
                     include_other_bucket=self.include_other_bucket,
+                    include_player_history=self.include_player_history,
+                    include_tournament_history=self.include_tournament_history,
                 ),
                 num_envs=self.group_size,
                 dataset_name="golf_forecasting",
@@ -406,6 +412,8 @@ class GolfForecastDatasetBuilder(RLDatasetBuilder):
     train_jsonl_path: str | None = None
     val_jsonl_path: str | None = None
     include_other_bucket: bool = True
+    include_player_history: bool = False
+    include_tournament_history: bool = False
 
     async def __call__(self) -> tuple[GolfForecastDataset, GolfForecastDataset | None]:
         if self.dataset_manifest_path is not None:
@@ -428,6 +436,8 @@ class GolfForecastDatasetBuilder(RLDatasetBuilder):
             renderer=renderer,
             split="train",
             include_other_bucket=self.include_other_bucket,
+            include_player_history=self.include_player_history,
+            include_tournament_history=self.include_tournament_history,
         )
         val_dataset = (
             GolfForecastDataset(
@@ -437,6 +447,8 @@ class GolfForecastDatasetBuilder(RLDatasetBuilder):
                 renderer=renderer,
                 split="val",
                 include_other_bucket=self.include_other_bucket,
+                include_player_history=self.include_player_history,
+                include_tournament_history=self.include_tournament_history,
             )
             if val_path is not None
             else None

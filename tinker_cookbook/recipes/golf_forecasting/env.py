@@ -30,6 +30,7 @@ _PRESSURE_PROFILES: dict[str, dict] | None = None
 _PRESSURE_PROFILES_NORMALIZED: dict[str, dict] | None = None
 _TOURNAMENT_HISTORY: dict[str, list] | None = None
 _PLAYER_COURSE_HISTORY: dict[str, dict] | None = None
+_PLAYER_QUALITY: dict[str, dict] | None = None
 
 
 def _load_pressure_profiles() -> dict[str, dict]:
@@ -89,6 +90,47 @@ class WinnerForecast(BaseModel):
         if any(prob < 0.0 for prob in value.values()):
             raise ValueError("winner_probs cannot contain negative probabilities")
         return value
+
+
+def _load_player_quality() -> dict[str, dict]:
+    """Load player quality scores from artifacts/player_quality.json."""
+    global _PLAYER_QUALITY
+    if _PLAYER_QUALITY is not None:
+        return _PLAYER_QUALITY
+    path = Path(__file__).parent / "artifacts" / "player_quality.json"
+    if not path.exists():
+        _PLAYER_QUALITY = {}
+        return {}
+    raw = json.loads(path.read_text())
+    _PLAYER_QUALITY = raw.get("players", {})
+    return _PLAYER_QUALITY
+
+
+def _build_player_quality_section(top_names: list[str]) -> str:
+    """Build a section showing each candidate's career quality context."""
+    quality = _load_player_quality()
+    if not quality:
+        return ""
+    lines = []
+    for name in top_names:
+        norm = normalize_player_name(name)
+        # Try exact match then normalized match
+        data = quality.get(name) or next(
+            (v for k, v in quality.items() if normalize_player_name(k) == norm), None
+        )
+        if data and data.get("wins", 0) > 0:
+            wins = data["wins"]
+            top5 = data.get("top5", 0)
+            win_rate = data.get("win_rate", 0.0)
+            lines.append(f"- {name}: {wins} career win{'s' if wins != 1 else ''}, {top5} top-5s, {win_rate:.1%} win rate")
+        elif data and data.get("top5", 0) > 0:
+            top5 = data.get("top5", 0)
+            lines.append(f"- {name}: 0 career wins, {top5} top-5s")
+        else:
+            lines.append(f"- {name}: limited career history in data")
+    if not lines:
+        return ""
+    return "Career quality context:\n" + "\n".join(lines)
 
 
 def _load_player_course_history() -> dict[str, dict]:
@@ -357,6 +399,7 @@ def build_messages(
     include_pressure: bool = True,
     include_tournament_history: bool = False,
     include_player_history: bool = False,
+    include_player_quality: bool = False,
 ) -> list[renderers.Message]:
     # Limit to top N players by position to keep prompt manageable
     if max_candidates > 0 and len(example.players) > max_candidates:
@@ -418,28 +461,35 @@ def build_messages(
             margin = int(scores[1] - scores[0])  # strokes leader is ahead
         else:
             margin = 0
+        # Empirical position win rates from 288 R3 training examples, by margin:
+        # margin=0: leader 64%, 3rd 13%, other 23% (2nd co-leader rarely wins; first-listed usually has edge)
+        # margin=1: leader 43%, 2nd 32%, 3rd 6%, other 20% (very volatile!)
+        # margin=2: leader 48%, 2nd 27%, 3rd 4%, other 21%
+        # margin=3+: leader 68-85%, 2nd 9%, 3rd 5%, other 14%
         if margin == 0:
             calibration_hint = (
-                "After round 3 with players tied for the lead: historically ~66% of the time "
-                "one of the co-leaders wins. 2nd place wins 18%, top-3 cover 81%. "
-                "Assign substantial probability to co-leaders and closely-trailing players."
+                "After round 3 tied for the lead: the first-listed co-leader historically wins ~64%; "
+                "3rd place wins ~13%; outside top-3 wins ~23%. The second co-leader rarely wins "
+                "(they are typically tied on score but have worse countback). "
+                "Give the first-listed co-leader most probability (~50-60%), minimal to 2nd, ~13% to 3rd, ~23% to 'other'."
             )
         elif margin == 1:
             calibration_hint = (
-                "After round 3 with the leader ahead by 1 stroke: historically the leader "
-                "wins only ~42% of the time — leads of just 1 stroke are volatile. "
-                "2nd place wins 18%, outside top-3 wins 19%. Spread probability widely."
+                "After round 3 with leader +1 over 2nd: VERY VOLATILE — leader wins only ~43%; "
+                "2nd place wins ~32% (major comeback potential!); 3rd wins ~6%; outside top-3 wins ~20%. "
+                "Split nearly equally: leader ~43%, 2nd ~30%, 3rd ~6%, 'other' ~20%."
             )
         elif margin <= 2:
             calibration_hint = (
-                "After round 3 with the leader ahead by 2 strokes: historically the leader "
-                "wins ~52% of the time. Still significant probability for 2nd/3rd place."
+                "After round 3 with leader +2 over 2nd: leader wins ~48%; "
+                "2nd place wins ~27% (still dangerous); 3rd wins ~4%; outside top-3 wins ~21%. "
+                "Assign probabilities: leader ~48%, 2nd ~27%, 3rd ~4%, 'other' ~21%."
             )
         else:
             calibration_hint = (
-                f"After round 3 with the leader ahead by {margin} strokes: historically "
-                "leaders with 3+ stroke leads win 70-75% of the time. "
-                "Give the leader strong but not overwhelming probability."
+                f"After round 3 with leader +{margin} strokes ahead: leaders with 3+ strokes "
+                "win ~68-85% of the time. 2nd place wins ~9%; 3rd wins ~5%; other ~14%. "
+                "Give the leader dominant probability but maintain some for 2nd and 'other'."
             )
 
     # Build hole-by-hole scorecard section (R3 only, when enabled)
@@ -482,6 +532,14 @@ def build_messages(
         else ""
     )
 
+    # Build player quality section (disabled by default, opt-in)
+    # Shows each candidate's career win count and win rate as a general quality proxy.
+    player_quality_section = (
+        _build_player_quality_section(top_names[:max_candidates])
+        if include_player_quality
+        else ""
+    )
+
     instructions = (
         f"Tournament: {example.tournament_name}\n"
         f"Course: {example.course_name or 'Unknown'}\n"
@@ -494,6 +552,7 @@ def build_messages(
         + (pressure_section + "\n\n" if pressure_section else "")
         + (tournament_history_section + "\n\n" if tournament_history_section else "")
         + (player_history_section + "\n\n" if player_history_section else "")
+        + (player_quality_section + "\n\n" if player_quality_section else "")
         + "Extra context:\n"
         f"{extra_context}\n\n"
         + (f"Field analysis:\n{field_analysis}\n\n" if field_analysis else "")

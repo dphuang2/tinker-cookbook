@@ -39,7 +39,7 @@ from tinker_cookbook.recipes.golf_forecasting.data import (
     load_dataset_manifest,
     load_examples,
 )
-from tinker_cookbook.recipes.golf_forecasting.env import build_messages
+from tinker_cookbook.recipes.golf_forecasting.env import build_messages, parse_forecast_response
 from tinker_cookbook.recipes.golf_forecasting.eval import (
     GolfForecastEvalConfig,
     run_eval,
@@ -132,6 +132,7 @@ async def generate_teacher_labels(
     include_pressure: bool = False,
     include_player_history: bool = False,
     include_tournament_history: bool = False,
+    include_player_quality: bool = False,
 ) -> None:
     """Run the teacher model on training examples and write (messages, completion) pairs."""
     output_file = Path(output_path)
@@ -168,6 +169,7 @@ async def generate_teacher_labels(
                 include_pressure=include_pressure,
                 include_player_history=include_player_history,
                 include_tournament_history=include_tournament_history,
+                include_player_quality=include_player_quality,
             )
             prompt = renderer.build_generation_prompt(messages)
             try:
@@ -188,6 +190,114 @@ async def generate_teacher_labels(
                 f.write(json.dumps(r, sort_keys=True) + "\n")
                 valid += 1
     logger.info("Wrote %d valid SFT records to %s", valid, output_path)
+
+
+async def generate_self_consistency_teacher_labels(
+    *,
+    teacher_model: str,
+    train_examples_path: str,
+    output_path: str,
+    max_candidates: int,
+    n_samples: int = 3,
+    sample_temperature: float = 0.3,
+    max_tokens: int = 512,
+    max_parallel: int = 16,
+    include_pressure: bool = False,
+    include_player_history: bool = False,
+    include_tournament_history: bool = False,
+    include_player_quality: bool = False,
+) -> None:
+    """Self-consistency: generate n_samples at sample_temperature and average probabilities."""
+    output_file = Path(output_path)
+    if output_file.exists():
+        count = sum(1 for l in output_file.read_text().splitlines() if l.strip())
+        logger.info(
+            "SFT data already exists at %s (%d records). Skipping.", output_path, count
+        )
+        return
+
+    renderer_name = model_info.get_recommended_renderer_name(teacher_model)
+    tokenizer = get_tokenizer(teacher_model)
+    renderer = renderers.get_renderer(renderer_name, tokenizer=tokenizer)
+
+    client = tinker.ServiceClient()
+    sc = client.create_sampling_client(base_model=teacher_model)
+    params = types.SamplingParams(
+        max_tokens=max_tokens,
+        temperature=sample_temperature,
+        stop=renderer.get_stop_sequences(),
+    )
+
+    examples = load_examples(train_examples_path)
+    logger.info(
+        "Generating self-consistency labels (%d samples, T=%.2f) for %d examples...",
+        n_samples, sample_temperature, len(examples),
+    )
+
+    semaphore = asyncio.Semaphore(max_parallel)
+
+    async def gen_one(ex):
+        async with semaphore:
+            messages = build_messages(
+                ex,
+                include_other_bucket=True,
+                max_candidates=max_candidates,
+                include_pressure=include_pressure,
+                include_player_history=include_player_history,
+                include_tournament_history=include_tournament_history,
+                include_player_quality=include_player_quality,
+            )
+            prompt = renderer.build_generation_prompt(messages)
+
+            if max_candidates > 0 and len(ex.players) > max_candidates:
+                top_names = [p.name for p in ex.players[:max_candidates]]
+            else:
+                top_names = ex.candidate_names
+            allowed = [*top_names, "other"]
+
+            accumulated: dict[str, float] = {label: 0.0 for label in allowed}
+            valid_count = 0
+
+            try:
+                resp = await sc.sample_async(
+                    prompt=prompt, num_samples=n_samples, sampling_params=params
+                )
+                for seq in resp.sequences:
+                    try:
+                        text = renderers.get_text_content(renderer.parse_response(seq.tokens)[0])
+                        forecast, _ = parse_forecast_response(
+                            text, allowed_labels=allowed, prob_floor=0.0
+                        )
+                        for label, prob in forecast.items():
+                            accumulated[label] += prob
+                        valid_count += 1
+                    except Exception:
+                        pass
+            except Exception as exc:
+                logger.warning("Self-consistency failed for %s: %s", ex.example_id, exc)
+                return None
+
+            if valid_count == 0:
+                return None
+
+            averaged = {label: prob / valid_count for label, prob in accumulated.items()}
+            total = sum(averaged.values())
+            if total <= 0:
+                return None
+            normalized = {label: round(prob / total, 4) for label, prob in averaged.items()}
+            completion = json.dumps({"winner_probs": normalized})
+            return {"messages": messages, "completion": completion, "example_id": ex.example_id}
+
+    results = await asyncio.gather(*(gen_one(ex) for ex in examples))
+
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    valid = 0
+    with output_file.open("w") as f:
+        for r in results:
+            if r:
+                f.write(json.dumps(r, sort_keys=True) + "\n")
+                valid += 1
+    logger.info("Wrote %d self-consistency SFT records to %s", valid, output_path)
 
 
 # ---------------------------------------------------------------------------
@@ -215,6 +325,9 @@ class ExpConfig:
     include_pressure: bool = False
     include_player_history: bool = False
     include_tournament_history: bool = False
+    include_player_quality: bool = False
+    n_consistency_samples: int = 1  # 1 = greedy, >1 = self-consistency averaging
+    sample_temperature: float = 0.3  # temperature for self-consistency samples
 
 
 async def run(config: ExpConfig) -> None:
@@ -223,16 +336,32 @@ async def run(config: ExpConfig) -> None:
 
     # 1. Generate teacher labels
     manifest = load_dataset_manifest(config.dataset_manifest_path)
-    await generate_teacher_labels(
-        teacher_model=config.teacher_model,
-        train_examples_path=manifest.train_path,
-        output_path=sft_path,
-        max_candidates=config.max_candidates,
-        max_tokens=config.max_tokens_generate,
-        include_pressure=config.include_pressure,
-        include_player_history=config.include_player_history,
-        include_tournament_history=config.include_tournament_history,
-    )
+    if config.n_consistency_samples > 1:
+        await generate_self_consistency_teacher_labels(
+            teacher_model=config.teacher_model,
+            train_examples_path=manifest.train_path,
+            output_path=sft_path,
+            max_candidates=config.max_candidates,
+            n_samples=config.n_consistency_samples,
+            sample_temperature=config.sample_temperature,
+            max_tokens=config.max_tokens_generate,
+            include_pressure=config.include_pressure,
+            include_player_history=config.include_player_history,
+            include_tournament_history=config.include_tournament_history,
+            include_player_quality=config.include_player_quality,
+        )
+    else:
+        await generate_teacher_labels(
+            teacher_model=config.teacher_model,
+            train_examples_path=manifest.train_path,
+            output_path=sft_path,
+            max_candidates=config.max_candidates,
+            max_tokens=config.max_tokens_generate,
+            include_pressure=config.include_pressure,
+            include_player_history=config.include_player_history,
+            include_tournament_history=config.include_tournament_history,
+            include_player_quality=config.include_player_quality,
+        )
 
     # 2. Build dataset and train
     renderer_name = await checkpoint_utils.resolve_renderer_name_from_checkpoint_or_default_async(
@@ -291,6 +420,7 @@ async def run(config: ExpConfig) -> None:
             include_pressure=config.include_pressure,
             include_player_history=config.include_player_history,
             include_tournament_history=config.include_tournament_history,
+            include_player_quality=config.include_player_quality,
         )
         metrics = await run_eval(eval_config)
         logger.info(
