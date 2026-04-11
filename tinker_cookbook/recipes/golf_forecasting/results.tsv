@@ -71,3 +71,5 @@ exp63-4model-ensemble	1.3034	0.7051	N/A	not-kept	training	4-model weighted ensem
 exp64-ultimate-1b	1.2460	0.6763	1.1698	kept	data+training	972 train examples (2020-2026), 1B SFT, similar anchor, good research diversity
 exp65-qwen4b-inst-sft	1.2673	0.6843	N/A	not-kept	model+training	Qwen3-4B-Instruct SFT, same quality as other students
 exp66-1b-sft-rl	1.6218	0.7765	N/A	not-kept	training	1B SFT+RL, RL catastrophically worsens 1B model (1.23->1.62)
+exp67-deepseek-structured	1.2087	0.6467	N/A	kept	prompt	DeepSeek with simplified structured prompt, new best teacher output (ll=1.21)
+exp67-1b-structured	1.2668	0.6962	1.2129	kept	prompt+training	1B SFT from structured DeepSeek, student doesn't fully capture teacher improvement
