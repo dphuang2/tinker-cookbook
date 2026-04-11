@@ -31,6 +31,7 @@ _PRESSURE_PROFILES_NORMALIZED: dict[str, dict] | None = None
 _TOURNAMENT_HISTORY: dict[str, list] | None = None
 _PLAYER_COURSE_HISTORY: dict[str, dict] | None = None
 _PLAYER_QUALITY: dict[str, dict] | None = None
+_TRAINING_EXAMPLES_R3: list | None = None
 
 
 def _load_pressure_profiles() -> dict[str, dict]:
@@ -104,6 +105,104 @@ def _load_player_quality() -> dict[str, dict]:
     raw = json.loads(path.read_text())
     _PLAYER_QUALITY = raw.get("players", {})
     return _PLAYER_QUALITY
+
+
+def _load_training_examples_r3() -> list:
+    """Load R3 training examples lazily for few-shot calibration.
+
+    Only R3 examples are useful for few-shot: R3 margin→winner outcomes are the
+    most direct precedent for the prediction task.
+    """
+    global _TRAINING_EXAMPLES_R3
+    if _TRAINING_EXAMPLES_R3 is not None:
+        return _TRAINING_EXAMPLES_R3
+    try:
+        from tinker_cookbook.recipes.golf_forecasting.data import load_examples
+
+        train_path = Path(__file__).parent.parent.parent / "example_data" / "golf_forecasting" / "train.jsonl"
+        if not train_path.exists():
+            _TRAINING_EXAMPLES_R3 = []
+            return []
+        all_examples = load_examples(str(train_path))
+        _TRAINING_EXAMPLES_R3 = [e for e in all_examples if e.round_number == 3]
+    except Exception:
+        _TRAINING_EXAMPLES_R3 = []
+    return _TRAINING_EXAMPLES_R3
+
+
+def _build_few_shot_section(
+    example,
+    *,
+    n_examples: int = 2,
+) -> str:
+    """Build a few-shot calibration section from similar historical R3 scenarios.
+
+    Finds training examples with the same R3 lead margin (or within ±1 stroke),
+    from tournaments before the current year, and formats them as concrete
+    historical precedents to anchor the model's probability estimates.
+    """
+    if example.round_number != 3:
+        return ""
+
+    scores = [p.score_to_par for p in example.players]
+    if len(scores) < 2:
+        return ""
+    margin = int(scores[1] - scores[0])
+
+    current_year = example.snapshot_timestamp[:4] if example.snapshot_timestamp else None
+    current_tid = example.tournament_id
+
+    training = _load_training_examples_r3()
+    if not training:
+        return ""
+
+    # Collect candidates: same margin ±0 first, then ±1, to find n_examples
+    candidates: list = []
+    for delta in (0, 1):
+        for ex in training:
+            if ex.tournament_id == current_tid:
+                continue
+            if current_year and ex.snapshot_timestamp and ex.snapshot_timestamp[:4] >= current_year:
+                continue
+            ex_scores = [p.score_to_par for p in ex.players]
+            if len(ex_scores) < 2:
+                continue
+            ex_margin = int(ex_scores[1] - ex_scores[0])
+            if abs(ex_margin - margin) <= delta and ex not in candidates:
+                candidates.append(ex)
+        if len(candidates) >= n_examples:
+            break
+
+    if not candidates:
+        return ""
+
+    selected = candidates[:n_examples]
+    lines = []
+    for ex in selected:
+        ex_scores = [p.score_to_par for p in ex.players]
+        ex_margin = int(ex_scores[1] - ex_scores[0])
+        year = ex.snapshot_timestamp[:4] if ex.snapshot_timestamp else "?"
+        leader_name = ex.players[0].name if ex.players else "?"
+        winner = ex.target_winner or "?"
+        # Determine winner's starting position
+        winner_pos = None
+        for i, p in enumerate(ex.players):
+            if p.name == winner:
+                winner_pos = i + 1
+                break
+        if winner == leader_name:
+            outcome = f"leader {winner} won (held lead)"
+        elif winner_pos:
+            outcome = f"{winner} won from position {winner_pos}"
+        else:
+            outcome = f"{winner} won"
+        lines.append(
+            f"  {ex.tournament_name} {year}: leader +{ex_margin} ahead → {outcome}"
+        )
+
+    margin_desc = f"+{margin}" if margin > 0 else "tied"
+    header = f"Historical R3 precedents (leader {margin_desc}, similar margin):"
+    return header + "\n" + "\n".join(lines)
 
 
 def _build_player_quality_section(top_names: list[str]) -> str:
@@ -400,6 +499,7 @@ def build_messages(
     include_tournament_history: bool = False,
     include_player_history: bool = False,
     include_player_quality: bool = False,
+    include_few_shot: bool = False,
 ) -> list[renderers.Message]:
     # Limit to top N players by position to keep prompt manageable
     if max_candidates > 0 and len(example.players) > max_candidates:
@@ -451,8 +551,9 @@ def build_messages(
         )
     elif round_num == 2:
         calibration_hint = (
-            "After round 2, the leader wins roughly 30-35% of the time. "
-            "Comebacks are common — spread probability across multiple contenders and 'other'."
+            "After round 2, ~47% of winners come from OUTSIDE the top-3 leaderboard positions. "
+            "The leader wins only 20-30% of the time. "
+            "Assign at least 40-50% probability to 'other' — upsets are the norm, not the exception."
         )
     else:
         # Compute margin-based calibration hint
@@ -533,6 +634,14 @@ def build_messages(
         else ""
     )
 
+    # Build few-shot calibration section (disabled by default, R3 only)
+    # Shows 2 historical examples from training set with similar R3 lead margin.
+    few_shot_section = (
+        _build_few_shot_section(example)
+        if include_few_shot
+        else ""
+    )
+
     instructions = (
         f"Tournament: {example.tournament_name}\n"
         f"Course: {example.course_name or 'Unknown'}\n"
@@ -546,6 +655,7 @@ def build_messages(
         + (tournament_history_section + "\n\n" if tournament_history_section else "")
         + (player_history_section + "\n\n" if player_history_section else "")
         + (player_quality_section + "\n\n" if player_quality_section else "")
+        + (few_shot_section + "\n\n" if few_shot_section else "")
         + "Extra context:\n"
         f"{extra_context}\n\n"
         + (f"Field analysis:\n{field_analysis}\n\n" if field_analysis else "")

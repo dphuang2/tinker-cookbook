@@ -51,6 +51,7 @@ class GolfForecastEvalConfig:
     include_tournament_history: bool = False
     include_player_history: bool = False
     include_player_quality: bool = False
+    include_few_shot: bool = False
 
 
 @dataclass(frozen=True)
@@ -113,6 +114,7 @@ class GolfForecastEvaluator(SamplingClientEvaluator):
             include_tournament_history=self.config.include_tournament_history,
             include_player_history=self.config.include_player_history,
             include_player_quality=self.config.include_player_quality,
+            include_few_shot=self.config.include_few_shot,
         )
         return self.renderer.build_generation_prompt(messages)
 
