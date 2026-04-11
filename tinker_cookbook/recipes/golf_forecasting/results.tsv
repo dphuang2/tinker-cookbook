@@ -5,4 +5,5 @@ exp1-rl-8b	6.2908	0.9239	5.2002	superseded	training	RL 1 epoch, 4e-5 lr, rank32,
 exp2-top20-rl	4.0563	0.7716	3.6108	kept	prompt	Top-20 candidates, RL 1 epoch, brier beats heuristic (0.77 vs 0.81)
 exp3-blended-reward	6.3075	0.8379	N/A	reverted	training	Blended brier+logloss reward, worse than exp2, reverted
 exp4-prob-floor	2.7635	0.7531	2.3106	superseded	evaluation	0.5% probability floor on all candidates, beats heuristic on all metrics
-exp5-calibrated	2.6058	0.7385	2.2018	kept	prompt+training	Calibration guidance in prompt, RL retrained, new best on all metrics
+exp5-calibrated	2.6058	0.7385	2.2018	superseded	prompt+training	Calibration guidance in prompt, RL retrained, new best on all metrics
+exp6-70b-zeroshot	2.4790	0.7206	2.1198	kept	model	Llama-3.3-70B-Instruct zero-shot, new best anchor log_loss and brier
