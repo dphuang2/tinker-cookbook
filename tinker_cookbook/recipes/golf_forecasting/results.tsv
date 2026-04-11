@@ -66,3 +66,4 @@ exp58-1b-sft	1.2257	0.6664	1.1573	kept	model+training	Llama-3.2-1B SFT, MATCHES 
 exp59-1b-top1	0.5918	0.4031	0.5481	kept	model+training	1B SFT top-1, matches 8B binary! Research 77% top1. Cheapest possible system
 exp60-3b-sft	1.2825	0.6968	N/A	not-kept	model+training	3B SFT, slightly worse than 1B (1.28 vs 1.23) — 1B remains optimal student
 exp61-1b-mixed	0.8345	0.5399	0.8093	kept	model+training	1B SFT mixed R2=2/R3=1, matches 8B mixed! Research top1=65%
+exp62-1b-top2	0.9941	0.5938	N/A	kept	model+training	1B SFT top-2, matches 8B (0.99). 1B = optimal for ALL configs
