@@ -43,3 +43,5 @@ exp35-eur-data-sft	1.2358	0.6671	1.2386	kept	data+training	Added EUR Tour (532 t
 exp36-mixed-expanded	0.8256	0.5321	0.8687	kept	data+training	SFT mixed R2=2/R3=1 on expanded EUR+PGA data, best balanced config
 exp37-top1-expanded	0.5855	0.3968	0.6267	kept	data+training	SFT top-1 on expanded data, new best binary (ll=0.585, brier=0.397)
 exp38-augmented-sft	1.2384	0.6697	1.2524	not-kept	training	3-temp augmented SFT (1368 examples), no improvement over base SFT
+exp39-rank64-sft	1.2367	0.6673	1.2250	not-kept	training	LoRA rank 64, nearly identical to rank 32, rank not a bottleneck
+exp40-deepseek-mixed	0.8079	0.5168	0.8349	kept	model	DeepSeek R2=top2/R3=top1, best zero-shot balanced (ll=0.81, 58% top1)
