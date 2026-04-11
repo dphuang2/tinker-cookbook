@@ -125,14 +125,21 @@ class GolfForecastEvaluator(SamplingClientEvaluator):
         else:
             top_names = example.candidate_names
         allowed = [*top_names, "other"] if self.config.include_other_bucket else top_names
+
+        # Compute effective target label within the candidate set used by the prompt.
+        # If the winner isn't in the top-N candidates, their label maps to "other".
+        effective_target = example.target_label
+        if effective_target not in allowed:
+            effective_target = "other"
+
         try:
             forecast, diagnostics = parse_forecast_response(text, allowed_labels=allowed)
-            scores = score_forecast(forecast, target_label=example.target_label)
+            scores = score_forecast(forecast, target_label=effective_target)
             return ExampleEvalResult(
                 example_id=example.example_id,
                 tournament_id=example.tournament_id,
                 target_winner=example.target_winner,
-                target_label=example.target_label,
+                target_label=effective_target,
                 forecast=forecast,
                 brier=scores["brier"],
                 log_loss=scores["log_loss"],

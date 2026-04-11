@@ -140,7 +140,7 @@ def parse_forecast_response(
     text: str,
     *,
     allowed_labels: Sequence[str],
-    prob_floor: float = 0.005,
+    prob_floor: float = 0.001,
 ) -> tuple[dict[str, float], dict[str, float]]:
     raw = WinnerForecast.model_validate_json(_extract_json_blob(text))
     allowed_lookup = {normalize_player_name(label): label for label in allowed_labels}
@@ -278,7 +278,11 @@ class GolfForecastEnv(Env):
                 content=content,
             )
 
-        scores = score_forecast(forecast, target_label=self.example.target_label)
+        # Use effective target: if winner is outside the candidate set, map to "other"
+        effective_target = self.example.target_label
+        if effective_target not in self.allowed_labels:
+            effective_target = "other"
+        scores = score_forecast(forecast, target_label=effective_target)
         reward = scores["brier_reward"]
         metrics = {
             **base_metrics,
