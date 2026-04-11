@@ -51,3 +51,4 @@ exp43-70b-sft	1.2430	0.6709	1.2013	not-kept	model+training	70B SFT same quality 
 exp44-r1mixed-sft	0.9467	0.5668	0.9208	not-kept	training	R1=3/R2=2/R3=1 SFT, R1 data dilutes R2/R3 anchor quality (0.95 vs 0.83)
 exp46-qwen35-4b-sft	13.8155	2.0000	N/A	not-kept	model+training	Qwen3.5-4B base + SFT, 0% format valid (base model incompatible)
 exp46-kimi-top1	6.8878	1.1678	N/A	not-kept	model	Kimi-K2-Thinking top-1, 53% format valid, thinking model can't follow constraints
+exp47-mega-sft	1.2714	0.6827	1.1625	kept	data+training	PGA+EUR+LPGA 735 train, best research ll=1.16, 54% top1, anchor slightly regressed
