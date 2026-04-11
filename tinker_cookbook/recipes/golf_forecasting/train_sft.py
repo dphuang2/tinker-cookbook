@@ -129,6 +129,9 @@ async def generate_teacher_labels(
     max_candidates: int,
     max_tokens: int = 512,
     max_parallel: int = 16,
+    include_pressure: bool = False,
+    include_player_history: bool = False,
+    include_tournament_history: bool = False,
 ) -> None:
     """Run the teacher model on training examples and write (messages, completion) pairs."""
     output_file = Path(output_path)
@@ -158,7 +161,14 @@ async def generate_teacher_labels(
 
     async def gen_one(ex):
         async with semaphore:
-            messages = build_messages(ex, include_other_bucket=True, max_candidates=max_candidates)
+            messages = build_messages(
+                ex,
+                include_other_bucket=True,
+                max_candidates=max_candidates,
+                include_pressure=include_pressure,
+                include_player_history=include_player_history,
+                include_tournament_history=include_tournament_history,
+            )
             prompt = renderer.build_generation_prompt(messages)
             try:
                 resp = await sc.sample_async(prompt=prompt, num_samples=1, sampling_params=params)
@@ -202,6 +212,9 @@ class ExpConfig:
     max_tokens_train: int = 2048
     results_base: str = "tinker_cookbook/recipes/golf_forecasting/results"
     base_url: str | None = None
+    include_pressure: bool = False
+    include_player_history: bool = False
+    include_tournament_history: bool = False
 
 
 async def run(config: ExpConfig) -> None:
@@ -216,6 +229,9 @@ async def run(config: ExpConfig) -> None:
         output_path=sft_path,
         max_candidates=config.max_candidates,
         max_tokens=config.max_tokens_generate,
+        include_pressure=config.include_pressure,
+        include_player_history=config.include_player_history,
+        include_tournament_history=config.include_tournament_history,
     )
 
     # 2. Build dataset and train
@@ -272,6 +288,9 @@ async def run(config: ExpConfig) -> None:
             include_other_bucket=True,
             max_candidates=config.max_candidates,
             base_url=config.base_url,
+            include_pressure=config.include_pressure,
+            include_player_history=config.include_player_history,
+            include_tournament_history=config.include_tournament_history,
         )
         metrics = await run_eval(eval_config)
         logger.info(

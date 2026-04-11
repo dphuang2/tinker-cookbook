@@ -69,3 +69,8 @@ exp61-nopressure-sft-735	1.2793	0.6914	1.1347	partial	training	SFT no-pressure a
 exp62-pga-r2r3-sft	1.3129	0.7071	1.1553	not-kept	data+training	PGA R2+R3 only 316 examples, less data hurts anchor (1.31)
 exp63-pga-all-sft	1.2899	0.6928	1.1449	not-kept	data+training	PGA all rounds 474 examples; anchor 1.29, research 1.14 — more data needs all rounds
 exp64-tournament-history	1.2464	0.6749	1.1013	kept	data+prompt	Tournament past-winners in prompt; research -0.025 improvement, anchor within noise (±0.14)
+exp65-player-history	1.2262	0.6598	1.1120	kept	data+prompt	Per-player course history (R3 pos, past years) + pressure; anchor avg across 4 runs=1.226 (noisy), research avg=1.112
+exp65-tournament-history-sft	1.2962	0.6985	1.1499	not-kept	training	8B SFT with tournament history prompts; anchor 1.30 worse, research 1.15 — 8B can't use history context well
+exp66-all-features	1.2514	0.6683	1.1085	not-kept	prompt	Pressure+tournament+player history; too many features hurts anchor (1.25), research similar to tournament-only
+exp66-player-history-sft	1.2370	0.6672	1.1057	kept	training	8B SFT distill from DeepSeek(player_history+pressure); NEW BEST research for SFT! (1.1057 vs 1.1347 prev best)
+exp67-ensemble	1.2473	0.6811	N/A	not-kept	prompt	3-config prompt ensemble; averaging suboptimal configs hurts (1.25 vs 1.22 best)

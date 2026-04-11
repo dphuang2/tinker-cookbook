@@ -29,6 +29,7 @@ from tinker_cookbook.recipes.golf_forecasting.data import (
 _PRESSURE_PROFILES: dict[str, dict] | None = None
 _PRESSURE_PROFILES_NORMALIZED: dict[str, dict] | None = None
 _TOURNAMENT_HISTORY: dict[str, list] | None = None
+_PLAYER_COURSE_HISTORY: dict[str, dict] | None = None
 
 
 def _load_pressure_profiles() -> dict[str, dict]:
@@ -88,6 +89,106 @@ class WinnerForecast(BaseModel):
         if any(prob < 0.0 for prob in value.values()):
             raise ValueError("winner_probs cannot contain negative probabilities")
         return value
+
+
+def _load_player_course_history() -> dict[str, dict]:
+    """Load per-player historical appearances at each tournament.
+
+    Uses v1 (R3 snapshot positions from training JSONL) because R3 positions
+    are the best proxy for "entering-final-round position" — matching the
+    prediction scenario. v2 (final R4 positions) is available but hurts because
+    it shows post-R4 outcomes which are less relevant as a prior.
+    """
+    global _PLAYER_COURSE_HISTORY
+    if _PLAYER_COURSE_HISTORY is not None:
+        return _PLAYER_COURSE_HISTORY
+    path = Path(__file__).parent / "artifacts" / "player_course_history.json"
+    if not path.exists():
+        _PLAYER_COURSE_HISTORY = {}
+        return {}
+    raw = json.loads(path.read_text())
+    _PLAYER_COURSE_HISTORY = raw.get("history", {})
+    return _PLAYER_COURSE_HISTORY
+
+
+# Tournament name aliases: handle rebrands and name changes.
+_TOURNAMENT_ALIASES: dict[str, str] = {
+    "Rocket Classic": "Rocket Mortgage Classic",
+    "Sentry Tournament of Champions": "The Sentry",
+    "The Sentry": "Sentry Tournament of Champions",
+    "Fortinet Championship": "Safeway Open",
+    "Safeway Open": "Fortinet Championship",
+    "Shriners Children's Open": "Shriners Hospitals for Children Open",
+    "Shriners Hospitals for Children Open": "Shriners Children's Open",
+    "Zurich Classic of New Orleans": "Zurich Classic",
+    "Zurich Classic": "Zurich Classic of New Orleans",
+}
+
+
+def _build_player_course_history_section(
+    tournament_name: str,
+    top_names: list[str],
+    *,
+    current_year: str | None = None,
+    max_years: int = 3,
+) -> str:
+    """Build per-player historical performance at this specific tournament.
+
+    Shows each candidate's R3 positions in past years at this venue,
+    filtered to only include years before the current snapshot year.
+    """
+    history = _load_player_course_history()
+    # Try original name first, then aliases
+    tournament_data = history.get(tournament_name) or history.get(
+        _TOURNAMENT_ALIASES.get(tournament_name, tournament_name), {}
+    )
+    if not tournament_data:
+        return ""
+
+    lines = []
+    for name in top_names:
+        normalized = normalize_player_name(name)
+        # Try exact name first, then normalized
+        player_records = tournament_data.get(name) or tournament_data.get(normalized)
+        if not player_records:
+            # Try fuzzy: match normalized key
+            player_records = next(
+                (v for k, v in tournament_data.items() if normalize_player_name(k) == normalized),
+                None,
+            )
+        if not player_records:
+            continue
+
+        # Filter to years before current
+        filtered = [r for r in player_records if not current_year or r.get("year", "9999") < current_year]
+        if not filtered:
+            continue
+
+        # Take most recent max_years
+        recent = sorted(filtered, key=lambda x: x.get("year", ""), reverse=True)[:max_years]
+
+        parts = []
+        for r in recent:
+            year = r.get("year", "?")
+            # v2 uses final_position + final_score; v1 uses r3_position + r3_score_to_par
+            pos = r.get("final_position") or r.get("r3_position")
+            won = r.get("won", False) or pos == 1
+            score = r.get("final_score") if r.get("final_score") is not None else r.get("r3_score_to_par")
+            score_str = f"({int(score):+d})" if score is not None else ""
+            if won or pos == 1:
+                parts.append(f"Won {year}{score_str}")
+            elif pos:
+                parts.append(f"T{pos} {year}{score_str}")
+            else:
+                parts.append(f"{year}")
+
+        if parts:
+            lines.append(f"  {name}: {', '.join(parts)}")
+
+    if not lines:
+        return ""
+
+    return f"Player history at {tournament_name} (recent finishes):\n" + "\n".join(lines)
 
 
 def _load_tournament_history() -> dict[str, list]:
@@ -255,6 +356,7 @@ def build_messages(
     include_scorecard: bool = False,
     include_pressure: bool = True,
     include_tournament_history: bool = False,
+    include_player_history: bool = False,
 ) -> list[renderers.Message]:
     # Limit to top N players by position to keep prompt manageable
     if max_candidates > 0 and len(example.players) > max_candidates:
@@ -297,7 +399,7 @@ def build_messages(
         field_analysis_parts.append(f"Players within 5 strokes: {within_5}")
     field_analysis = "\n".join(f"- {p}" for p in field_analysis_parts) if field_analysis_parts else ""
 
-    # Round-specific calibration guidance
+    # Round-specific calibration guidance (empirically derived from 307 R3 historical examples)
     round_num = example.round_number
     if round_num == 1:
         calibration_hint = (
@@ -310,10 +412,35 @@ def build_messages(
             "Comebacks are common — spread probability across multiple contenders and 'other'."
         )
     else:
-        calibration_hint = (
-            "After round 3, the leader wins roughly 50-60% of the time. "
-            "The top 3-5 players cover most outcomes, but upsets still happen."
-        )
+        # Compute margin-based calibration hint
+        scores = [p.score_to_par for p in example.players]
+        if len(scores) >= 2:
+            margin = int(scores[1] - scores[0])  # strokes leader is ahead
+        else:
+            margin = 0
+        if margin == 0:
+            calibration_hint = (
+                "After round 3 with players tied for the lead: historically ~66% of the time "
+                "one of the co-leaders wins. 2nd place wins 18%, top-3 cover 81%. "
+                "Assign substantial probability to co-leaders and closely-trailing players."
+            )
+        elif margin == 1:
+            calibration_hint = (
+                "After round 3 with the leader ahead by 1 stroke: historically the leader "
+                "wins only ~42% of the time — leads of just 1 stroke are volatile. "
+                "2nd place wins 18%, outside top-3 wins 19%. Spread probability widely."
+            )
+        elif margin <= 2:
+            calibration_hint = (
+                "After round 3 with the leader ahead by 2 strokes: historically the leader "
+                "wins ~52% of the time. Still significant probability for 2nd/3rd place."
+            )
+        else:
+            calibration_hint = (
+                f"After round 3 with the leader ahead by {margin} strokes: historically "
+                "leaders with 3+ stroke leads win 70-75% of the time. "
+                "Give the leader strong but not overwhelming probability."
+            )
 
     # Build hole-by-hole scorecard section (R3 only, when enabled)
     # A/B testing shows scorecard adds noise; disable by default, pressure profiles are more helpful.
@@ -343,6 +470,18 @@ def build_messages(
         else ""
     )
 
+    # Build per-player course history section (disabled by default, opt-in)
+    # Shows each candidate's R3 positions in past years at this specific venue.
+    player_history_section = (
+        _build_player_course_history_section(
+            example.tournament_name,
+            top_names[:max_candidates],
+            current_year=current_year,
+        )
+        if include_player_history
+        else ""
+    )
+
     instructions = (
         f"Tournament: {example.tournament_name}\n"
         f"Course: {example.course_name or 'Unknown'}\n"
@@ -354,6 +493,7 @@ def build_messages(
         + (scorecard_section + "\n\n" if scorecard_section else "")
         + (pressure_section + "\n\n" if pressure_section else "")
         + (tournament_history_section + "\n\n" if tournament_history_section else "")
+        + (player_history_section + "\n\n" if player_history_section else "")
         + "Extra context:\n"
         f"{extra_context}\n\n"
         + (f"Field analysis:\n{field_analysis}\n\n" if field_analysis else "")
@@ -479,6 +619,8 @@ class GolfForecastEnv(Env):
         max_candidates: int = 20,
         include_scorecard: bool = False,
         include_pressure: bool = True,
+        include_tournament_history: bool = False,
+        include_player_history: bool = False,
     ):
         self.example = example
         self.renderer = renderer
@@ -491,6 +633,8 @@ class GolfForecastEnv(Env):
             max_candidates=max_candidates,
             include_scorecard=include_scorecard,
             include_pressure=include_pressure,
+            include_tournament_history=include_tournament_history,
+            include_player_history=include_player_history,
         )
         # Build allowed labels to match what build_messages uses
         if max_candidates > 0 and len(example.players) > max_candidates:

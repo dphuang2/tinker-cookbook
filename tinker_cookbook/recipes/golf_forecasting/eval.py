@@ -49,6 +49,7 @@ class GolfForecastEvalConfig:
     include_scorecard: bool = False
     include_pressure: bool = True
     include_tournament_history: bool = False
+    include_player_history: bool = False
 
 
 @dataclass(frozen=True)
@@ -109,6 +110,7 @@ class GolfForecastEvaluator(SamplingClientEvaluator):
             include_scorecard=self.config.include_scorecard,
             include_pressure=self.config.include_pressure,
             include_tournament_history=self.config.include_tournament_history,
+            include_player_history=self.config.include_player_history,
         )
         return self.renderer.build_generation_prompt(messages)
 
