@@ -696,33 +696,52 @@ def build_messages(
                         f"probability by 10-15% and add to {r2_contender_names} specifically "
                         f"(not to 'other')."
                     )
+
+        # Check if 2nd-place R2 contender is a historically elite closer
+        r2_contender_clutch_note = ""
+        if len(top_names) > 1:
+            r2_second = top_names[1]
+            norm_r2_second = normalize_player_name(r2_second)
+            r2_second_profile = profiles.get(norm_r2_second) if profiles else None
+            if r2_second_profile:
+                r2s_cnt = r2_second_profile.get("r2_within3_count", 0)
+                r2s_rate = r2_second_profile.get("r2_within3_win_rate", 0)
+                r2s_wins = int(round(r2s_rate * r2s_cnt)) if r2s_cnt else 0
+                # Only for genuinely elite closers with strong sample size
+                if r2s_cnt >= 15 and r2s_rate >= 0.40:
+                    r2_contender_clutch_note = (
+                        f" NOTE: {r2_second} wins {r2s_wins}/{r2s_cnt} times when within "
+                        f"contention after round 2 ({int(r2s_rate*100)}%) — an elite closer; "
+                        f"boost {r2_second}'s probability by 10-15%."
+                    )
+
         if nc <= 3:
             calibration_hint = (
                 "After round 2, ~47% of winners come from OUTSIDE the top-3 leaderboard positions. "
                 "The leader wins only 20-30% of the time. "
                 "Assign at least 40-50% probability to 'other' — upsets are the norm, not the exception."
-                + r2_pressure_note
+                + r2_pressure_note + r2_contender_clutch_note
             )
         elif nc <= 5:
             calibration_hint = (
                 "After round 2, ~29% of winners come from OUTSIDE the top-5 leaderboard positions. "
                 "The leader wins only 20-30% of the time. "
                 "Assign approximately 27-30% probability to 'other'."
-                + r2_pressure_note
+                + r2_pressure_note + r2_contender_clutch_note
             )
         elif nc <= 7:
             calibration_hint = (
                 "After round 2, ~21% of winners come from OUTSIDE the top-7 leaderboard positions. "
                 "The leader wins only 20-30% of the time. "
                 "Assign approximately 19-22% probability to 'other'."
-                + r2_pressure_note
+                + r2_pressure_note + r2_contender_clutch_note
             )
         else:
             calibration_hint = (
                 "After round 2, ~15% of winners come from OUTSIDE the top-10 leaderboard positions. "
                 "The leader wins only 20-30% of the time. "
                 "Assign approximately 13-16% probability to 'other'."
-                + r2_pressure_note
+                + r2_pressure_note + r2_contender_clutch_note
             )
     else:
         # Compute margin-based calibration hint using correctly-ordered players
@@ -778,38 +797,56 @@ def build_messages(
                         f"R3 leads — a CLUTCH performer; boost {leader_name}'s probability by 10-15%."
                     )
 
+        # Check if any top contender (2nd/3rd) is a historically clutch closer
+        contender_clutch_note = ""
+        if len(top_names) > 1 and profiles:
+            second_player = top_names[1]
+            norm_second = normalize_player_name(second_player)
+            second_profile = profiles.get(norm_second)
+            if second_profile:
+                s_w3_cnt = second_profile.get("r3_within3_count", 0)
+                s_w3_rate = second_profile.get("r3_within3_win_rate", 0)
+                s_wins = int(round(s_w3_rate * s_w3_cnt)) if s_w3_cnt else 0
+                # Only note if clear clutch signal (many opportunities, high win rate)
+                if s_w3_cnt >= 8 and s_w3_rate >= 0.40:
+                    contender_clutch_note = (
+                        f" NOTE: {second_player} wins {s_wins}/{s_w3_cnt} times from "
+                        f"R3 contention ({int(s_w3_rate*100)}% rate) — a proven closer; "
+                        f"boost {second_player}'s probability by 10-15%."
+                    )
+
         if margin == 0:
             calibration_hint = (
                 "After round 3 with players tied for the lead: historically ~66% of the time "
                 "one of the co-leaders wins. 2nd place wins 18%, top-3 cover 81%. "
                 f"Assign {r3_other} to 'other'; concentrate probability on leaders."
-                + leader_pressure_note
+                + leader_pressure_note + contender_clutch_note
             )
         elif margin == 1:
             calibration_hint = (
                 "After round 3 with the leader ahead by 1 stroke: historically the leader "
                 "wins only ~42% of the time — leads of just 1 stroke are volatile. "
                 f"2nd place wins 18%, outside top-3 wins 19%. Assign {r3_other} to 'other'."
-                + leader_pressure_note
+                + leader_pressure_note + contender_clutch_note
             )
         elif margin <= 2:
             calibration_hint = (
                 "After round 3 with the leader ahead by 2 strokes: historically the leader "
                 f"wins ~52% of the time. Assign {r3_other} to 'other', rest to top contenders."
-                + leader_pressure_note
+                + leader_pressure_note + contender_clutch_note
             )
         elif margin == 3:
             calibration_hint = (
                 "After round 3 with the leader ahead by 3 strokes: historically the leader "
                 f"wins ~68% of the time. Top-3 covers 86%. Assign {r3_other} to 'other'."
-                + leader_pressure_note
+                + leader_pressure_note + contender_clutch_note
             )
         else:
             calibration_hint = (
                 f"After round 3 with the leader ahead by {margin} strokes: historically "
                 "leaders with 4+ stroke leads win 80-85% of the time. "
                 f"Give the leader dominant probability (~80%), assign {r3_other} to 'other'."
-                + leader_pressure_note
+                + leader_pressure_note + contender_clutch_note
             )
 
     # Build hole-by-hole scorecard section (R3 only, when enabled)
