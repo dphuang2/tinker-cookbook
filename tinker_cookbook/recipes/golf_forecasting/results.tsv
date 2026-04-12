@@ -87,3 +87,6 @@ exp78-kimi25-4k	5.3469	1.1325	N/A	not-kept	model	Kimi-K2.5 with 4k tokens, 68% f
 exp79-binary-margin	0.5421	0.3661	0.5580	kept	prompt	NEW BEST BINARY! DeepSeek + margin/density context, ll=0.54 (was 0.59)
 exp80-1b-bin-margin	0.5591	0.3807	0.5858	kept	training	1B SFT binary+margin, improved from 0.59->0.56, doesn't fully match DeepSeek 0.54
 exp81-ds-top3-margin	1.2572	0.6699	N/A	not-kept	prompt	DeepSeek top-3 + margin/density, WORSE than structured (1.26 vs 1.21), margin helps binary not multi-cand
+exp82-binary-chaser	0.5526	0.3774	N/A	not-kept	prompt	Binary + chaser name, slightly worse than margin-only (0.55 vs 0.54)
+exp83-8b-rank128	1.2485	0.6744	N/A	not-kept	training	8B rank-128 SFT, same as rank-32 — LoRA rank confirmed not a bottleneck (3rd time)
+exp84-kimi-ds-mix	1.2466	0.6822	N/A	not-kept	training	100 Kimi + 474 DeepSeek labels, same as DeepSeek-only (1.25 vs 1.23)
