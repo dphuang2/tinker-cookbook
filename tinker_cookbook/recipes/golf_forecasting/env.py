@@ -714,24 +714,36 @@ def build_messages(
 
         # Check if leader has a notable pressure profile (choker vs clutch)
         leader_name = top_names[0] if top_names else None
+        contender_names = ", ".join(top_names[1:3]) if len(top_names) > 1 else "the contenders"
         leader_pressure_note = ""
         if leader_name:
             profiles = _load_pressure_profiles()
             norm_leader = normalize_player_name(leader_name)
             leader_profile = profiles.get(norm_leader)
-            if leader_profile and leader_profile.get("r3_leads", 0) >= 2:
+            if leader_profile:
                 r3_rate = leader_profile.get("r3_lead_hold_rate")
                 r3_leads = leader_profile.get("r3_leads", 0)
-                if r3_rate is not None and r3_rate == 0.0:
+                r3_w3_cnt = leader_profile.get("r3_within3_count", 0)
+                r3_w3_rate = leader_profile.get("r3_within3_win_rate", None)
+                is_lead_choker = (r3_leads >= 2 and r3_rate == 0.0)
+                is_w3_choker = (r3_w3_cnt >= 5 and r3_w3_rate == 0.0 and not is_lead_choker)
+                if is_lead_choker:
                     leader_pressure_note = (
                         f" NOTE: {leader_name} has historically BLOWN all {r3_leads} "
-                        f"of their R3 leads — reduce leader probability by 15-20% and "
-                        f"redistribute to 2nd/3rd place contenders (not to 'other')."
+                        f"of their R3 leads — reduce {leader_name}'s probability by 15-20% "
+                        f"and add that probability to {contender_names} specifically (not to 'other')."
+                    )
+                elif is_w3_choker:
+                    leader_pressure_note = (
+                        f" NOTE: {leader_name} has NEVER won from a final-round contention "
+                        f"position in {r3_w3_cnt} opportunities — reduce {leader_name}'s probability "
+                        f"by 20-25% and add that probability to {contender_names} specifically "
+                        f"(not to 'other')."
                     )
                 elif r3_rate is not None and r3_rate >= 0.8 and r3_leads >= 3:
                     leader_pressure_note = (
                         f" NOTE: {leader_name} has held {int(r3_rate*r3_leads)}/{r3_leads} "
-                        f"R3 leads — a CLUTCH performer; boost leader probability by 10-15%."
+                        f"R3 leads — a CLUTCH performer; boost {leader_name}'s probability by 10-15%."
                     )
 
         if margin == 0:
