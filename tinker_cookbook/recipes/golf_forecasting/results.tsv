@@ -95,3 +95,4 @@ exp86-kimi25-structured	1.1686	0.6270	N/A	kept	model	Kimi-K2.5 structured 8k, ll
 exp87-1b-rounds-left	1.1885	0.6526	N/A	kept	training	1B SFT rounds_remaining 10ep (final), ll=1.19 — MATCHES DeepSeek teacher!
 exp88-kimi25-rounds	1.1334	0.6072	N/A	kept	model	Kimi-K2.5 + rounds_remaining 8k, NEW ALL-TIME BEST multi-cand ll=1.13!
 exp89-8b-rounds	1.2367	0.6726	N/A	not-kept	training	8B SFT rounds_remaining, ll=1.24 — 1B (1.19) is BETTER student than 8B
+exp90-hybrid-best	0.7609	0.4811	N/A	kept	prompt	R2=top2(std)/R3=binary+margin, NEW BEST balanced! ll=0.76 (was 0.81)
