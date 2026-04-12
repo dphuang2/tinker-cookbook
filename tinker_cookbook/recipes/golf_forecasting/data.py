@@ -326,7 +326,7 @@ def leaderboard_table(
         )
 
     rows = []
-    for player in players:
+    for rank, player in enumerate(players, start=1):
         rnd_str = f"{player.round_score:+.0f}" if player.round_score is not None else "-"
         if not is_r1 and player.round_score is not None:
             prev_str = f"{player.score_to_par - player.round_score:+.0f}"
@@ -334,9 +334,11 @@ def leaderboard_table(
             prev_str = "-"
 
         if is_stableford and stableford_leader_score is not None:
-            # Behind = how many points the player trails the leader
+            # Use Stableford rank (1, 2, 3...) and points-behind-leader for Behind
+            pos_display = str(rank)
             behind_val = stableford_leader_score - player.score_to_par
         else:
+            pos_display = player.position or "-"
             behind_val = player.strokes_behind
 
         # For Stableford, show raw points without the +/- prefix (positive = good)
@@ -347,7 +349,7 @@ def leaderboard_table(
                 "| {name} | {pos} | {total} | {rnd} | {behind:.1f} | {hole} | "
                 "{done} | {rem} | {prior} | {recent} |".format(
                     name=player.name,
-                    pos=player.position or "-",
+                    pos=pos_display,
                     total=total_fmt,
                     rnd=rnd_str,
                     behind=behind_val,
@@ -363,7 +365,7 @@ def leaderboard_table(
                 "| {name} | {pos} | {total} | {rnd} | {prev} | {behind:.1f} | {hole} | "
                 "{done} | {rem} | {prior} | {recent} |".format(
                     name=player.name,
-                    pos=player.position or "-",
+                    pos=pos_display,
                     total=total_fmt,
                     rnd=rnd_str,
                     prev=prev_str,
