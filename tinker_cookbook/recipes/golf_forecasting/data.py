@@ -288,23 +288,40 @@ def scorecard_momentum(holes: tuple[HoleScore, ...], *, last_n: int = 5) -> str:
     return f"Last {len(recent)} holes: {trend}"
 
 
-def leaderboard_table(example: GolfForecastExample, *, max_players: int | None = None) -> str:
+def leaderboard_table(
+    example: GolfForecastExample,
+    *,
+    max_players: int | None = None,
+    players_override: list["PlayerSnapshot"] | None = None,
+    is_stableford: bool = False,
+) -> str:
     """Render the leaderboard as a markdown table.
 
     For R2+ snapshots shows This Rnd + Prev Rnds columns so the model can see
     per-round scoring trajectory, not just the cumulative total.
+
+    players_override: if provided, use this ordered list instead of example.players
+    (useful for re-sorting Stableford tournaments where higher score = better).
+    is_stableford: if True, recalculates 'behind' relative to the new leader (max score)
+    and shows 'Pts' label instead of 'Total'.
     """
-    players = example.players[:max_players] if max_players is not None else example.players
+    source = players_override if players_override is not None else example.players
+    players = source[:max_players] if max_players is not None else source
     is_r1 = example.round_number == 1
+
+    # For Stableford, compute behind relative to the new sorted leader (highest score)
+    stableford_leader_score = players[0].score_to_par if (is_stableford and players) else None
+
+    total_label = "Pts" if is_stableford else "Total"
 
     if is_r1:
         header = (
-            "| Player | Pos | Total | This Rnd | Behind | Hole | Done | Remaining | Prior | Recent |\n"
+            f"| Player | Pos | {total_label} | This Rnd | Behind | Hole | Done | Remaining | Prior | Recent |\n"
             "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"
         )
     else:
         header = (
-            "| Player | Pos | Total | This Rnd | Prev Rnds | Behind | Hole | Done | Remaining | Prior | Recent |\n"
+            f"| Player | Pos | {total_label} | This Rnd | Prev Rnds | Behind | Hole | Done | Remaining | Prior | Recent |\n"
             "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"
         )
 
@@ -316,15 +333,24 @@ def leaderboard_table(example: GolfForecastExample, *, max_players: int | None =
         else:
             prev_str = "-"
 
+        if is_stableford and stableford_leader_score is not None:
+            # Behind = how many points the player trails the leader
+            behind_val = stableford_leader_score - player.score_to_par
+        else:
+            behind_val = player.strokes_behind
+
+        # For Stableford, show raw points without the +/- prefix (positive = good)
+        total_fmt = f"{player.score_to_par:.0f}" if is_stableford else f"{player.score_to_par:+.0f}"
+
         if is_r1:
             rows.append(
-                "| {name} | {pos} | {total:+.0f} | {rnd} | {behind:.1f} | {hole} | "
+                "| {name} | {pos} | {total} | {rnd} | {behind:.1f} | {hole} | "
                 "{done} | {rem} | {prior} | {recent} |".format(
                     name=player.name,
                     pos=player.position or "-",
-                    total=player.score_to_par,
+                    total=total_fmt,
                     rnd=rnd_str,
-                    behind=player.strokes_behind,
+                    behind=behind_val,
                     hole=player.current_hole if player.current_hole is not None else "-",
                     done=player.holes_completed if player.holes_completed is not None else "-",
                     rem=player.holes_remaining if player.holes_remaining is not None else "-",
@@ -334,14 +360,14 @@ def leaderboard_table(example: GolfForecastExample, *, max_players: int | None =
             )
         else:
             rows.append(
-                "| {name} | {pos} | {total:+.0f} | {rnd} | {prev} | {behind:.1f} | {hole} | "
+                "| {name} | {pos} | {total} | {rnd} | {prev} | {behind:.1f} | {hole} | "
                 "{done} | {rem} | {prior} | {recent} |".format(
                     name=player.name,
                     pos=player.position or "-",
-                    total=player.score_to_par,
+                    total=total_fmt,
                     rnd=rnd_str,
                     prev=prev_str,
-                    behind=player.strokes_behind,
+                    behind=behind_val,
                     hole=player.current_hole if player.current_hole is not None else "-",
                     done=player.holes_completed if player.holes_completed is not None else "-",
                     rem=player.holes_remaining if player.holes_remaining is not None else "-",

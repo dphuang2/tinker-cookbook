@@ -78,6 +78,14 @@ FORECAST_SYSTEM_PROMPT = (
     "Return JSON only."
 )
 
+# Tournaments that use Modified Stableford scoring (higher score = better position).
+# Standard golf is stroke play (lower score = better); these are the exceptions.
+_STABLEFORD_TOURNAMENTS: frozenset[str] = frozenset(
+    {
+        "Barracuda Championship",
+    }
+)
+
 
 class WinnerForecast(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -560,8 +568,23 @@ def build_messages(
     include_recent_form: bool = False,
     include_few_shot: bool = False,
 ) -> list[renderers.Message]:
+    # Detect Stableford tournaments (higher score = better; need descending sort)
+    is_stableford = example.tournament_name in _STABLEFORD_TOURNAMENTS
+    if is_stableford:
+        # Re-sort players by DESCENDING score_to_par: most Stableford points first
+        stableford_sorted = sorted(example.players, key=lambda p: p.score_to_par, reverse=True)
+        stableford_players_override: list | None = stableford_sorted
+    else:
+        stableford_sorted = None
+        stableford_players_override = None
+
     # Limit to top N players by position to keep prompt manageable
-    if max_candidates > 0 and len(example.players) > max_candidates:
+    if is_stableford and stableford_sorted is not None:
+        if max_candidates > 0 and len(stableford_sorted) > max_candidates:
+            top_names = [p.name for p in stableford_sorted[:max_candidates]]
+        else:
+            top_names = [p.name for p in stableford_sorted]
+    elif max_candidates > 0 and len(example.players) > max_candidates:
         top_names = [p.name for p in example.players[:max_candidates]]
     else:
         top_names = example.candidate_names
@@ -586,19 +609,36 @@ def build_messages(
     n_total = len(example.players)
     n_shown = min(max_candidates, n_total) if max_candidates > 0 else n_total
 
-    # Compute field analysis from leaderboard
-    scores = [p.score_to_par for p in example.players]
-    leader_score = scores[0] if scores else 0
-    field_analysis_parts = []
-    if len(scores) >= 2:
-        gap_to_2nd = scores[1] - leader_score
-        field_analysis_parts.append(f"Leader's margin: {gap_to_2nd:.0f} stroke(s) over 2nd place")
-    if len(scores) >= 5:
-        within_3 = sum(1 for s in scores if s - leader_score <= 3)
-        field_analysis_parts.append(f"Players within 3 strokes of lead: {within_3}")
-    if len(scores) >= 10:
-        within_5 = sum(1 for s in scores if s - leader_score <= 5)
-        field_analysis_parts.append(f"Players within 5 strokes: {within_5}")
+    # Compute field analysis from leaderboard.
+    # For Stableford, use the descending-sorted players (highest score = leader).
+    ordered_players = stableford_sorted if (is_stableford and stableford_sorted) else list(example.players)
+    if is_stableford:
+        # Higher score = better; leader is first, margin = leader_pts - 2nd_pts
+        scores = [p.score_to_par for p in ordered_players]
+        leader_score = scores[0] if scores else 0
+        field_analysis_parts = []
+        if len(scores) >= 2:
+            gap_to_2nd = leader_score - scores[1]  # positive = leader ahead
+            field_analysis_parts.append(f"Leader's margin: {gap_to_2nd:.0f} point(s) over 2nd place")
+        if len(scores) >= 5:
+            within_3 = sum(1 for s in scores if leader_score - s <= 3)
+            field_analysis_parts.append(f"Players within 3 points of lead: {within_3}")
+        if len(scores) >= 10:
+            within_5 = sum(1 for s in scores if leader_score - s <= 5)
+            field_analysis_parts.append(f"Players within 5 points: {within_5}")
+    else:
+        scores = [p.score_to_par for p in example.players]
+        leader_score = scores[0] if scores else 0
+        field_analysis_parts = []
+        if len(scores) >= 2:
+            gap_to_2nd = scores[1] - leader_score
+            field_analysis_parts.append(f"Leader's margin: {gap_to_2nd:.0f} stroke(s) over 2nd place")
+        if len(scores) >= 5:
+            within_3 = sum(1 for s in scores if s - leader_score <= 3)
+            field_analysis_parts.append(f"Players within 3 strokes of lead: {within_3}")
+        if len(scores) >= 10:
+            within_5 = sum(1 for s in scores if s - leader_score <= 5)
+            field_analysis_parts.append(f"Players within 5 strokes: {within_5}")
     field_analysis = "\n".join(f"- {p}" for p in field_analysis_parts) if field_analysis_parts else ""
 
     # Round-specific calibration guidance.
@@ -653,10 +693,13 @@ def build_messages(
                 "Assign approximately 13-16% probability to 'other'."
             )
     else:
-        # Compute margin-based calibration hint
-        scores = [p.score_to_par for p in example.players]
-        if len(scores) >= 2:
-            margin = int(scores[1] - scores[0])  # strokes leader is ahead
+        # Compute margin-based calibration hint using correctly-ordered players
+        r3_scores = [p.score_to_par for p in ordered_players]
+        if len(r3_scores) >= 2:
+            if is_stableford:
+                margin = int(r3_scores[0] - r3_scores[1])  # points leader is ahead (higher=better)
+            else:
+                margin = int(r3_scores[1] - r3_scores[0])  # strokes leader is ahead
         else:
             margin = 0
         # R3 "other" percentage scaled by candidate count (empirical: outside top-5=12%, top-7=7%)
@@ -764,14 +807,23 @@ def build_messages(
         else ""
     )
 
+    stableford_note = (
+        "IMPORTANT: This tournament uses MODIFIED STABLEFORD scoring. "
+        "Players accumulate POINTS each hole (eagle=+5, birdie=+2, par=0, bogey=-1, double bogey=-3). "
+        "The player with the MOST points wins. Higher 'Total' values are BETTER. "
+        "The leaderboard below is sorted by descending points (most points = position 1).\n\n"
+        if is_stableford
+        else ""
+    )
     instructions = (
         f"Tournament: {example.tournament_name}\n"
         f"Course: {example.course_name or 'Unknown'}\n"
         f"Round: {round_num}\n"
         f"Event day: {example.event_day or 'Unknown'}\n"
         f"Snapshot time: {example.snapshot_timestamp}\n\n"
-        f"Leaderboard snapshot (top {n_shown} of {n_total} players):\n"
-        f"{leaderboard_table(example, max_players=max_candidates)}\n\n"
+        + stableford_note
+        + f"Leaderboard snapshot (top {n_shown} of {n_total} players):\n"
+        f"{leaderboard_table(example, max_players=max_candidates, players_override=stableford_players_override, is_stableford=is_stableford)}\n\n"
         + (scorecard_section + "\n\n" if scorecard_section else "")
         + (pressure_section + "\n\n" if pressure_section else "")
         + (tournament_history_section + "\n\n" if tournament_history_section else "")
