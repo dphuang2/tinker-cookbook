@@ -21,6 +21,7 @@ from tinker_cookbook.recipes.golf_forecasting.data import (
     load_examples,
 )
 from tinker_cookbook.recipes.golf_forecasting.env import (
+    _STABLEFORD_TOURNAMENTS,
     build_messages,
     compute_log_loss,
     parse_forecast_response,
@@ -132,12 +133,20 @@ class GolfForecastEvaluator(SamplingClientEvaluator):
             sampling_params=sampling_params,
         )
         text = renderers.get_text_content(self.renderer.parse_response(response.sequences[0].tokens)[0])
-        # Build allowed labels matching the prompt's candidate list
+        # Build allowed labels matching the prompt's candidate list.
+        # For Stableford tournaments the prompt re-sorts players by descending score
+        # (highest points = position 1). Use the same order so effective_target and
+        # allowed set are consistent with what the model saw in the prompt.
+        is_stableford = example.tournament_name in _STABLEFORD_TOURNAMENTS
         max_c = self.config.max_candidates
-        if max_c > 0 and len(example.players) > max_c:
-            top_names = [p.name for p in example.players[:max_c]]
+        if is_stableford:
+            ordered_players = sorted(example.players, key=lambda p: p.score_to_par, reverse=True)
         else:
-            top_names = example.candidate_names
+            ordered_players = list(example.players)
+        if max_c > 0 and len(ordered_players) > max_c:
+            top_names = [p.name for p in ordered_players[:max_c]]
+        else:
+            top_names = [p.name for p in ordered_players]
         allowed = [*top_names, "other"] if self.config.include_other_bucket else top_names
 
         # Compute effective target label within the candidate set used by the prompt.
