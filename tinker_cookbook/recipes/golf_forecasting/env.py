@@ -711,33 +711,61 @@ def build_messages(
             r3_other = "about 6-8%"
         else:
             r3_other = "about 4-6%"
+
+        # Check if leader has a notable pressure profile (choker vs clutch)
+        leader_name = top_names[0] if top_names else None
+        leader_pressure_note = ""
+        if leader_name:
+            profiles = _load_pressure_profiles()
+            norm_leader = normalize_player_name(leader_name)
+            leader_profile = profiles.get(norm_leader)
+            if leader_profile and leader_profile.get("r3_leads", 0) >= 2:
+                r3_rate = leader_profile.get("r3_lead_hold_rate")
+                r3_leads = leader_profile.get("r3_leads", 0)
+                if r3_rate is not None and r3_rate == 0.0:
+                    leader_pressure_note = (
+                        f" NOTE: {leader_name} has historically BLOWN all {r3_leads} "
+                        f"of their R3 leads — reduce leader probability by 15-20% and "
+                        f"redistribute to 2nd/3rd place contenders (not to 'other')."
+                    )
+                elif r3_rate is not None and r3_rate >= 0.8 and r3_leads >= 3:
+                    leader_pressure_note = (
+                        f" NOTE: {leader_name} has held {int(r3_rate*r3_leads)}/{r3_leads} "
+                        f"R3 leads — a CLUTCH performer; boost leader probability by 10-15%."
+                    )
+
         if margin == 0:
             calibration_hint = (
                 "After round 3 with players tied for the lead: historically ~66% of the time "
                 "one of the co-leaders wins. 2nd place wins 18%, top-3 cover 81%. "
                 f"Assign {r3_other} to 'other'; concentrate probability on leaders."
+                + leader_pressure_note
             )
         elif margin == 1:
             calibration_hint = (
                 "After round 3 with the leader ahead by 1 stroke: historically the leader "
                 "wins only ~42% of the time — leads of just 1 stroke are volatile. "
                 f"2nd place wins 18%, outside top-3 wins 19%. Assign {r3_other} to 'other'."
+                + leader_pressure_note
             )
         elif margin <= 2:
             calibration_hint = (
                 "After round 3 with the leader ahead by 2 strokes: historically the leader "
                 f"wins ~52% of the time. Assign {r3_other} to 'other', rest to top contenders."
+                + leader_pressure_note
             )
         elif margin == 3:
             calibration_hint = (
                 "After round 3 with the leader ahead by 3 strokes: historically the leader "
                 f"wins ~68% of the time. Top-3 covers 86%. Assign {r3_other} to 'other'."
+                + leader_pressure_note
             )
         else:
             calibration_hint = (
                 f"After round 3 with the leader ahead by {margin} strokes: historically "
                 "leaders with 4+ stroke leads win 80-85% of the time. "
                 f"Give the leader dominant probability (~80%), assign {r3_other} to 'other'."
+                + leader_pressure_note
             )
 
     # Build hole-by-hole scorecard section (R3 only, when enabled)
