@@ -31,6 +31,7 @@ _PRESSURE_PROFILES_NORMALIZED: dict[str, dict] | None = None
 _TOURNAMENT_HISTORY: dict[str, list] | None = None
 _PLAYER_COURSE_HISTORY: dict[str, dict] | None = None
 _PLAYER_QUALITY: dict[str, dict] | None = None
+_PLAYER_RECENT_FORM: dict[str, list] | None = None
 _TRAINING_EXAMPLES_R3: list | None = None
 
 
@@ -230,6 +231,63 @@ def _build_player_quality_section(top_names: list[str]) -> str:
     if not lines:
         return ""
     return "Career quality context:\n" + "\n".join(lines)
+
+
+def _load_player_recent_form() -> dict[str, list]:
+    """Load player recent form (last 5 tournament results) from artifacts."""
+    global _PLAYER_RECENT_FORM
+    if _PLAYER_RECENT_FORM is not None:
+        return _PLAYER_RECENT_FORM
+    path = Path(__file__).parent / "artifacts" / "player_recent_form.json"
+    if not path.exists():
+        _PLAYER_RECENT_FORM = {}
+        return {}
+    raw = json.loads(path.read_text())
+    _PLAYER_RECENT_FORM = raw.get("form", {})
+    return _PLAYER_RECENT_FORM
+
+
+def _build_player_recent_form_section(
+    top_names: list[str],
+    *,
+    current_year: str | None = None,
+    max_results: int = 3,
+) -> str:
+    """Show each candidate's recent tournament form (last N results before current year)."""
+    form_data = _load_player_recent_form()
+    if not form_data:
+        return ""
+    lines = []
+    for name in top_names:
+        norm = normalize_player_name(name)
+        results = form_data.get(name) or next(
+            (v for k, v in form_data.items() if normalize_player_name(k) == norm), None
+        )
+        if not results:
+            continue
+        # Filter to results before current year
+        filtered = [r for r in results if not current_year or r.get("year", "9999") < current_year]
+        if not filtered:
+            continue
+        recent = filtered[:max_results]
+        parts = []
+        for r in recent:
+            pos = r.get("position", 999)
+            won = r.get("won", False) or pos == 1
+            t = r.get("tournament", "?")[:20]
+            if won or pos == 1:
+                parts.append(f"Won ({t})")
+            elif pos <= 5:
+                parts.append(f"T{pos} ({t})")
+            elif pos <= 10:
+                parts.append(f"T{pos} ({t})")
+            else:
+                parts.append(f"T{pos} ({t})")
+        if parts:
+            lines.append(f"  {name}: {', '.join(parts)}")
+    if not lines:
+        return ""
+    return f"Recent form (last {max_results} events, 54-hole position):\n" + "\n".join(lines)
 
 
 def _load_player_course_history() -> dict[str, dict]:
@@ -499,6 +557,7 @@ def build_messages(
     include_tournament_history: bool = False,
     include_player_history: bool = False,
     include_player_quality: bool = False,
+    include_recent_form: bool = False,
     include_few_shot: bool = False,
 ) -> list[renderers.Message]:
     # Limit to top N players by position to keep prompt manageable
@@ -686,6 +745,17 @@ def build_messages(
         else ""
     )
 
+    # Build player recent form section (disabled by default, opt-in)
+    # Shows each candidate's last 3 tournament results (54-hole position).
+    recent_form_section = (
+        _build_player_recent_form_section(
+            top_names[:max_candidates],
+            current_year=current_year,
+        )
+        if include_recent_form
+        else ""
+    )
+
     # Build few-shot calibration section (disabled by default, R3 only)
     # Shows 2 historical examples from training set with similar R3 lead margin.
     few_shot_section = (
@@ -707,6 +777,7 @@ def build_messages(
         + (tournament_history_section + "\n\n" if tournament_history_section else "")
         + (player_history_section + "\n\n" if player_history_section else "")
         + (player_quality_section + "\n\n" if player_quality_section else "")
+        + (recent_form_section + "\n\n" if recent_form_section else "")
         + (few_shot_section + "\n\n" if few_shot_section else "")
         + "Extra context:\n"
         f"{extra_context}\n\n"
