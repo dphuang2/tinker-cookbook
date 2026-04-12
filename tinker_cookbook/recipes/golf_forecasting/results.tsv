@@ -91,3 +91,5 @@ exp82-binary-chaser	0.5526	0.3774	N/A	not-kept	prompt	Binary + chaser name, slig
 exp83-8b-rank128	1.2485	0.6744	N/A	not-kept	training	8B rank-128 SFT, same as rank-32 — LoRA rank confirmed not a bottleneck (3rd time)
 exp84-kimi-ds-mix	1.2466	0.6822	N/A	not-kept	training	100 Kimi + 474 DeepSeek labels, same as DeepSeek-only (1.25 vs 1.23)
 exp85-ds-rounds-left	1.1929	0.6543	N/A	kept	prompt	DeepSeek structured + rounds_remaining, ll=1.19! (vs 1.21 without)
+exp86-kimi25-structured	1.1686	0.6270	N/A	kept	model	Kimi-K2.5 structured 8k, ll=1.17 (same as standard prompt — thinking handles both)
+exp87-1b-rounds-left	1.1990	0.6544	N/A	kept	training	1B SFT rounds_remaining 10ep, ll=1.20 — NEW BEST 1B! (was 1.21)
