@@ -84,3 +84,4 @@ exp76-kimi-k2-8k	1.2287	0.6587	N/A	kept	model	Kimi-K2-Thinking 8k tokens, ll=1.2
 exp77-ds-struct-binary	0.6284	0.4372	N/A	not-kept	prompt	DeepSeek structured binary, worse than standard (0.63 vs 0.59)
 exp78-kimi25-binary	0.8523	0.5867	N/A	not-kept	model	Kimi-K2.5 binary 8k tokens, WORSE than DeepSeek binary (0.85 vs 0.59), overthinks simple task
 exp78-kimi25-4k	5.3469	1.1325	N/A	not-kept	model	Kimi-K2.5 with 4k tokens, 68% format valid — 8k required for thinking model
+exp79-binary-margin	0.5421	0.3661	0.5580	kept	prompt	NEW BEST BINARY! DeepSeek + margin/density context, ll=0.54 (was 0.59)
