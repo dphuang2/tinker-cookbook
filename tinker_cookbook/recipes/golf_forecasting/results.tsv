@@ -98,3 +98,4 @@ exp89-8b-rounds	1.2367	0.6726	N/A	not-kept	training	8B SFT rounds_remaining, ll=
 exp90-hybrid-best	0.7609	0.4811	N/A	superseded	prompt	R2=top2(std)/R3=binary+margin, ll=0.76
 exp91-full-hybrid	0.7544	0.4760	0.9113	superseded	prompt	R1=top3/R2=top2/R3=binary+margin, ll=0.75
 exp92-multi-model	0.7291	0.4541	N/A	kept	system	Kimi(R1-2) + DeepSeek(R3), NEW ALL-TIME BEST balanced ll=0.73!
+exp93-mm-enhanced	0.7689	0.4879	N/A	not-kept	prompt	Multi-model + extra context, WORSE (0.77 vs 0.73), simpler Kimi prompts better
