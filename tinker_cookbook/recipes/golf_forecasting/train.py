@@ -25,6 +25,8 @@ class CLIConfig:
     include_other_bucket: bool = True
     include_player_history: bool = False
     include_tournament_history: bool = False
+    include_player_quality: bool = False
+    max_candidates: int = 20
 
     # Training hyperparameters
     group_size: int = 8
@@ -65,6 +67,8 @@ async def cli_main(cli_config: CLIConfig) -> None:
         include_other_bucket=cli_config.include_other_bucket,
         include_player_history=cli_config.include_player_history,
         include_tournament_history=cli_config.include_tournament_history,
+        include_player_quality=cli_config.include_player_quality,
+        max_candidates=cli_config.max_candidates,
     )
 
     short_model_name = cli_config.model_name.replace("/", "-")

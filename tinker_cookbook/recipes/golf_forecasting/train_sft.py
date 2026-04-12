@@ -133,10 +133,12 @@ async def generate_teacher_labels(
     include_player_history: bool = False,
     include_tournament_history: bool = False,
     include_player_quality: bool = False,
+    include_scorecard: bool = False,
     teacher_include_pressure: bool | None = None,
     teacher_include_player_history: bool | None = None,
     teacher_include_tournament_history: bool | None = None,
     teacher_include_player_quality: bool | None = None,
+    teacher_include_scorecard: bool | None = None,
 ) -> None:
     """Run the teacher model on training examples and write (messages, completion) pairs.
 
@@ -173,12 +175,14 @@ async def generate_teacher_labels(
     t_history = teacher_include_player_history if teacher_include_player_history is not None else include_player_history
     t_tournament = teacher_include_tournament_history if teacher_include_tournament_history is not None else include_tournament_history
     t_quality = teacher_include_player_quality if teacher_include_player_quality is not None else include_player_quality
+    t_scorecard = teacher_include_scorecard if teacher_include_scorecard is not None else include_scorecard
     teacher_differs = (t_pressure != include_pressure or t_history != include_player_history or
-                       t_tournament != include_tournament_history or t_quality != include_player_quality)
+                       t_tournament != include_tournament_history or t_quality != include_player_quality or
+                       t_scorecard != include_scorecard)
     if teacher_differs:
         logger.info(
-            "Rich teacher → plain student: teacher(pressure=%s,quality=%s) student(pressure=%s,quality=%s)",
-            t_pressure, t_quality, include_pressure, include_player_quality,
+            "Rich teacher → plain student: teacher(pressure=%s,quality=%s,scorecard=%s) student(pressure=%s,quality=%s,scorecard=%s)",
+            t_pressure, t_quality, t_scorecard, include_pressure, include_player_quality, include_scorecard,
         )
 
     semaphore = asyncio.Semaphore(max_parallel)
@@ -194,6 +198,7 @@ async def generate_teacher_labels(
                 include_player_history=include_player_history,
                 include_tournament_history=include_tournament_history,
                 include_player_quality=include_player_quality,
+                include_scorecard=include_scorecard,
             )
             if teacher_differs:
                 # Teacher gets richer context for label generation
@@ -205,6 +210,7 @@ async def generate_teacher_labels(
                     include_player_history=t_history,
                     include_tournament_history=t_tournament,
                     include_player_quality=t_quality,
+                    include_scorecard=t_scorecard,
                 )
             else:
                 teacher_messages = student_messages
@@ -363,12 +369,14 @@ class ExpConfig:
     include_player_history: bool = False
     include_tournament_history: bool = False
     include_player_quality: bool = False
+    include_scorecard: bool = False
     n_consistency_samples: int = 1  # 1 = greedy, >1 = self-consistency averaging
     sample_temperature: float = 0.3  # temperature for self-consistency samples
     # Teacher-specific feature overrides (None = same as student include_* flags)
     # Set these to True while keeping student flags False for "rich teacher → plain student" distillation
     teacher_include_pressure: bool | None = None
     teacher_include_player_quality: bool | None = None
+    teacher_include_scorecard: bool | None = None
 
 
 async def run(config: ExpConfig) -> None:
@@ -402,8 +410,10 @@ async def run(config: ExpConfig) -> None:
             include_player_history=config.include_player_history,
             include_tournament_history=config.include_tournament_history,
             include_player_quality=config.include_player_quality,
+            include_scorecard=config.include_scorecard,
             teacher_include_pressure=config.teacher_include_pressure,
             teacher_include_player_quality=config.teacher_include_player_quality,
+            teacher_include_scorecard=config.teacher_include_scorecard,
         )
 
     # 2. Build dataset and train

@@ -395,6 +395,8 @@ class GolfForecastDataset(RLDataset):
         include_other_bucket: bool = True,
         include_player_history: bool = False,
         include_tournament_history: bool = False,
+        include_player_quality: bool = False,
+        max_candidates: int = 20,
     ):
         self.examples = list(examples)
         self.batch_size = batch_size
@@ -403,6 +405,8 @@ class GolfForecastDataset(RLDataset):
         self.include_other_bucket = include_other_bucket
         self.include_player_history = include_player_history
         self.include_tournament_history = include_tournament_history
+        self.include_player_quality = include_player_quality
+        self.max_candidates = max_candidates
 
     def __len__(self) -> int:
         return math.ceil(len(self.examples) / self.batch_size)
@@ -422,6 +426,8 @@ class GolfForecastDataset(RLDataset):
                     include_other_bucket=self.include_other_bucket,
                     include_player_history=self.include_player_history,
                     include_tournament_history=self.include_tournament_history,
+                    include_player_quality=self.include_player_quality,
+                    max_candidates=self.max_candidates,
                 ),
                 num_envs=self.group_size,
                 dataset_name="golf_forecasting",
@@ -442,6 +448,8 @@ class GolfForecastDatasetBuilder(RLDatasetBuilder):
     include_other_bucket: bool = True
     include_player_history: bool = False
     include_tournament_history: bool = False
+    include_player_quality: bool = False
+    max_candidates: int = 20
 
     async def __call__(self) -> tuple[GolfForecastDataset, GolfForecastDataset | None]:
         if self.dataset_manifest_path is not None:
@@ -466,6 +474,8 @@ class GolfForecastDatasetBuilder(RLDatasetBuilder):
             include_other_bucket=self.include_other_bucket,
             include_player_history=self.include_player_history,
             include_tournament_history=self.include_tournament_history,
+            include_player_quality=self.include_player_quality,
+            max_candidates=self.max_candidates,
         )
         val_dataset = (
             GolfForecastDataset(
@@ -477,6 +487,8 @@ class GolfForecastDatasetBuilder(RLDatasetBuilder):
                 include_other_bucket=self.include_other_bucket,
                 include_player_history=self.include_player_history,
                 include_tournament_history=self.include_tournament_history,
+                include_player_quality=self.include_player_quality,
+                max_candidates=self.max_candidates,
             )
             if val_path is not None
             else None

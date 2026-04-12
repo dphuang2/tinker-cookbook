@@ -958,6 +958,7 @@ class GolfForecastEnv(Env):
         include_pressure: bool = True,
         include_tournament_history: bool = False,
         include_player_history: bool = False,
+        include_player_quality: bool = False,
     ):
         self.example = example
         self.renderer = renderer
@@ -972,6 +973,7 @@ class GolfForecastEnv(Env):
             include_pressure=include_pressure,
             include_tournament_history=include_tournament_history,
             include_player_history=include_player_history,
+            include_player_quality=include_player_quality,
         )
         # Build allowed labels to match what build_messages uses
         if max_candidates > 0 and len(example.players) > max_candidates:
