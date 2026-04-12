@@ -668,29 +668,61 @@ def build_messages(
                 "~37% of winners come from outside the top-10 — assign ~35% to 'other'."
             )
     elif round_num == 2:
+        # Check R2 leader pressure profile
+        r2_leader_name = top_names[0] if top_names else None
+        r2_contender_names = ", ".join(top_names[1:3]) if len(top_names) > 1 else "the contenders"
+        r2_pressure_note = ""
+        if r2_leader_name:
+            profiles = _load_pressure_profiles()
+            norm_r2_leader = normalize_player_name(r2_leader_name)
+            r2_leader_profile = profiles.get(norm_r2_leader)
+            if r2_leader_profile:
+                r2_leads = r2_leader_profile.get("r2_leads", 0)
+                r2_rate = r2_leader_profile.get("r2_lead_hold_rate")
+                r2_w3_cnt = r2_leader_profile.get("r2_within3_count", 0)
+                r2_w3_rate = r2_leader_profile.get("r2_within3_win_rate", None)
+                is_r2_lead_choker = (r2_leads >= 2 and r2_rate == 0.0)
+                is_r2_w3_choker = (r2_w3_cnt >= 5 and r2_w3_rate == 0.0 and not is_r2_lead_choker)
+                if is_r2_lead_choker:
+                    r2_pressure_note = (
+                        f" NOTE: {r2_leader_name} has historically BLOWN all {r2_leads} "
+                        f"of their R2 leads — reduce {r2_leader_name}'s probability by 10-15% "
+                        f"and add that to {r2_contender_names} specifically (not to 'other')."
+                    )
+                elif is_r2_w3_choker:
+                    r2_pressure_note = (
+                        f" NOTE: {r2_leader_name} has NEVER won a tournament when within contention "
+                        f"after round 2 in {r2_w3_cnt} opportunities — reduce {r2_leader_name}'s "
+                        f"probability by 10-15% and add to {r2_contender_names} specifically "
+                        f"(not to 'other')."
+                    )
         if nc <= 3:
             calibration_hint = (
                 "After round 2, ~47% of winners come from OUTSIDE the top-3 leaderboard positions. "
                 "The leader wins only 20-30% of the time. "
                 "Assign at least 40-50% probability to 'other' — upsets are the norm, not the exception."
+                + r2_pressure_note
             )
         elif nc <= 5:
             calibration_hint = (
                 "After round 2, ~29% of winners come from OUTSIDE the top-5 leaderboard positions. "
                 "The leader wins only 20-30% of the time. "
                 "Assign approximately 27-30% probability to 'other'."
+                + r2_pressure_note
             )
         elif nc <= 7:
             calibration_hint = (
                 "After round 2, ~21% of winners come from OUTSIDE the top-7 leaderboard positions. "
                 "The leader wins only 20-30% of the time. "
                 "Assign approximately 19-22% probability to 'other'."
+                + r2_pressure_note
             )
         else:
             calibration_hint = (
                 "After round 2, ~15% of winners come from OUTSIDE the top-10 leaderboard positions. "
                 "The leader wins only 20-30% of the time. "
                 "Assign approximately 13-16% probability to 'other'."
+                + r2_pressure_note
             )
     else:
         # Compute margin-based calibration hint using correctly-ordered players
