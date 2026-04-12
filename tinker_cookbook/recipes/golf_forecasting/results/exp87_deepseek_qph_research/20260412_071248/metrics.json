@@ -1,0 +1,8 @@
+{
+  "eval/brier": 0.5967373255283891,
+  "eval/format_valid_rate": 1.0,
+  "eval/log_loss": 1.1164109347328475,
+  "eval/target_prob": 0.3871706157824841,
+  "eval/top1_accuracy": 0.5614035087719298,
+  "eval/top3_recall": 0.9298245614035088
+}

@@ -542,19 +542,57 @@ def build_messages(
         field_analysis_parts.append(f"Players within 5 strokes: {within_5}")
     field_analysis = "\n".join(f"- {p}" for p in field_analysis_parts) if field_analysis_parts else ""
 
-    # Round-specific calibration guidance (empirically derived from 307 R3 historical examples)
+    # Round-specific calibration guidance.
+    # For mc=3, hints are tuned via A/B testing (not raw empirical rates) since LLMs over-weight leaders.
+    # For mc>3, hints scale "other" down proportionally (empirical: R2 outside top-5=29%, top-7=21%).
     round_num = example.round_number
+    nc = n_shown  # number of named candidates in the prompt
     if round_num == 1:
-        calibration_hint = (
-            "After round 1, the leader wins only about 15-20% of the time. "
-            "The field is very wide open — give significant probability to 'other'."
-        )
+        if nc <= 3:
+            calibration_hint = (
+                "After round 1, the leader wins only about 15-20% of the time. "
+                "The field is very wide open — give significant probability to 'other'."
+            )
+        elif nc <= 5:
+            calibration_hint = (
+                "After round 1, the leader wins only about 15-20% of the time. "
+                "~49% of winners come from outside the top-5 — assign ~48% to 'other'."
+            )
+        elif nc <= 7:
+            calibration_hint = (
+                "After round 1, the leader wins only about 15-20% of the time. "
+                "~42% of winners come from outside the top-7 — assign ~40% to 'other'."
+            )
+        else:
+            calibration_hint = (
+                "After round 1, the leader wins only about 15-20% of the time. "
+                "~37% of winners come from outside the top-10 — assign ~35% to 'other'."
+            )
     elif round_num == 2:
-        calibration_hint = (
-            "After round 2, ~47% of winners come from OUTSIDE the top-3 leaderboard positions. "
-            "The leader wins only 20-30% of the time. "
-            "Assign at least 40-50% probability to 'other' — upsets are the norm, not the exception."
-        )
+        if nc <= 3:
+            calibration_hint = (
+                "After round 2, ~47% of winners come from OUTSIDE the top-3 leaderboard positions. "
+                "The leader wins only 20-30% of the time. "
+                "Assign at least 40-50% probability to 'other' — upsets are the norm, not the exception."
+            )
+        elif nc <= 5:
+            calibration_hint = (
+                "After round 2, ~29% of winners come from OUTSIDE the top-5 leaderboard positions. "
+                "The leader wins only 20-30% of the time. "
+                "Assign approximately 27-30% probability to 'other'."
+            )
+        elif nc <= 7:
+            calibration_hint = (
+                "After round 2, ~21% of winners come from OUTSIDE the top-7 leaderboard positions. "
+                "The leader wins only 20-30% of the time. "
+                "Assign approximately 19-22% probability to 'other'."
+            )
+        else:
+            calibration_hint = (
+                "After round 2, ~15% of winners come from OUTSIDE the top-10 leaderboard positions. "
+                "The leader wins only 20-30% of the time. "
+                "Assign approximately 13-16% probability to 'other'."
+            )
     else:
         # Compute margin-based calibration hint
         scores = [p.score_to_par for p in example.players]
@@ -562,28 +600,42 @@ def build_messages(
             margin = int(scores[1] - scores[0])  # strokes leader is ahead
         else:
             margin = 0
+        # R3 "other" percentage scaled by candidate count (empirical: outside top-5=12%, top-7=7%)
+        if nc <= 3:
+            r3_other = "about 18-20%"
+        elif nc <= 5:
+            r3_other = "about 10-12%"
+        elif nc <= 7:
+            r3_other = "about 6-8%"
+        else:
+            r3_other = "about 4-6%"
         if margin == 0:
             calibration_hint = (
                 "After round 3 with players tied for the lead: historically ~66% of the time "
                 "one of the co-leaders wins. 2nd place wins 18%, top-3 cover 81%. "
-                "Assign substantial probability to co-leaders and closely-trailing players."
+                f"Assign {r3_other} to 'other'; concentrate probability on leaders."
             )
         elif margin == 1:
             calibration_hint = (
                 "After round 3 with the leader ahead by 1 stroke: historically the leader "
                 "wins only ~42% of the time — leads of just 1 stroke are volatile. "
-                "2nd place wins 18%, outside top-3 wins 19%. Spread probability widely."
+                f"2nd place wins 18%, outside top-3 wins 19%. Assign {r3_other} to 'other'."
             )
         elif margin <= 2:
             calibration_hint = (
                 "After round 3 with the leader ahead by 2 strokes: historically the leader "
-                "wins ~52% of the time. Still significant probability for 2nd/3rd place."
+                f"wins ~52% of the time. Assign {r3_other} to 'other', rest to top contenders."
+            )
+        elif margin == 3:
+            calibration_hint = (
+                "After round 3 with the leader ahead by 3 strokes: historically the leader "
+                f"wins ~68% of the time. Top-3 covers 86%. Assign {r3_other} to 'other'."
             )
         else:
             calibration_hint = (
                 f"After round 3 with the leader ahead by {margin} strokes: historically "
-                "leaders with 3+ stroke leads win 70-75% of the time. "
-                "Give the leader strong but not overwhelming probability."
+                "leaders with 4+ stroke leads win 80-85% of the time. "
+                f"Give the leader dominant probability (~80%), assign {r3_other} to 'other'."
             )
 
     # Build hole-by-hole scorecard section (R3 only, when enabled)
