@@ -93,3 +93,4 @@ exp84-kimi-ds-mix	1.2466	0.6822	N/A	not-kept	training	100 Kimi + 474 DeepSeek la
 exp85-ds-rounds-left	1.1929	0.6543	N/A	kept	prompt	DeepSeek structured + rounds_remaining, ll=1.19! (vs 1.21 without)
 exp86-kimi25-structured	1.1686	0.6270	N/A	kept	model	Kimi-K2.5 structured 8k, ll=1.17 (same as standard prompt — thinking handles both)
 exp87-1b-rounds-left	1.1885	0.6526	N/A	kept	training	1B SFT rounds_remaining 10ep (final), ll=1.19 — MATCHES DeepSeek teacher!
+exp88-kimi25-rounds	1.1334	0.6072	N/A	kept	model	Kimi-K2.5 + rounds_remaining 8k, NEW ALL-TIME BEST multi-cand ll=1.13!
