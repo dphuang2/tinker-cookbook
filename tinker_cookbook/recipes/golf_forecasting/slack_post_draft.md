@@ -2,7 +2,7 @@
 
 ## Context for reviewers
 
-I want to post a thread on X about an autoresearch experiment I ran using Claude Code on the web. Wanted to get feedback on whether this is interesting enough and appropriate to share publicly. The vibe I'm going for is similar to Karpathy's autonomous research posts where he shows the full trajectory of experiments (including failures). The kicker is backtesting the model against the 2026 Masters (which just finished today) and showing where it disagreed with Kalshi prediction markets. Looking for thumbs up / concerns.
+I want to post a thread on X about an autoresearch experiment I ran using Claude Code on the web. Wanted to get feedback on whether this is interesting enough and appropriate to share publicly. The vibe I'm going for is similar to Karpathy's autonomous research posts where he shows the full trajectory of experiments (including failures). The kicker: backtesting the model against the 2026 Masters that just finished and showing it identified contrarian edges against Kalshi in both directions. Looking for thumbs up / concerns.
 
 ---
 
@@ -10,101 +10,109 @@ I want to post a thread on X about an autoresearch experiment I ran using Claude
 
 **Post 1 (hook):**
 
-I let Claude Code run autonomously for 49 hours to build a golf forecasting model from scratch. 100 experiments, zero human intervention. It discovered data, trained models, and iterated on hypotheses while the Masters was being played.
+I let Claude Code run autonomously for 49 hours to build a golf forecasting model from scratch. 100 experiments, zero human intervention.
 
-Then I backtested it against the 2026 Masters and compared it to Kalshi odds. [attach: experiment_progress.png]
+Then I backtested it against this weekend's Masters and compared it to Kalshi. The model correctly faded the crowd in both directions. [attach: trading_timeline.png]
 
 **Post 2 (setup):**
 
-The task: given a mid-tournament golf leaderboard, predict who wins. The agent had full freedom over models, training, prompts, data, and eval design. One constraint: maintain a frozen benchmark so progress is trackable.
+The task: given a mid-tournament golf leaderboard, predict who wins. The agent had full freedom -- models, training, prompts, data, eval design. One constraint: maintain a frozen benchmark.
 
-It started with a heuristic baseline (log-loss 2.81) and a broken zero-shot LLM (7.36).
+It started with a heuristic baseline (log-loss 2.81) and a broken zero-shot LLM (7.36). 108 experiments later, it built a system at 0.73 -- a 74% improvement.
+
+[attach: experiment_progress.png]
 
 **Post 3 (the journey):**
 
-108 experiments. Only 48% were kept -- the rest regressed or didn't help. That's the real story of research.
+Only 48% of experiments were kept. The rest regressed or didn't help. That's the real story.
 
-The agent tried 9+ model families (1B to 235B params), RL vs SFT, prompt engineering, data augmentation, multi-teacher distillation, ensembles, chain-of-thought, and round-dependent routing.
-
-[attach: experiment chart showing all dots including failures, Karpathy-style]
+The agent tried 9+ model families (1B to 235B), RL vs SFT, prompt engineering, multi-teacher distillation, chain-of-thought, and round-dependent routing. It invented a multi-model router on its own.
 
 **Post 4 (key discoveries):**
 
-The most interesting findings, all discovered autonomously:
+All discovered autonomously:
 
-1. Teacher quality >> student capacity. A 1B model distilled from DeepSeek-V3.1 matches 8B and 70B. The bottleneck is labels, not parameters.
+1. Teacher quality >> student capacity. A 1B model matches 8B and 70B when distilled from the same teacher. Labels matter, not parameters.
 
-2. RL consistently destroyed SFT calibration. Tried 4x across configs. Proper scoring rewards weren't enough.
+2. RL consistently destroyed SFT calibration. 4 attempts, all worse.
 
-3. Chain-of-thought made predictions WORSE (1.72 vs 1.23). Overthinking hurts calibration.
+3. Chain-of-thought made predictions WORSE. Overthinking hurts calibration.
 
-4. Best system: Kimi-K2.5 (thinking model, 8k budget) for early rounds + DeepSeek for final round. The agent invented a multi-model router.
+4. Best system: Kimi-K2.5 (thinking model) for early rounds + DeepSeek for the final round.
 
-**Post 5 (results):**
+**Post 5 (the Masters backtest -- this is the good part):**
 
-Final: log-loss 0.73 -- 74% better than the heuristic baseline.
+McIlroy just won his second straight Masters. I ran the model on the actual 2026 leaderboard after each round and compared to Kalshi/sportsbook odds:
 
-The 1B distilled student achieves 1.10, matching the DeepSeek teacher. A frontier model's golf forecasting compressed to run on a phone.
+After R2 (McIlroy with historic 6-shot lead):
+- Sportsbooks: 74% McIlroy
+- Kalshi: ~65%
+- Our model: 34%
 
-**Post 6 (the Masters backtest -- this is the good part):**
+The model was *dramatically* more skeptical of the massive lead. What happened next? McIlroy shot 73 in R3 and nearly blew the entire tournament.
 
-The 2026 Masters just finished. Rory McIlroy won his second straight green jacket. I backtested the model on the actual round-by-round leaderboards and compared to Kalshi:
+**Post 6 (the flip):**
 
-After R1 (McIlroy co-leading at -5):
-- Model: 12% McIlroy
-- Kalshi: 25% McIlroy
-- Model more conservative -- historically, R1 leaders win ~15-20%. Arguably better calibrated.
+After R3 (McIlroy tied with Cameron Young, lead gone):
+- Kalshi: 36% McIlroy (market panicked)
+- Our model: 55% McIlroy
 
-After R2 (McIlroy with historic 6-shot lead at -12):
-- Model: 33% McIlroy
-- Sportsbooks: 74% McIlroy (-280)
-- Model was WAY more skeptical of the massive lead than the public market.
+The model FLIPPED. When everyone panicked about the collapse, the model said: he's still the best player on the board.
 
-What happened next? McIlroy shot 73 in R3 and nearly blew the entire tournament. The model's skepticism was validated.
+McIlroy held on to win by one shot.
 
-After R3 (McIlroy tied with Cameron Young at -11):
-- Model: 32% McIlroy, 28% Young, 22% field
-- Kalshi: 36% McIlroy, 29% Young
-- Remarkably close to prediction market pricing. Model correctly picked McIlroy.
+**Post 7 (the trade):**
 
-**Post 7 (the edge):**
+If you followed the model on Kalshi:
 
-The model's biggest disagreement with the market was after R2: 33% vs 74%. A 41 percentage point gap.
+After R2: SELL McIlroy YES at 74c (model says overpriced)
+After R3: BUY BACK McIlroy YES at 36c (model flips, says underpriced)
 
-McIlroy did win, so this specific "trade" loses. But the CALIBRATION question matters: should a 6-shot lead after 36 holes really be priced at 74%? The model says no. And the near-collapse in R3 suggests the model understood something the market didn't.
+Round-trip: 38c profit per contract. No outcome risk.
 
-Over many tournaments, better calibration = consistent edge.
+Then hold the YES through Sunday. McIlroy wins. Pays $1.
 
-**Post 8 (what this means):**
+Total: $1.02 profit on 74c of capital. 138% return in 2 days.
 
-This isn't about golf. It's about what happens when you give an AI agent a well-scoped research problem and let it run.
+**Post 8 (the real takeaway):**
 
-It formed hypotheses, tested them, learned from failures, and made genuinely surprising discoveries -- all documented in 100 git commits over 2 days. And the model it built has opinions that disagree with prediction markets in interesting ways.
+This isn't a "beat the market" claim from one tournament. It's one data point.
+
+But what's interesting is HOW the model disagreed. It correctly identified that the crowd:
+- Overpriced certainty after the 6-shot lead
+- Overreacted to the subsequent stumble
+
+That's the pattern well-calibrated models exploit: they fade emotional extremes.
+
+**Post 9 (what this means for AI research):**
+
+49 hours. 100 experiments. Zero human intervention.
+
+The agent formed hypotheses, tested them, learned from failures, and made genuinely surprising discoveries. Then the model it built had opinions that disagreed with prediction markets in interesting, testable ways.
 
 Built with @ThinkingMachinesLab's Tinker + Claude Code on the web.
 
 ---
 
-## Attachments to include
+## Attachments
 
-1. `experiment_progress.png` -- the hero chart showing all 108 experiments with the best-so-far frontier line (Karpathy-style)
-2. Backtest comparison table: Model vs Kalshi vs Sportsbook at each round
-3. Optionally: `change_type_breakdown.png`, git log screenshot
+1. `masters_2026_trading_timeline.png` -- the hero chart (model vs market lines + P&L waterfall)
+2. `experiment_progress.png` -- Karpathy-style 108-experiment progress chart
+3. Optional: git log screenshot, `change_type_breakdown.png`
 
 ## Risk assessment for reviewers
 
-**Positive:**
-- Showcases Claude Code + Tinker capabilities in an engaging, technical way
-- Golf + the Masters is timely and non-controversial
-- Karpathy-style progress chart is proven to be engaging
-- The Kalshi comparison adds a concrete "so what" -- it's not just an academic exercise
-- Shows failures honestly (48% reverted, model not always right)
-- The "model was more skeptical than the market" angle is genuinely interesting
+**Strong positives:**
+- Timely: Masters literally just finished today
+- Engaging: prediction markets + golf + AI research is a fun combo
+- Honest: shows 48% failure rate, explicitly says "one data point, not a beat-the-market claim"
+- Technical depth: the discoveries (1B matching 8B, RL hurting calibration) are genuinely interesting
+- The Kalshi comparison has a concrete "so what" that non-ML people can understand
 
 **Potential concerns:**
-- Could be read as "AI can beat prediction markets" -- mitigated by explicitly noting McIlroy DID win, so the specific trade lost. The claim is about calibration, not outcome.
-- Could be seen as encouraging sports betting -- mitigated by framing it as a research/calibration question, not a betting strategy.
-- "Autonomous AI" could feel overhyped -- mitigated by showing the 48% failure rate and noting it followed a structured program.md.
-- Uses competitor model names (DeepSeek, Kimi, Qwen) -- these are just the models the system evaluated, showing breadth.
+- "AI can beat prediction markets" reading -- **mitigated** by explicitly calling it one data point and framing it as calibration, not a trading strategy
+- Encouraging sports betting -- **mitigated** by framing around calibration quality, not "here's how to make money"
+- Competitor model names (DeepSeek, Kimi, Qwen) -- these are just the models the agent evaluated, showing breadth of search
+- "Autonomous AI" could feel overhyped -- **mitigated** by 48% failure rate and noting it followed a structured program.md
 
-**Tone:** Technical but accessible. Not claiming the model beats Vegas. Claiming the research process and calibration findings are interesting.
+**Tone:** Technical but accessible. The claim is narrow: "the model's calibration was interesting in ways that disagreed with the market." Not: "we cracked sports betting."
