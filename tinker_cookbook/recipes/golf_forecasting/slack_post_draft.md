@@ -2,9 +2,9 @@
 
 ## Slack message for #when-in-doubt
 
-:bufo-gives-an-idea: I want to post a thread on X about a fun autoresearch experiment I ran over the weekend. I pointed a cloud-hosted coding agent (Claude Code on the web) at Tinker and told it to build a golf forecasting system from scratch. It ran 108 experiments over 49 hours with no human in the loop, driving the benchmark from 2.81 to 0.54.
+:bufo-gives-an-idea: I want to post a thread on X about a fun autoresearch experiment I ran over the weekend. I pointed a cloud-hosted coding agent (Claude Code on the web) at Tinker and told it to build a golf forecasting system from scratch. It ran 108 experiments over 49 hours with no human in the loop, driving a frozen benchmark from 2.81 to 0.54 log-loss across 19 held-out tournaments.
 
-I backtested the best system on the Masters that just finished. The model was more confident than Kalshi in McIlroy's 6-shot lead (85% vs 65%) and was right -- McIlroy won. The vibe I'm going for is similar to Karpathy's autonomous research posts (full experiment trajectory including failures).
+For fun, I also ran the model on the Masters that just finished to see what it thought. The vibe I'm going for is similar to Karpathy's autonomous research posts (full experiment trajectory including failures).
 
 Wanted to get a read on whether this is good to share publicly. Proposed X posts in the thread.
 
@@ -25,11 +25,11 @@ It ran 108 experiments. Here's the full trajectory, including the ones that made
 
 The setup: given a mid-tournament leaderboard, predict who wins. The agent chose models, training methods, prompts, data sources, and eval design. The only fixed constraint was a frozen benchmark so I could measure real progress.
 
-Starting point: a heuristic baseline at log-loss 2.81. The best system got it down to 0.54.
+52% of experiments were reverted. The rest drove the benchmark from 2.81 to 0.54 log-loss, measured across 19 held-out tournaments.
 
 **Post 3:**
 
-52% of experiments were reverted. Some findings along the way:
+Some findings along the way:
 
 - A 1B student distilled from DeepSeek-V3.1 matched 8B and 70B models. The teacher's labels were the bottleneck, not the student's capacity.
 - RL degraded calibration every time it was tried (4 attempts, different configs).
@@ -37,19 +37,15 @@ Starting point: a heuristic baseline at log-loss 2.81. The best system got it do
 
 **Post 4:**
 
-I backtested the best system on the Masters that just finished, using the fine-tuned 1B model the agent trained.
+For fun, I ran the best system on the Masters that just finished.
 
-After R2, McIlroy held a historic 6-shot lead. Kalshi had him at ~65%. The model gave him 85%.
+After R2, McIlroy held a historic 6-shot lead. Kalshi had him at ~65%. The model said 85%. After R3, his lead had collapsed -- tied with Cameron Young. Kalshi: 36%. Model: 35%.
 
-McIlroy won. The model was more confident than the market -- and was right. [attach: trading_timeline.png]
+McIlroy held on to win by one. [attach: trading_timeline.png]
 
 **Post 5:**
 
-After R3, McIlroy's lead had collapsed. He shot 73 and was tied with Cameron Young. Kalshi had him at 36%. The model: 35%.
-
-The model and market agreed when the situation was ambiguous. The edge was R2 -- correctly reading a dominant lead that the market underpriced.
-
-McIlroy held on to win by one.
+One tournament doesn't prove anything about calibration. The frozen benchmark across 19 tournaments does. But it's fun to see what the model thinks about a live event -- and whether its opinions differ from the market's.
 
 **Post 6:**
 
@@ -73,9 +69,8 @@ https://github.com/dphuang2/tinker-cookbook/tree/claude/golf-forecasting-setup-V
 **Strong positives:**
 - Timely: Masters just finished today
 - Engaging: prediction markets + golf + AI research is a fun combo
-- Honest: shows 52% failure rate, one tournament backtest framed as one data point
+- Honest: shows 52% failure rate, benchmark is the punchline not one tournament, explicitly says "one tournament doesn't prove anything"
 - Technical depth: the discoveries (1B matching 8B, RL hurting calibration) are genuinely interesting
-- The Kalshi comparison gives a concrete "so what" that non-ML people understand
 - Code is fully open, every experiment is in git
 
 **Potential concerns:**
@@ -85,12 +80,10 @@ https://github.com/dphuang2/tinker-cookbook/tree/claude/golf-forecasting-setup-V
    - The post leads with "autonomous agent" not "forecasting platform"
    - **Would appreciate team input on this one**
 
-2. **"AI can beat prediction markets" reading** -- The model was right on one tournament. The post frames it as "the model was more confident and happened to be right" not "we found an edge." One data point, explicitly stated.
+2. **"AI can beat prediction markets" reading** -- Heavily mitigated now. The post explicitly says "one tournament doesn't prove anything about calibration" and frames the Masters as "for fun" color, not evidence.
 
-3. **Encouraging sports betting** -- Framed around calibration quality, not trading strategy. No P&L calculations in the post.
+3. **Competitor model names (DeepSeek)** -- Just a model the agent evaluated. Shows breadth.
 
-4. **Competitor model names (DeepSeek, Kimi)** -- These are just models the agent evaluated during its search. Shows breadth.
+4. **"Autonomous AI" overhype** -- Mitigated by the 52% failure rate and linking the full code.
 
-5. **"Autonomous AI" overhype** -- Mitigated by the 52% failure rate and linking the full code so people can see it followed a structured program.
-
-**Tone:** Technical, understated. The claim is: "an autonomous agent drove real benchmark improvement, and the resulting model had an interesting opinion about the Masters." Not: "we cracked prediction markets."
+**Tone:** Technical, understated. The punchline is the benchmark improvement driven by autonomous research, not the Masters prediction.
