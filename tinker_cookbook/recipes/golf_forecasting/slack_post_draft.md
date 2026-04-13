@@ -32,40 +32,34 @@ Starting point: a heuristic baseline at log-loss 2.81. The best system got it do
 
 - A 1B student distilled from DeepSeek-V3.1 matched 8B and 70B models. The teacher's labels were the bottleneck, not the student's capacity.
 - RL degraded calibration every time it was tried (4 attempts, different configs).
-- Chain-of-thought made predictions worse. Calibration suffered when models overthought.
+- Chain-of-thought made predictions worse. Calibration suffered when the model overthought.
 
 **Post 4:**
 
 I backtested the system on this weekend's Masters.
 
-After R2, McIlroy held a historic 6-shot lead. Sportsbooks priced him at 74%. Kalshi ~65%. The model gave him 34%.
+After R2, McIlroy held a historic 6-shot lead. Kalshi priced him at ~65%. The model gave him 34%.
 
 McIlroy then shot 73 in R3 and nearly lost the tournament. [attach: trading_timeline.png]
 
 **Post 5:**
 
-After R3, McIlroy was tied with Cameron Young. Kalshi dropped him to 36%.
-
-The agent discovered that different rounds call for different approaches. Early on, it predicts across multiple contenders. By the final round, fewer players are realistic, so it switches to binary (leader vs field) and routes to a different model. With that config, the model gave McIlroy 55% -- while the market had him at 36%.
+After R3, McIlroy was tied with Cameron Young. Kalshi dropped him to 36%. The model gave him 55%.
 
 McIlroy held on to win by one.
 
+On Kalshi, the R2 call alone was actionable. McIlroy NO was ~35c after R2, ~64c after R3. One tournament, not a system -- but the model identified the mispricing.
+
 **Post 6:**
-
-On Kalshi, the R2 call alone was worth something. McIlroy NO was trading at ~35c after R2. After R3 it was ~64c. That's a clean +29c per contract just from the lead collapsing, no final-round risk needed.
-
-One tournament. Not a system. But the model identified the mispricing.
-
-**Post 7:**
 
 I also ran raw Claude Opus 4.6 on the same prompts (no fine-tuning, no knowledge of the outcome):
 
-After R2: Claude said 42%. Closer to the model's 34% than the market's 74%.
+After R2: Claude said 42%. Closer to the model's 34% than Kalshi's 65%.
 After R3: Claude said 32%.
 
-Base Opus is already more skeptical than prediction markets. Fine-tuning sharpens that -- especially at R2, where the fine-tuned model was more disciplined about the 6-shot lead (34% vs Claude's 42%).
+Base Opus is already more skeptical than prediction markets. Fine-tuning sharpened that further -- especially at R2, where the trained model was more disciplined about the 6-shot lead (34% vs Claude's 42%).
 
-**Post 8:**
+**Post 7:**
 
 This worked because of Tinker. The agent needed to train, distill, and evaluate dozens of models across 108 experiments -- switching between model families, RL and SFT, different prediction formats -- without managing GPUs or distributed training. Tinker handled all of that. Claude Code on the web provided the agent loop.
 
