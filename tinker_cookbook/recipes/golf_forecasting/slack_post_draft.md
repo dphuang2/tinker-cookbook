@@ -4,6 +4,9 @@
 
 I want to post a thread on X about an autoresearch experiment I ran using Claude Code on the web. Wanted to get feedback on whether this is interesting enough and appropriate to share publicly. The vibe I'm going for is similar to Karpathy's autonomous research posts where he shows the full trajectory of experiments (including failures). The kicker: backtesting the model against the 2026 Masters that just finished and showing it identified contrarian edges against Kalshi in both directions. Looking for thumbs up / concerns.
 
+**Full session link (internal):** https://claude.ai/code/session_01VzCzqLRWq3ttDiWQRqpPtV
+**Code branch:** https://github.com/dphuang2/tinker-cookbook/tree/claude/golf-forecasting-setup-VIpRZ/tinker_cookbook/recipes/golf_forecasting
+
 ---
 
 ## Proposed X post (thread format)
