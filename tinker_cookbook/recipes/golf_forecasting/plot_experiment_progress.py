@@ -92,14 +92,13 @@ def plot_progress_chart(experiments, output_path):
         step_ys.append(best_ys[-1])
         ax.plot(step_xs, step_ys, color="#264653", linewidth=2, alpha=0.8, label="Best so far")
 
-    # Manually place milestone annotations to avoid overlap
-    # Format: (exp_x, exp_y, label, text_x, text_y) -- text positions are absolute
+    # Manually place milestone annotations
     milestones = [
-        (1, 2.81, "Heuristic\nbaseline", 6, 3.8),
-        (9, 1.90, "Bug fix", 14, 2.9),
-        (18, 1.27, "Top-3\ncandidates", 24, 2.2),
-        (36, 1.23, "SFT distillation", 42, 1.8),
-        (64, 1.23, "1B matches 8B!", 58, 1.65),
+        (1, 2.81, "Heuristic baseline", 8, 3.9),
+        (9, 1.90, "Bug fix", 16, 3.1),
+        (18, 1.27, "Top-3 candidates", 26, 2.4),
+        (36, 1.23, "SFT distillation", 44, 1.95),
+        (64, 1.23, "1B matches 8B", 60, 1.7),
     ]
 
     for mx, my, label, tx, ty in milestones:
@@ -107,7 +106,7 @@ def plot_progress_chart(experiments, output_path):
             label,
             xy=(mx, my),
             xytext=(tx, ty),
-            fontsize=8,
+            fontsize=9.5,
             ha="center",
             va="bottom",
             arrowprops=dict(arrowstyle="-", color="#999", lw=0.8),
@@ -125,12 +124,11 @@ def plot_progress_chart(experiments, output_path):
     ]
     ax.legend(handles=legend_elements, loc="upper right", fontsize=9, framealpha=0.9)
 
-    ax.set_xlabel("Experiment #", fontsize=12)
-    ax.set_ylabel("Anchor Log-Loss (lower = better)", fontsize=12)
+    ax.set_xlabel("Experiment #", fontsize=13)
+    ax.set_ylabel("Log-Loss (lower = better)", fontsize=13)
     ax.set_title(
-        "Golf Forecasting Autoresearch: 108 Experiments in 49 Hours\n"
-        "Autonomous Claude Code agent, zero human intervention",
-        fontsize=14,
+        "108 Experiments in 49 Hours, Zero Human Intervention",
+        fontsize=15,
         fontweight="bold",
     )
     ax.set_ylim(0, 4.5)
@@ -141,10 +139,10 @@ def plot_progress_chart(experiments, output_path):
     # Point the improvement annotation at the actual best experiment
     if best_exp_x and best_exp_y:
         ax.annotate(
-            "81% improvement\n(2.81 \u2192 0.54)",
+            "2.81 \u2192 0.54",
             xy=(best_exp_x, best_exp_y),
-            xytext=(75, 1.7),
-            fontsize=11,
+            xytext=(78, 1.6),
+            fontsize=13,
             fontweight="bold",
             color="#264653",
             ha="center",

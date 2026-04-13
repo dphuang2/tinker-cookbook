@@ -12,111 +12,79 @@ OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "figures")
 
 
 def plot_simple_timeline():
-    fig, ax = plt.subplots(figsize=(13, 6.5))
+    fig, ax = plt.subplots(figsize=(13, 7))
 
-    # X positions and labels
     x = [0, 1, 2, 3]
     xlabels = ["Pre-tournament", "After R1\n(Thursday)", "After R2\n(Friday)", "After R3\n(Saturday)"]
 
-    # Market line (sportsbook implied, most dramatic contrast)
-    market = [18, 25, 74, 36]
-    # Model line
+    # Use Kalshi prices consistently (matches the post)
+    market = [18, 25, 65, 36]
     model = [None, 12, 34, 55]
 
-    # Plot market line
-    ax.plot(x, market, "o-", color="#e76f51", linewidth=2.5, markersize=9, label="Prediction market", zorder=4)
-    # Plot model line (starts at R1)
-    ax.plot([1, 2, 3], model[1:], "o-", color="#2a9d8f", linewidth=2.5, markersize=9, label="Our model", zorder=5)
+    # Plot lines
+    ax.plot(x, market, "o-", color="#e76f51", linewidth=2.5, markersize=10, label="Prediction market (Kalshi)", zorder=4)
+    ax.plot([1, 2, 3], model[1:], "o-", color="#2a9d8f", linewidth=2.5, markersize=10, label="Our model", zorder=5)
 
-    # Shade the gap: RED where model < market (buy NO), GREEN where model > market (buy YES)
-    # R1 to R2: model below market
+    # Shade the gap
+    # R1 to R2: model below market (buy NO zone)
     ax.fill_between([1, 2], [model[1], model[2]], [market[1], market[2]],
-                    color="#e76f51", alpha=0.15, zorder=2)
-    # R2 to R3: lines cross, need to find intersection
-    # model goes 34->55, market goes 74->36. Cross at: 34+t*21 = 74-t*38 => t=40/59 ≈ 0.678
-    t_cross = (74 - 34) / (21 + 38)
+                    color="#e76f51", alpha=0.12, zorder=2)
+    # R2 to R3: lines cross
+    t_cross = (65 - 34) / ((55 - 34) + (65 - 36))
     x_cross = 2 + t_cross
-    y_cross = 34 + t_cross * 21
-    # R2 to crossing: model < market (buy NO zone)
     xs_pre = np.linspace(2, x_cross, 20)
-    model_interp_pre = np.interp(xs_pre, [2, 3], [34, 55])
-    market_interp_pre = np.interp(xs_pre, [2, 3], [74, 36])
-    ax.fill_between(xs_pre, model_interp_pre, market_interp_pre, color="#e76f51", alpha=0.15, zorder=2)
-    # Crossing to R3: model > market (buy YES zone)
+    model_pre = np.interp(xs_pre, [2, 3], [34, 55])
+    market_pre = np.interp(xs_pre, [2, 3], [65, 36])
+    ax.fill_between(xs_pre, model_pre, market_pre, color="#e76f51", alpha=0.12, zorder=2)
     xs_post = np.linspace(x_cross, 3, 20)
-    model_interp_post = np.interp(xs_post, [2, 3], [34, 55])
-    market_interp_post = np.interp(xs_post, [2, 3], [74, 36])
-    ax.fill_between(xs_post, model_interp_post, market_interp_post, color="#2a9d8f", alpha=0.15, zorder=2)
+    model_post = np.interp(xs_post, [2, 3], [34, 55])
+    market_post = np.interp(xs_post, [2, 3], [65, 36])
+    ax.fill_between(xs_post, model_post, market_post, color="#2a9d8f", alpha=0.12, zorder=2)
 
-    # Label the gaps
-    ax.annotate(
-        "BUY NO\n40pp edge",
-        xy=(2, 54), fontsize=11, fontweight="bold", color="#c0392b",
-        ha="center", va="center",
-    )
-    ax.annotate(
-        "BUY YES\n19pp edge",
-        xy=(2.85, 48), fontsize=11, fontweight="bold", color="#1a7a6d",
-        ha="center", va="center",
-    )
+    # Gap labels -- clean, no "pp"
+    ax.text(1.85, 50, "BUY NO", fontsize=13, fontweight="bold", color="#c0392b", ha="center")
+    ax.text(2.92, 48, "BUY\nYES", fontsize=12, fontweight="bold", color="#1a7a6d", ha="left")
 
-    # Add what happened callouts
-    ax.annotate(
-        "McIlroy has historic\n6-shot lead",
-        xy=(2, 74), xytext=(1.25, 85),
-        fontsize=9, color="#888", ha="center",
-        arrowprops=dict(arrowstyle="->", color="#bbb", lw=1.2),
-    )
-    ax.annotate(
-        "Shoots 73, lead\ncollapses to 0",
-        xy=(2.5, 55), xytext=(2.5, 90),
-        fontsize=9, color="#888", ha="center", style="italic",
-        arrowprops=dict(arrowstyle="->", color="#bbb", lw=1.2),
-    )
-    ax.annotate(
-        "Holds on, wins\nby 1 stroke",
-        xy=(3, 55), xytext=(3.3, 75),
-        fontsize=9, color="#888", ha="center", style="italic",
-        arrowprops=dict(arrowstyle="->", color="#bbb", lw=1.2),
-    )
+    # Value labels on points
+    for xi, mi, ki in [(1, 12, 25), (2, 34, 65), (3, 55, 36)]:
+        m_offset = -4.5 if mi < ki else 4
+        k_offset = 4.5 if ki > mi else -5.5
+        ax.text(xi - 0.08, mi + m_offset, f"{mi}%", ha="center", fontsize=11, color="#2a9d8f", fontweight="bold")
+        ax.text(xi + 0.08, ki + k_offset, f"{ki}%", ha="center", fontsize=11, color="#e76f51", fontweight="bold")
+    ax.text(0, market[0] + 4, f"{market[0]}%", ha="center", fontsize=11, color="#e76f51", fontweight="bold")
 
-    # Add value labels on each point
-    for xi, mi, ki in [(1, 12, 25), (2, 34, 74), (3, 55, 36)]:
-        ax.text(xi, mi - 4, f"{mi}%", ha="center", fontsize=10, color="#2a9d8f", fontweight="bold")
-        offset = 4 if ki > mi else -5
-        ax.text(xi, ki + offset, f"{ki}%", ha="center", fontsize=10, color="#e76f51", fontweight="bold")
-    ax.text(0, market[0] + 3, f"{market[0]}%", ha="center", fontsize=10, color="#e76f51", fontweight="bold")
+    # Event annotations -- one per key moment, placed cleanly
+    ax.annotate("6-shot lead", xy=(2, 65), xytext=(0.8, 78),
+                fontsize=10, color="#777", ha="center",
+                arrowprops=dict(arrowstyle="->", color="#bbb", lw=1))
+    ax.annotate("Shoots 73,\nlead collapses", xy=(2.5, 50), xytext=(2.5, 85),
+                fontsize=10, color="#777", ha="center", style="italic",
+                arrowprops=dict(arrowstyle="->", color="#bbb", lw=1))
+    ax.annotate("Wins by 1", xy=(3, 55), xytext=(3.35, 72),
+                fontsize=10, color="#777", ha="center", style="italic",
+                arrowprops=dict(arrowstyle="->", color="#bbb", lw=1))
 
-    # Legend with custom patches
+    # Legend
     legend_elements = [
         plt.Line2D([0], [0], color="#2a9d8f", linewidth=2.5, marker="o", markersize=8, label="Our model"),
-        plt.Line2D([0], [0], color="#e76f51", linewidth=2.5, marker="o", markersize=8, label="Prediction market"),
-        mpatches.Patch(facecolor="#e76f51", alpha=0.15, edgecolor="none", label="Model says BUY NO (overpriced)"),
-        mpatches.Patch(facecolor="#2a9d8f", alpha=0.15, edgecolor="none", label="Model says BUY YES (underpriced)"),
+        plt.Line2D([0], [0], color="#e76f51", linewidth=2.5, marker="o", markersize=8, label="Kalshi"),
+        mpatches.Patch(facecolor="#e76f51", alpha=0.15, edgecolor="none", label="Model says overpriced"),
+        mpatches.Patch(facecolor="#2a9d8f", alpha=0.15, edgecolor="none", label="Model says underpriced"),
     ]
     ax.legend(handles=legend_elements, fontsize=10, loc="upper left", framealpha=0.95)
 
     ax.set_xticks(x)
-    ax.set_xticklabels(xlabels, fontsize=11)
-    ax.set_ylabel("McIlroy Win Probability (%)", fontsize=12)
-    ax.set_ylim(0, 100)
-    ax.set_xlim(-0.3, 3.5)
+    ax.set_xticklabels(xlabels, fontsize=12)
+    ax.set_ylabel("McIlroy Win Probability (%)", fontsize=13)
+    ax.set_ylim(0, 95)
+    ax.set_xlim(-0.3, 3.6)
     ax.grid(True, alpha=0.2)
 
-    ax.set_title(
-        "2026 Masters: Our Model vs. Prediction Markets\n"
-        "The model faded the crowd in both directions -- and was right both times",
-        fontsize=13, fontweight="bold",
-    )
+    ax.set_title("2026 Masters: Model vs. Kalshi", fontsize=15, fontweight="bold")
 
-    # Bottom text with the trade summary
-    ax.text(
-        0.5, -0.13,
-        "Trades: BUY NO at 26c (Fri) -> SELL NO at 64c (Sat) = +38c  |  "
-        "BUY YES at 36c (Sat) -> McIlroy wins = +64c  |  "
-        "Net: +$1.02 on 26c",
-        transform=ax.transAxes, fontsize=10, ha="center", color="#264653", fontweight="bold",
-    )
+    # Outcome line at bottom -- short
+    ax.text(0.5, -0.10, "McIlroy won (-12), 1 shot over Scheffler.",
+            transform=ax.transAxes, fontsize=11, ha="center", color="#555", style="italic")
 
     plt.tight_layout()
     out = os.path.join(OUTPUT_DIR, "masters_2026_trading_timeline.png")
