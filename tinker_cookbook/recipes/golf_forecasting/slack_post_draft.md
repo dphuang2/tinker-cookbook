@@ -48,6 +48,8 @@ McIlroy held on to win by one. [attach: trading_timeline.png]
 
 **Post 5:**
 
+For comparison, I asked raw Claude Opus 4.6 the same question (no fine-tuning, no knowledge of the outcome). At R2 it said 42%. The fine-tuned 1B said 85%. Same situation, very different read. That gap is what 108 experiments of prompt iteration and distillation bought.
+
 One tournament doesn't prove anything about calibration. The frozen benchmark across 19 tournaments does. But it's fun to see what the model thinks about a live event and whether it disagrees with the market.
 
 **Post 6:**
