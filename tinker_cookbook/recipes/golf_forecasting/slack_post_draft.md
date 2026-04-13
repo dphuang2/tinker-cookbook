@@ -35,6 +35,8 @@ Some findings along the way:
 - RL degraded calibration every time it was tried (4 attempts, different configs).
 - Chain-of-thought made predictions worse. Calibration suffered when the model overthought.
 
+The best system in the end: DeepSeek-V3.1 as teacher, with a prompt the agent iterated into (binary prediction with explicit lead margin context), distilled into a 1B model via SFT. The 1B matches the teacher and runs on a phone.
+
 **Post 4:**
 
 For fun, I ran the best system on the Masters that just finished.
