@@ -68,14 +68,14 @@ McIlroy held on to win by one shot.
 
 If you followed the model on Kalshi:
 
-After R2: SELL McIlroy YES at 74c (model says overpriced)
-After R3: BUY BACK McIlroy YES at 36c (model flips, says underpriced)
+After R2: BUY McIlroy NO at 26c (market prices YES at 74%, model says only 34%)
+After R3: SELL McIlroy NO at 64c (market panicked, NO jumped from 26c to 64c)
 
-Round-trip: 38c profit per contract. No outcome risk.
+NO round-trip: +38c profit per contract. 146% return. No outcome risk -- you're flat before Sunday.
 
-Then hold the YES through Sunday. McIlroy wins. Pays $1.
+Then after R3: BUY McIlroy YES at 36c (model flips, says 55%). Hold through Sunday. McIlroy wins. Pays $1. Another +64c.
 
-Total: $1.02 profit on 74c of capital. 138% return in 2 days.
+Total: +$1.02 on 26c of initial capital.
 
 **Post 8 (the real takeaway):**
 

@@ -60,24 +60,24 @@ def analyze_trades():
     # Strategy 1: The Round-Trip (best trade)
     print("\n--- STRATEGY 1: THE ROUND-TRIP (model as contrarian signal) ---\n")
     print("After R2: Model says 34%, market says 65-74%.")
-    print("  -> SELL McIlroy YES at 74c (sportsbook implied)")
-    print("     or BUY NO at 26c on Kalshi")
+    print("  -> BUY McIlroy NO at 26c (market prices YES at 74%, so NO costs 26c)")
     print()
     print("After R3: McIlroy shoots 73, lead collapses. Market drops to 36%.")
-    print("  Model FLIPS: now says 55%, market says 36%.")
-    print("  -> BUY BACK McIlroy YES at 36c")
+    print("  McIlroy NO is now worth 64c (market prices YES at 36%).")
+    print("  Model FLIPS: now says 55% McIlroy, so NO is overpriced.")
+    print("  -> SELL McIlroy NO at 64c")
     print()
-    r2_sell = 0.74
-    r3_buy = 0.36
-    round_trip_profit = r2_sell - r3_buy
-    print(f"  Round-trip profit: {r2_sell:.0%} - {r3_buy:.0%} = {round_trip_profit:.0%} per contract")
-    print(f"  That's a {round_trip_profit/r2_sell:.0%} return in ~24 hours")
+    no_buy = 0.26
+    no_sell = 0.64
+    round_trip_profit = no_sell - no_buy
+    print(f"  Round-trip profit: 64c - 26c = {round_trip_profit:.0%} per contract")
+    print(f"  That's a {round_trip_profit/no_buy:.0%} return in ~24 hours")
     print(f"  NO OUTCOME RISK -- you're flat before the final round!")
     print()
 
     # Strategy 2: Hold the YES through final round
-    print("--- STRATEGY 2: HOLD THE YES (R3 buy through to finish) ---\n")
-    print("After R3: Buy YES at 36c (model says 55%).")
+    print("--- STRATEGY 2: BUY YES AFTER R3 (model says underpriced) ---\n")
+    print("After R3: Buy McIlroy YES at 36c (model says 55%, market says 36%).")
     print("Outcome: McIlroy wins.")
     r3_yes_cost = 0.36
     payout = 1.00
@@ -88,15 +88,16 @@ def analyze_trades():
 
     # Strategy 3: Full model-following strategy
     print("--- STRATEGY 3: FULL MODEL-FOLLOWING (the complete play) ---\n")
-    print("After R2: SELL YES at 74c (model says overpriced)")
-    print("After R3: BUY YES at 36c (model flips, says underpriced)")
+    print("After R2: BUY NO at 26c (model says McIlroy overpriced)")
+    print("After R3: SELL NO at 64c (model flips, McIlroy now underpriced)")
+    print("After R3: BUY YES at 36c (model says 55%)")
     print("Hold through: McIlroy wins, YES pays $1")
     print()
     total = round_trip_profit + r3_profit
-    print(f"  Round-trip profit (R2 sell -> R3 buy): ${round_trip_profit:.2f}")
-    print(f"  Final round profit (R3 hold -> win):   ${r3_profit:.2f}")
-    print(f"  Total profit:                          ${total:.2f} per contract")
-    print(f"  On 74c of initial capital = {total/r2_sell:.0%} return over 2 days")
+    print(f"  NO round-trip (buy 26c, sell 64c):     +${round_trip_profit:.2f}")
+    print(f"  YES hold (buy 36c, pays $1):            +${r3_profit:.2f}")
+    print(f"  Total profit:                           +${total:.2f}")
+    print(f"  On 26c of initial capital = {total/no_buy:.0%} return over 2 days")
     print()
 
     # The key insight
@@ -137,7 +138,7 @@ def analyze_trades():
         "round_trip_profit": round_trip_profit,
         "r3_hold_profit": r3_profit,
         "total_profit": total,
-        "total_return": total / r2_sell,
+        "total_return": total / no_buy,
     }
 
 
@@ -163,11 +164,11 @@ def plot_trading_timeline():
              "^--", color="#e9c46a", linewidth=2, markersize=8, label="Sportsbook (implied)", zorder=4)
 
     # Add trade annotations
-    # R2: SELL signal
+    # R2: BUY NO signal
     ax1.annotate(
-        "SELL at 74c\nModel: 34%\nMarket: 74%",
+        "BUY NO at 26c\nModel: 34%\nMarket: 74%",
         xy=(2, 73.7),
-        xytext=(2.4, 82),
+        xytext=(2.45, 85),
         fontsize=9,
         fontweight="bold",
         color="#d44",
@@ -176,11 +177,11 @@ def plot_trading_timeline():
         bbox=dict(boxstyle="round,pad=0.4", facecolor="#fff5f5", edgecolor="#d44"),
     )
 
-    # R3: BUY signal
+    # R3: SELL NO + BUY YES signal
     ax1.annotate(
-        "BUY at 36c\nModel: 55%\nMarket: 36%",
+        "SELL NO at 64c\nBUY YES at 36c\nModel: 55%  Market: 36%",
         xy=(3, 36),
-        xytext=(2.4, 20),
+        xytext=(2.35, 15),
         fontsize=9,
         fontweight="bold",
         color="#2a9d8f",
@@ -189,7 +190,7 @@ def plot_trading_timeline():
         bbox=dict(boxstyle="round,pad=0.4", facecolor="#f0faf8", edgecolor="#2a9d8f"),
     )
 
-    # Arrow showing the round-trip
+    # Arrow showing the NO round-trip
     ax1.annotate(
         "",
         xy=(3, 40),
@@ -202,7 +203,7 @@ def plot_trading_timeline():
             connectionstyle="arc3,rad=0.3",
         ),
     )
-    ax1.text(2.65, 58, "38c profit\n(round-trip)", fontsize=8, ha="center", color="#264653", style="italic")
+    ax1.text(2.65, 58, "NO: +38c\n(buy 26c, sell 64c)", fontsize=8, ha="center", color="#264653", style="italic")
 
     # What happened annotation
     ax1.axvline(x=2.5, color="#ddd", linestyle=":", alpha=0.8)
@@ -223,10 +224,15 @@ def plot_trading_timeline():
     ax1.grid(True, alpha=0.3)
 
     # Bottom panel: P&L waterfall
-    trades = ["Sell YES\n(R2, 74c)", "Buy YES\n(R3, 36c)", "McIlroy wins\n(payout $1)", "Total"]
-    values = [0.74, -0.36, 0.64, 1.02]
-    cumulative = [0.74, 0.38, 1.02, 1.02]
-    colors_bar = ["#2a9d8f", "#e76f51", "#2a9d8f", "#264653"]
+    trades = [
+        "Buy NO\n(R2, 26c)",
+        "Sell NO\n(R3, 64c)",
+        "Buy YES\n(R3, 36c)",
+        "McIlroy wins\nYES pays $1",
+        "Total",
+    ]
+    values = [-0.26, 0.64, -0.36, 1.00, 1.02]
+    colors_bar = ["#e76f51", "#2a9d8f", "#e76f51", "#2a9d8f", "#264653"]
 
     bars = ax2.bar(range(len(trades)), values, color=colors_bar, edgecolor="white", linewidth=0.8)
     for i, (bar, val) in enumerate(zip(bars, values)):
@@ -234,13 +240,13 @@ def plot_trading_timeline():
         y_pos = bar.get_height() + 0.02 if val > 0 else bar.get_height() - 0.05
         ax2.text(bar.get_x() + bar.get_width() / 2, y_pos, label,
                  ha="center", va="bottom" if val > 0 else "top",
-                 fontweight="bold", fontsize=11, color=colors_bar[i])
+                 fontweight="bold", fontsize=10, color=colors_bar[i])
 
     ax2.set_xticks(range(len(trades)))
-    ax2.set_xticklabels(trades, fontsize=10)
+    ax2.set_xticklabels(trades, fontsize=9)
     ax2.set_ylabel("$ per contract", fontsize=11)
-    ax2.set_title("P&L: Full model-following strategy = $1.02 on 74c capital (138% return in 2 days)",
-                   fontsize=11, fontweight="bold", color="#264653")
+    ax2.set_title("P&L: Buy NO at 26c, sell at 64c (+38c). Buy YES at 36c, McIlroy wins (+64c). Net: +$1.02",
+                   fontsize=10, fontweight="bold", color="#264653")
     ax2.axhline(y=0, color="black", linewidth=0.5)
     ax2.set_ylim(-0.5, 1.2)
     ax2.grid(True, axis="y", alpha=0.3)
