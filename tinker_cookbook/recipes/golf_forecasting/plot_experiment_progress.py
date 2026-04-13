@@ -42,13 +42,13 @@ def plot_progress_chart(experiments, output_path):
     best_xs, best_ys = [], []
     best_so_far = float("inf")
 
-    milestone_annotations = []
+    # Track the index of key milestones for annotation placement
+    best_exp_x, best_exp_y = None, None
 
     for i, e in enumerate(experiments):
         if e["anchor_ll"] is None:
             continue
         ll = e["anchor_ll"]
-        # Cap display at 4.0 for readability
         display_ll = min(ll, 4.5)
         xs.append(i + 1)
         ys.append(display_ll)
@@ -70,27 +70,9 @@ def plot_progress_chart(experiments, output_path):
             best_so_far = ll
             best_xs.append(i + 1)
             best_ys.append(ll)
-            # Mark key milestones
-            name = e["name"]
-            if name in (
-                "baseline-heuristic",
-                "exp7-bugfix-floor",
-                "exp16-top3",
-                "exp30-sft-distill",
-                "exp58-1b-sft",
-                "exp79-binary-margin",
-                "exp92-multi-model",
-            ):
-                short = {
-                    "baseline-heuristic": "Heuristic\nbaseline",
-                    "exp7-bugfix-floor": "Bug fix +\nprob floor",
-                    "exp16-top3": "Top-3\ncandidates",
-                    "exp30-sft-distill": "SFT distill\n(DeepSeek->8B)",
-                    "exp58-1b-sft": "1B matches 8B!",
-                    "exp79-binary-margin": "Binary +\nmargin ctx",
-                    "exp92-multi-model": "Multi-model\nrouter (BEST)",
-                }.get(name, name)
-                milestone_annotations.append((i + 1, ll, short))
+
+        if e["name"] == "exp92-multi-model":
+            best_exp_x, best_exp_y = i + 1, ll
 
     # Plot all experiments as scatter
     for x, y, c, m in zip(xs, ys, colors, markers):
@@ -106,22 +88,31 @@ def plot_progress_chart(experiments, output_path):
                 step_ys.append(best_ys[j - 1])
             step_xs.append(best_xs[j])
             step_ys.append(best_ys[j])
-        # Extend to end
         step_xs.append(xs[-1])
         step_ys.append(best_ys[-1])
         ax.plot(step_xs, step_ys, color="#264653", linewidth=2, alpha=0.8, label="Best so far")
 
-    # Annotate milestones
-    for mx, my, label in milestone_annotations:
-        y_offset = 0.25 if my > 1.0 else 0.15
+    # Manually place milestone annotations to avoid overlap
+    # Format: (exp_x, exp_y, label, text_x, text_y) -- text positions are absolute
+    milestones = [
+        (1, 2.81, "Heuristic\nbaseline", 6, 3.8),
+        (9, 1.90, "Bug fix +\nprob floor", 14, 2.9),
+        (18, 1.27, "Top-3\ncandidates", 24, 2.2),
+        (36, 1.23, "SFT distill\n(DeepSeek\u21928B)", 42, 1.8),
+        (64, 1.23, "1B matches 8B!", 58, 1.65),
+        (86, 0.54, "Binary + margin", 78, 1.5),
+        (99, 0.73, "Multi-model\nrouter (best)", 105, 1.45),
+    ]
+
+    for mx, my, label, tx, ty in milestones:
         ax.annotate(
             label,
             xy=(mx, my),
-            xytext=(mx + 2, my + y_offset),
-            fontsize=7.5,
-            ha="left",
+            xytext=(tx, ty),
+            fontsize=8,
+            ha="center",
             va="bottom",
-            arrowprops=dict(arrowstyle="-", color="#666", lw=0.8),
+            arrowprops=dict(arrowstyle="-", color="#999", lw=0.8),
             bbox=dict(boxstyle="round,pad=0.3", facecolor="white", edgecolor="#ccc", alpha=0.9),
         )
 
@@ -149,17 +140,18 @@ def plot_progress_chart(experiments, output_path):
     ax.yaxis.set_major_locator(ticker.MultipleLocator(0.5))
     ax.grid(True, alpha=0.3)
 
-    # Add improvement annotation
-    ax.annotate(
-        "74% improvement\n(2.81 -> 0.73)",
-        xy=(100, 0.73),
-        xytext=(85, 1.5),
-        fontsize=11,
-        fontweight="bold",
-        color="#264653",
-        ha="center",
-        arrowprops=dict(arrowstyle="->", color="#264653", lw=1.5),
-    )
+    # Point the improvement annotation at the actual best experiment
+    if best_exp_x and best_exp_y:
+        ax.annotate(
+            "74% improvement\n(2.81 \u2192 0.73)",
+            xy=(best_exp_x, best_exp_y),
+            xytext=(75, 1.7),
+            fontsize=11,
+            fontweight="bold",
+            color="#264653",
+            ha="center",
+            arrowprops=dict(arrowstyle="->", color="#264653", lw=1.5),
+        )
 
     plt.tight_layout()
     plt.savefig(output_path, dpi=200, bbox_inches="tight")
