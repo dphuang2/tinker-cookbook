@@ -36,28 +36,27 @@ Starting point: a heuristic baseline at log-loss 2.81. The best system got it do
 
 **Post 4:**
 
-I backtested the system on this weekend's Masters.
+I backtested the best system on this weekend's Masters using its fine-tuned 1B model.
 
-After R2, McIlroy held a historic 6-shot lead. Kalshi priced him at ~65%. The model gave him 34%.
+After R2, McIlroy held a historic 6-shot lead. Kalshi priced him at ~65%. The model gave him 85%.
 
-McIlroy then shot 73 in R3 and nearly lost the tournament. [attach: trading_timeline.png]
+McIlroy did win. The model was more confident than the market and was right.
 
 **Post 5:**
 
-After R3, McIlroy was tied with Cameron Young. Kalshi dropped him to 36%. The model gave him 55%.
+After R3, McIlroy's lead had collapsed -- tied with Cameron Young after shooting 73. Kalshi had him at 36%. The model dropped to 35%. Roughly in agreement.
 
 McIlroy held on to win by one.
 
-On Kalshi, the R2 call alone was actionable. McIlroy NO was ~35c after R2, ~64c after R3. One tournament, not a system -- but the model identified the mispricing.
+The model's edge was R2: it correctly read the 6-shot lead as dominant, while the market underpriced it. [attach: trading_timeline.png]
 
 **Post 6:**
 
 I also ran raw Claude Opus 4.6 on the same prompts (no fine-tuning, no knowledge of the outcome):
 
-After R2: Claude said 42%. Closer to the model's 34% than Kalshi's 65%.
-After R3: Claude said 32%.
+After R2: Claude said 42%. The market said 65%. The fine-tuned 1B said 85%.
 
-Base Opus is already more skeptical than prediction markets. Fine-tuning sharpened that further -- especially at R2, where the trained model was more disciplined about the 6-shot lead (34% vs Claude's 42%).
+The fine-tuned model was the most confident of all three -- and the closest to what actually happened.
 
 **Post 7:**
 
