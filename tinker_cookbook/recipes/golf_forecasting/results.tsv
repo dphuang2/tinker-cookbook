@@ -103,3 +103,5 @@ exp94-owgr	1.2695	0.6865	N/A	not-kept	data	Current OWGR rankings in prompt, WORS
 exp95-momentum	1.3429	0.7127	N/A	not-kept	prompt	Round score momentum in prompt, WORSE — redundant with cumulative score
 exp96-qwen235b-rounds	1.4246	0.7534	N/A	not-kept	model	Qwen3-235B + rounds_remaining, worse than without — prompt variant model-specific
 exp97-ds-top3r-r3bin	1.1046	0.6427	N/A	kept	system	DeepSeek R1-2=top3+rounds / R3=binary+margin, strong single-model config
+exp98-kimi25-16k	1.1143	0.5971	N/A	kept	model	Kimi-K2.5 16k tokens + rounds, ll=1.11 (marginal over 8k's 1.13)
+exp98-k2think-rounds	4.4944	0.9712	N/A	not-kept	model	Kimi-K2-Thinking + rounds, 74% format — rounds prompt breaks this model
