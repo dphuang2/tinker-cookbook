@@ -37,34 +37,30 @@ The agent eventually built a multi-model router on its own -- Kimi-K2.5 for earl
 
 I backtested the system on this weekend's Masters.
 
-After R2, McIlroy held a historic 6-shot lead. Sportsbooks priced him at 74%. The model gave him 34%.
+After R2, McIlroy held a historic 6-shot lead. Sportsbooks priced him at 74%. Kalshi ~65%. The model gave him 34%.
 
-McIlroy then shot 73 in R3 and nearly lost the tournament.
+McIlroy then shot 73 in R3 and nearly lost the tournament. [attach: trading_timeline.png]
 
 **Post 5:**
 
-After R3, McIlroy was tied with Cameron Young. The market dropped him to 36%. The model moved the other direction: 55%.
+After R3, McIlroy was tied with Cameron Young. Kalshi dropped him to 36%. The model had him at 32% -- roughly in line with the market.
 
 McIlroy held on to win by one.
 
-The model disagreed with the market in both directions and was closer to what actually happened both times. [attach: trading_timeline.png]
+The model's one big contrarian call was R2: the 6-shot lead was overpriced. That turned out to be right.
 
 **Post 6:**
 
-On Kalshi, that sequence looks like this:
+On Kalshi, the R2 call alone was worth something. McIlroy NO was trading at ~35c after R2. After R3 it was ~64c. That's a clean +29c per contract just from the lead collapsing, no final-round risk needed.
 
-After R2: buy McIlroy NO at 26c.
-After R3: sell NO at 64c (+38c, no outcome risk).
-After R3: buy YES at 36c. McIlroy wins, pays $1 (+64c).
-
-One tournament. Not a system. But the shape of the disagreement is interesting -- the model faded emotional extremes on both sides.
+One tournament. Not a system. But the model identified the mispricing.
 
 **Post 7:**
 
 I also ran raw Claude Opus 4.6 on the same prompts (no fine-tuning, no knowledge of the outcome):
 
 After R2: Claude said 42%. Closer to the model's 34% than the market's 74%.
-After R3: Claude said 32%. Exactly the model's number.
+After R3: Claude said 32%. Same as the fine-tuned model.
 
 Base Opus is already more skeptical than prediction markets. Fine-tuning sharpens that further in extreme situations.
 
