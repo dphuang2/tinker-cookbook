@@ -110,9 +110,33 @@ Built with @ThinkingMachinesLab's Tinker + Claude Code on the web.
 - The Kalshi comparison has a concrete "so what" that non-ML people can understand
 
 **Potential concerns:**
-- "AI can beat prediction markets" reading -- **mitigated** by explicitly calling it one data point and framing it as calibration, not a trading strategy
-- Encouraging sports betting -- **mitigated** by framing around calibration quality, not "here's how to make money"
-- Competitor model names (DeepSeek, Kimi, Qwen) -- these are just the models the agent evaluated, showing breadth of search
-- "Autonomous AI" could feel overhyped -- **mitigated** by 48% failure rate and noting it followed a structured program.md
+
+1. **Competitive intelligence / signaling what we're building** -- Some of our customers use Tinker for forecasting workloads. Posting a polished forecasting demo could signal to competitors what our platform is good at and what kinds of use cases we're investing in. Even though golf is a toy domain, the underlying pipeline (calibrated probability distributions, proper scoring rules, SFT distillation for forecasting, multi-model routing) maps directly to real customer workflows. Possible mitigations:
+   - Reframe the post to lead with "autonomous AI research agent" rather than "forecasting." The hero story is Claude Code running 100 experiments unattended, not Tinker's forecasting stack.
+   - Downplay the Tinker-specific details (reward functions, training infra) and emphasize the agent loop + discoveries.
+   - Or: decide we're comfortable with this signal because the recipe is already open-source in tinker-cookbook anyway.
+   - **This is the concern I'm most uncertain about -- would appreciate team input.**
+
+2. "AI can beat prediction markets" reading -- **mitigated** by explicitly calling it one data point and framing it as calibration, not a trading strategy
+
+3. Encouraging sports betting -- **mitigated** by framing around calibration quality, not "here's how to make money"
+
+4. Competitor model names (DeepSeek, Kimi, Qwen) -- these are just the models the agent evaluated, showing breadth of search
+
+5. "Autonomous AI" could feel overhyped -- **mitigated** by 48% failure rate and noting it followed a structured program.md
 
 **Tone:** Technical but accessible. The claim is narrow: "the model's calibration was interesting in ways that disagreed with the market." Not: "we cracked sports betting."
+
+## Alternative framing (if concern #1 is serious)
+
+If the team thinks the forecasting angle is too revealing, the post could be reframed to focus purely on the autonomous research loop:
+
+- Lead: "I let Claude Code run 100 experiments in 49 hours with zero intervention"
+- Hero visual: the Karpathy-style experiment progress chart
+- Findings: 1B matching 8B, RL hurting calibration, agent inventing multi-model routing
+- Skip or minimize: the Kalshi backtest, the forecasting-specific details
+- Mention Tinker only as "our training platform" without detailing the forecasting pipeline
+
+This version is less spicy (no prediction market angle) but also less revealing about what the platform does well. It's more of a "look at what coding agents can do" post than a "look at what our forecasting stack can do" post.
+
+The tradeoff: the Kalshi angle is what makes this post stand out from generic "I let an AI agent run" posts. Without it, we're competing with every other autonomous agent demo. With it, we have a concrete, testable, timely hook that nobody else has.
