@@ -1,0 +1,1207 @@
+{
+  "fetched_at": "2026-04-13T05:24:41.908228+00:00",
+  "source": "https://apiweb.owgr.com/api/owgr/rankings/getRankings",
+  "n_players": 200,
+  "rankings": [
+    {
+      "rank": 1,
+      "name": "Scottie Scheffler",
+      "points_average": 16.2883,
+      "country": "United States"
+    },
+    {
+      "rank": 2,
+      "name": "Rory McIlroy",
+      "points_average": 10.1483,
+      "country": "Northern Ireland"
+    },
+    {
+      "rank": 3,
+      "name": "Cameron Young",
+      "points_average": 5.8765,
+      "country": "United States"
+    },
+    {
+      "rank": 4,
+      "name": "Justin Rose",
+      "points_average": 5.3151,
+      "country": "England"
+    },
+    {
+      "rank": 5,
+      "name": "Tommy Fleetwood",
+      "points_average": 5.2239,
+      "country": "England"
+    },
+    {
+      "rank": 6,
+      "name": "Russell Henley",
+      "points_average": 5.1071,
+      "country": "United States"
+    },
+    {
+      "rank": 7,
+      "name": "Matt Fitzpatrick",
+      "points_average": 5.0875,
+      "country": "England"
+    },
+    {
+      "rank": 8,
+      "name": "Collin Morikawa",
+      "points_average": 5.0833,
+      "country": "United States"
+    },
+    {
+      "rank": 9,
+      "name": "Xander Schauffele",
+      "points_average": 4.9408,
+      "country": "United States"
+    },
+    {
+      "rank": 10,
+      "name": "J.J. Spaun",
+      "points_average": 4.8424,
+      "country": "United States"
+    },
+    {
+      "rank": 11,
+      "name": "Chris Gotterup",
+      "points_average": 4.6908,
+      "country": "United States"
+    },
+    {
+      "rank": 12,
+      "name": "Robert MacIntyre",
+      "points_average": 4.6191,
+      "country": "Scotland"
+    },
+    {
+      "rank": 13,
+      "name": "Sepp Straka",
+      "points_average": 4.1586,
+      "country": "Austria"
+    },
+    {
+      "rank": 14,
+      "name": "Hideki Matsuyama",
+      "points_average": 4.094,
+      "country": "Japan"
+    },
+    {
+      "rank": 15,
+      "name": "Justin Thomas",
+      "points_average": 3.8574,
+      "country": "United States"
+    },
+    {
+      "rank": 16,
+      "name": "Ben Griffin",
+      "points_average": 3.8293,
+      "country": "United States"
+    },
+    {
+      "rank": 17,
+      "name": "Ludvig Aberg",
+      "points_average": 3.7868,
+      "country": "Sweden"
+    },
+    {
+      "rank": 18,
+      "name": "Jacob Bridgeman",
+      "points_average": 3.6398,
+      "country": "United States"
+    },
+    {
+      "rank": 19,
+      "name": "Alex Noren",
+      "points_average": 3.5249,
+      "country": "Sweden"
+    },
+    {
+      "rank": 20,
+      "name": "Patrick Reed",
+      "points_average": 3.5141,
+      "country": "United States"
+    },
+    {
+      "rank": 21,
+      "name": "Harris English",
+      "points_average": 3.4588,
+      "country": "United States"
+    },
+    {
+      "rank": 22,
+      "name": "Viktor Hovland",
+      "points_average": 3.4503,
+      "country": "Norway"
+    },
+    {
+      "rank": 23,
+      "name": "Tyrrell Hatton",
+      "points_average": 3.3859,
+      "country": "England"
+    },
+    {
+      "rank": 24,
+      "name": "Akshay Bhatia",
+      "points_average": 3.3633,
+      "country": "United States"
+    },
+    {
+      "rank": 25,
+      "name": "Bryson DeChambeau",
+      "points_average": 3.0924,
+      "country": "United States"
+    },
+    {
+      "rank": 26,
+      "name": "Keegan Bradley",
+      "points_average": 3.0059,
+      "country": "United States"
+    },
+    {
+      "rank": 27,
+      "name": "Min Woo Lee",
+      "points_average": 2.9868,
+      "country": "Australia"
+    },
+    {
+      "rank": 28,
+      "name": "Sam Burns",
+      "points_average": 2.9508,
+      "country": "United States"
+    },
+    {
+      "rank": 29,
+      "name": "Maverick McNealy",
+      "points_average": 2.9494,
+      "country": "United States"
+    },
+    {
+      "rank": 30,
+      "name": "Si Woo Kim",
+      "points_average": 2.9238,
+      "country": "South Korea"
+    },
+    {
+      "rank": 31,
+      "name": "Jon Rahm",
+      "points_average": 2.9055,
+      "country": "Spain"
+    },
+    {
+      "rank": 32,
+      "name": "Ryan Gerard",
+      "points_average": 2.8901,
+      "country": "United States"
+    },
+    {
+      "rank": 33,
+      "name": "Patrick Cantlay",
+      "points_average": 2.7769,
+      "country": "United States"
+    },
+    {
+      "rank": 34,
+      "name": "Shane Lowry",
+      "points_average": 2.7152,
+      "country": "Ireland"
+    },
+    {
+      "rank": 35,
+      "name": "Kurt Kitayama",
+      "points_average": 2.622,
+      "country": "United States"
+    },
+    {
+      "rank": 36,
+      "name": "Jake Knapp",
+      "points_average": 2.5423,
+      "country": "United States"
+    },
+    {
+      "rank": 37,
+      "name": "Marco Penge",
+      "points_average": 2.5356,
+      "country": "England"
+    },
+    {
+      "rank": 38,
+      "name": "Nicolai Hojgaard",
+      "points_average": 2.5257,
+      "country": "Denmark"
+    },
+    {
+      "rank": 39,
+      "name": "Jason Day",
+      "points_average": 2.4997,
+      "country": "Australia"
+    },
+    {
+      "rank": 40,
+      "name": "Daniel Berger",
+      "points_average": 2.3773,
+      "country": "United States"
+    },
+    {
+      "rank": 41,
+      "name": "Aaron Rai",
+      "points_average": 2.3021,
+      "country": "England"
+    },
+    {
+      "rank": 42,
+      "name": "Nicolas Echavarria",
+      "points_average": 2.2972,
+      "country": "Colombia"
+    },
+    {
+      "rank": 43,
+      "name": "Corey Conners",
+      "points_average": 2.2558,
+      "country": "Canada"
+    },
+    {
+      "rank": 44,
+      "name": "Michael Kim",
+      "points_average": 2.228,
+      "country": "United States"
+    },
+    {
+      "rank": 45,
+      "name": "Samuel Stevens",
+      "points_average": 2.2121,
+      "country": "United States"
+    },
+    {
+      "rank": 46,
+      "name": "Kristoffer Reitan",
+      "points_average": 2.1292,
+      "country": "Norway"
+    },
+    {
+      "rank": 47,
+      "name": "Michael Brennan",
+      "points_average": 2.1151,
+      "country": "United States"
+    },
+    {
+      "rank": 48,
+      "name": "Matt McCarty",
+      "points_average": 2.0827,
+      "country": "United States"
+    },
+    {
+      "rank": 49,
+      "name": "Gary Woodland",
+      "points_average": 2.0476,
+      "country": "United States"
+    },
+    {
+      "rank": 50,
+      "name": "Brian Harman",
+      "points_average": 2.0453,
+      "country": "United States"
+    },
+    {
+      "rank": 1,
+      "name": "Scottie Scheffler",
+      "points_average": 16.2883,
+      "country": "United States"
+    },
+    {
+      "rank": 2,
+      "name": "Rory McIlroy",
+      "points_average": 10.1483,
+      "country": "Northern Ireland"
+    },
+    {
+      "rank": 3,
+      "name": "Cameron Young",
+      "points_average": 5.8765,
+      "country": "United States"
+    },
+    {
+      "rank": 4,
+      "name": "Justin Rose",
+      "points_average": 5.3151,
+      "country": "England"
+    },
+    {
+      "rank": 5,
+      "name": "Tommy Fleetwood",
+      "points_average": 5.2239,
+      "country": "England"
+    },
+    {
+      "rank": 6,
+      "name": "Russell Henley",
+      "points_average": 5.1071,
+      "country": "United States"
+    },
+    {
+      "rank": 7,
+      "name": "Matt Fitzpatrick",
+      "points_average": 5.0875,
+      "country": "England"
+    },
+    {
+      "rank": 8,
+      "name": "Collin Morikawa",
+      "points_average": 5.0833,
+      "country": "United States"
+    },
+    {
+      "rank": 9,
+      "name": "Xander Schauffele",
+      "points_average": 4.9408,
+      "country": "United States"
+    },
+    {
+      "rank": 10,
+      "name": "J.J. Spaun",
+      "points_average": 4.8424,
+      "country": "United States"
+    },
+    {
+      "rank": 11,
+      "name": "Chris Gotterup",
+      "points_average": 4.6908,
+      "country": "United States"
+    },
+    {
+      "rank": 12,
+      "name": "Robert MacIntyre",
+      "points_average": 4.6191,
+      "country": "Scotland"
+    },
+    {
+      "rank": 13,
+      "name": "Sepp Straka",
+      "points_average": 4.1586,
+      "country": "Austria"
+    },
+    {
+      "rank": 14,
+      "name": "Hideki Matsuyama",
+      "points_average": 4.094,
+      "country": "Japan"
+    },
+    {
+      "rank": 15,
+      "name": "Justin Thomas",
+      "points_average": 3.8574,
+      "country": "United States"
+    },
+    {
+      "rank": 16,
+      "name": "Ben Griffin",
+      "points_average": 3.8293,
+      "country": "United States"
+    },
+    {
+      "rank": 17,
+      "name": "Ludvig Aberg",
+      "points_average": 3.7868,
+      "country": "Sweden"
+    },
+    {
+      "rank": 18,
+      "name": "Jacob Bridgeman",
+      "points_average": 3.6398,
+      "country": "United States"
+    },
+    {
+      "rank": 19,
+      "name": "Alex Noren",
+      "points_average": 3.5249,
+      "country": "Sweden"
+    },
+    {
+      "rank": 20,
+      "name": "Patrick Reed",
+      "points_average": 3.5141,
+      "country": "United States"
+    },
+    {
+      "rank": 21,
+      "name": "Harris English",
+      "points_average": 3.4588,
+      "country": "United States"
+    },
+    {
+      "rank": 22,
+      "name": "Viktor Hovland",
+      "points_average": 3.4503,
+      "country": "Norway"
+    },
+    {
+      "rank": 23,
+      "name": "Tyrrell Hatton",
+      "points_average": 3.3859,
+      "country": "England"
+    },
+    {
+      "rank": 24,
+      "name": "Akshay Bhatia",
+      "points_average": 3.3633,
+      "country": "United States"
+    },
+    {
+      "rank": 25,
+      "name": "Bryson DeChambeau",
+      "points_average": 3.0924,
+      "country": "United States"
+    },
+    {
+      "rank": 26,
+      "name": "Keegan Bradley",
+      "points_average": 3.0059,
+      "country": "United States"
+    },
+    {
+      "rank": 27,
+      "name": "Min Woo Lee",
+      "points_average": 2.9868,
+      "country": "Australia"
+    },
+    {
+      "rank": 28,
+      "name": "Sam Burns",
+      "points_average": 2.9508,
+      "country": "United States"
+    },
+    {
+      "rank": 29,
+      "name": "Maverick McNealy",
+      "points_average": 2.9494,
+      "country": "United States"
+    },
+    {
+      "rank": 30,
+      "name": "Si Woo Kim",
+      "points_average": 2.9238,
+      "country": "South Korea"
+    },
+    {
+      "rank": 31,
+      "name": "Jon Rahm",
+      "points_average": 2.9055,
+      "country": "Spain"
+    },
+    {
+      "rank": 32,
+      "name": "Ryan Gerard",
+      "points_average": 2.8901,
+      "country": "United States"
+    },
+    {
+      "rank": 33,
+      "name": "Patrick Cantlay",
+      "points_average": 2.7769,
+      "country": "United States"
+    },
+    {
+      "rank": 34,
+      "name": "Shane Lowry",
+      "points_average": 2.7152,
+      "country": "Ireland"
+    },
+    {
+      "rank": 35,
+      "name": "Kurt Kitayama",
+      "points_average": 2.622,
+      "country": "United States"
+    },
+    {
+      "rank": 36,
+      "name": "Jake Knapp",
+      "points_average": 2.5423,
+      "country": "United States"
+    },
+    {
+      "rank": 37,
+      "name": "Marco Penge",
+      "points_average": 2.5356,
+      "country": "England"
+    },
+    {
+      "rank": 38,
+      "name": "Nicolai Hojgaard",
+      "points_average": 2.5257,
+      "country": "Denmark"
+    },
+    {
+      "rank": 39,
+      "name": "Jason Day",
+      "points_average": 2.4997,
+      "country": "Australia"
+    },
+    {
+      "rank": 40,
+      "name": "Daniel Berger",
+      "points_average": 2.3773,
+      "country": "United States"
+    },
+    {
+      "rank": 41,
+      "name": "Aaron Rai",
+      "points_average": 2.3021,
+      "country": "England"
+    },
+    {
+      "rank": 42,
+      "name": "Nicolas Echavarria",
+      "points_average": 2.2972,
+      "country": "Colombia"
+    },
+    {
+      "rank": 43,
+      "name": "Corey Conners",
+      "points_average": 2.2558,
+      "country": "Canada"
+    },
+    {
+      "rank": 44,
+      "name": "Michael Kim",
+      "points_average": 2.228,
+      "country": "United States"
+    },
+    {
+      "rank": 45,
+      "name": "Samuel Stevens",
+      "points_average": 2.2121,
+      "country": "United States"
+    },
+    {
+      "rank": 46,
+      "name": "Kristoffer Reitan",
+      "points_average": 2.1292,
+      "country": "Norway"
+    },
+    {
+      "rank": 47,
+      "name": "Michael Brennan",
+      "points_average": 2.1151,
+      "country": "United States"
+    },
+    {
+      "rank": 48,
+      "name": "Matt McCarty",
+      "points_average": 2.0827,
+      "country": "United States"
+    },
+    {
+      "rank": 49,
+      "name": "Gary Woodland",
+      "points_average": 2.0476,
+      "country": "United States"
+    },
+    {
+      "rank": 50,
+      "name": "Brian Harman",
+      "points_average": 2.0453,
+      "country": "United States"
+    },
+    {
+      "rank": 1,
+      "name": "Scottie Scheffler",
+      "points_average": 16.2883,
+      "country": "United States"
+    },
+    {
+      "rank": 2,
+      "name": "Rory McIlroy",
+      "points_average": 10.1483,
+      "country": "Northern Ireland"
+    },
+    {
+      "rank": 3,
+      "name": "Cameron Young",
+      "points_average": 5.8765,
+      "country": "United States"
+    },
+    {
+      "rank": 4,
+      "name": "Justin Rose",
+      "points_average": 5.3151,
+      "country": "England"
+    },
+    {
+      "rank": 5,
+      "name": "Tommy Fleetwood",
+      "points_average": 5.2239,
+      "country": "England"
+    },
+    {
+      "rank": 6,
+      "name": "Russell Henley",
+      "points_average": 5.1071,
+      "country": "United States"
+    },
+    {
+      "rank": 7,
+      "name": "Matt Fitzpatrick",
+      "points_average": 5.0875,
+      "country": "England"
+    },
+    {
+      "rank": 8,
+      "name": "Collin Morikawa",
+      "points_average": 5.0833,
+      "country": "United States"
+    },
+    {
+      "rank": 9,
+      "name": "Xander Schauffele",
+      "points_average": 4.9408,
+      "country": "United States"
+    },
+    {
+      "rank": 10,
+      "name": "J.J. Spaun",
+      "points_average": 4.8424,
+      "country": "United States"
+    },
+    {
+      "rank": 11,
+      "name": "Chris Gotterup",
+      "points_average": 4.6908,
+      "country": "United States"
+    },
+    {
+      "rank": 12,
+      "name": "Robert MacIntyre",
+      "points_average": 4.6191,
+      "country": "Scotland"
+    },
+    {
+      "rank": 13,
+      "name": "Sepp Straka",
+      "points_average": 4.1586,
+      "country": "Austria"
+    },
+    {
+      "rank": 14,
+      "name": "Hideki Matsuyama",
+      "points_average": 4.094,
+      "country": "Japan"
+    },
+    {
+      "rank": 15,
+      "name": "Justin Thomas",
+      "points_average": 3.8574,
+      "country": "United States"
+    },
+    {
+      "rank": 16,
+      "name": "Ben Griffin",
+      "points_average": 3.8293,
+      "country": "United States"
+    },
+    {
+      "rank": 17,
+      "name": "Ludvig Aberg",
+      "points_average": 3.7868,
+      "country": "Sweden"
+    },
+    {
+      "rank": 18,
+      "name": "Jacob Bridgeman",
+      "points_average": 3.6398,
+      "country": "United States"
+    },
+    {
+      "rank": 19,
+      "name": "Alex Noren",
+      "points_average": 3.5249,
+      "country": "Sweden"
+    },
+    {
+      "rank": 20,
+      "name": "Patrick Reed",
+      "points_average": 3.5141,
+      "country": "United States"
+    },
+    {
+      "rank": 21,
+      "name": "Harris English",
+      "points_average": 3.4588,
+      "country": "United States"
+    },
+    {
+      "rank": 22,
+      "name": "Viktor Hovland",
+      "points_average": 3.4503,
+      "country": "Norway"
+    },
+    {
+      "rank": 23,
+      "name": "Tyrrell Hatton",
+      "points_average": 3.3859,
+      "country": "England"
+    },
+    {
+      "rank": 24,
+      "name": "Akshay Bhatia",
+      "points_average": 3.3633,
+      "country": "United States"
+    },
+    {
+      "rank": 25,
+      "name": "Bryson DeChambeau",
+      "points_average": 3.0924,
+      "country": "United States"
+    },
+    {
+      "rank": 26,
+      "name": "Keegan Bradley",
+      "points_average": 3.0059,
+      "country": "United States"
+    },
+    {
+      "rank": 27,
+      "name": "Min Woo Lee",
+      "points_average": 2.9868,
+      "country": "Australia"
+    },
+    {
+      "rank": 28,
+      "name": "Sam Burns",
+      "points_average": 2.9508,
+      "country": "United States"
+    },
+    {
+      "rank": 29,
+      "name": "Maverick McNealy",
+      "points_average": 2.9494,
+      "country": "United States"
+    },
+    {
+      "rank": 30,
+      "name": "Si Woo Kim",
+      "points_average": 2.9238,
+      "country": "South Korea"
+    },
+    {
+      "rank": 31,
+      "name": "Jon Rahm",
+      "points_average": 2.9055,
+      "country": "Spain"
+    },
+    {
+      "rank": 32,
+      "name": "Ryan Gerard",
+      "points_average": 2.8901,
+      "country": "United States"
+    },
+    {
+      "rank": 33,
+      "name": "Patrick Cantlay",
+      "points_average": 2.7769,
+      "country": "United States"
+    },
+    {
+      "rank": 34,
+      "name": "Shane Lowry",
+      "points_average": 2.7152,
+      "country": "Ireland"
+    },
+    {
+      "rank": 35,
+      "name": "Kurt Kitayama",
+      "points_average": 2.622,
+      "country": "United States"
+    },
+    {
+      "rank": 36,
+      "name": "Jake Knapp",
+      "points_average": 2.5423,
+      "country": "United States"
+    },
+    {
+      "rank": 37,
+      "name": "Marco Penge",
+      "points_average": 2.5356,
+      "country": "England"
+    },
+    {
+      "rank": 38,
+      "name": "Nicolai Hojgaard",
+      "points_average": 2.5257,
+      "country": "Denmark"
+    },
+    {
+      "rank": 39,
+      "name": "Jason Day",
+      "points_average": 2.4997,
+      "country": "Australia"
+    },
+    {
+      "rank": 40,
+      "name": "Daniel Berger",
+      "points_average": 2.3773,
+      "country": "United States"
+    },
+    {
+      "rank": 41,
+      "name": "Aaron Rai",
+      "points_average": 2.3021,
+      "country": "England"
+    },
+    {
+      "rank": 42,
+      "name": "Nicolas Echavarria",
+      "points_average": 2.2972,
+      "country": "Colombia"
+    },
+    {
+      "rank": 43,
+      "name": "Corey Conners",
+      "points_average": 2.2558,
+      "country": "Canada"
+    },
+    {
+      "rank": 44,
+      "name": "Michael Kim",
+      "points_average": 2.228,
+      "country": "United States"
+    },
+    {
+      "rank": 45,
+      "name": "Samuel Stevens",
+      "points_average": 2.2121,
+      "country": "United States"
+    },
+    {
+      "rank": 46,
+      "name": "Kristoffer Reitan",
+      "points_average": 2.1292,
+      "country": "Norway"
+    },
+    {
+      "rank": 47,
+      "name": "Michael Brennan",
+      "points_average": 2.1151,
+      "country": "United States"
+    },
+    {
+      "rank": 48,
+      "name": "Matt McCarty",
+      "points_average": 2.0827,
+      "country": "United States"
+    },
+    {
+      "rank": 49,
+      "name": "Gary Woodland",
+      "points_average": 2.0476,
+      "country": "United States"
+    },
+    {
+      "rank": 50,
+      "name": "Brian Harman",
+      "points_average": 2.0453,
+      "country": "United States"
+    },
+    {
+      "rank": 1,
+      "name": "Scottie Scheffler",
+      "points_average": 16.2883,
+      "country": "United States"
+    },
+    {
+      "rank": 2,
+      "name": "Rory McIlroy",
+      "points_average": 10.1483,
+      "country": "Northern Ireland"
+    },
+    {
+      "rank": 3,
+      "name": "Cameron Young",
+      "points_average": 5.8765,
+      "country": "United States"
+    },
+    {
+      "rank": 4,
+      "name": "Justin Rose",
+      "points_average": 5.3151,
+      "country": "England"
+    },
+    {
+      "rank": 5,
+      "name": "Tommy Fleetwood",
+      "points_average": 5.2239,
+      "country": "England"
+    },
+    {
+      "rank": 6,
+      "name": "Russell Henley",
+      "points_average": 5.1071,
+      "country": "United States"
+    },
+    {
+      "rank": 7,
+      "name": "Matt Fitzpatrick",
+      "points_average": 5.0875,
+      "country": "England"
+    },
+    {
+      "rank": 8,
+      "name": "Collin Morikawa",
+      "points_average": 5.0833,
+      "country": "United States"
+    },
+    {
+      "rank": 9,
+      "name": "Xander Schauffele",
+      "points_average": 4.9408,
+      "country": "United States"
+    },
+    {
+      "rank": 10,
+      "name": "J.J. Spaun",
+      "points_average": 4.8424,
+      "country": "United States"
+    },
+    {
+      "rank": 11,
+      "name": "Chris Gotterup",
+      "points_average": 4.6908,
+      "country": "United States"
+    },
+    {
+      "rank": 12,
+      "name": "Robert MacIntyre",
+      "points_average": 4.6191,
+      "country": "Scotland"
+    },
+    {
+      "rank": 13,
+      "name": "Sepp Straka",
+      "points_average": 4.1586,
+      "country": "Austria"
+    },
+    {
+      "rank": 14,
+      "name": "Hideki Matsuyama",
+      "points_average": 4.094,
+      "country": "Japan"
+    },
+    {
+      "rank": 15,
+      "name": "Justin Thomas",
+      "points_average": 3.8574,
+      "country": "United States"
+    },
+    {
+      "rank": 16,
+      "name": "Ben Griffin",
+      "points_average": 3.8293,
+      "country": "United States"
+    },
+    {
+      "rank": 17,
+      "name": "Ludvig Aberg",
+      "points_average": 3.7868,
+      "country": "Sweden"
+    },
+    {
+      "rank": 18,
+      "name": "Jacob Bridgeman",
+      "points_average": 3.6398,
+      "country": "United States"
+    },
+    {
+      "rank": 19,
+      "name": "Alex Noren",
+      "points_average": 3.5249,
+      "country": "Sweden"
+    },
+    {
+      "rank": 20,
+      "name": "Patrick Reed",
+      "points_average": 3.5141,
+      "country": "United States"
+    },
+    {
+      "rank": 21,
+      "name": "Harris English",
+      "points_average": 3.4588,
+      "country": "United States"
+    },
+    {
+      "rank": 22,
+      "name": "Viktor Hovland",
+      "points_average": 3.4503,
+      "country": "Norway"
+    },
+    {
+      "rank": 23,
+      "name": "Tyrrell Hatton",
+      "points_average": 3.3859,
+      "country": "England"
+    },
+    {
+      "rank": 24,
+      "name": "Akshay Bhatia",
+      "points_average": 3.3633,
+      "country": "United States"
+    },
+    {
+      "rank": 25,
+      "name": "Bryson DeChambeau",
+      "points_average": 3.0924,
+      "country": "United States"
+    },
+    {
+      "rank": 26,
+      "name": "Keegan Bradley",
+      "points_average": 3.0059,
+      "country": "United States"
+    },
+    {
+      "rank": 27,
+      "name": "Min Woo Lee",
+      "points_average": 2.9868,
+      "country": "Australia"
+    },
+    {
+      "rank": 28,
+      "name": "Sam Burns",
+      "points_average": 2.9508,
+      "country": "United States"
+    },
+    {
+      "rank": 29,
+      "name": "Maverick McNealy",
+      "points_average": 2.9494,
+      "country": "United States"
+    },
+    {
+      "rank": 30,
+      "name": "Si Woo Kim",
+      "points_average": 2.9238,
+      "country": "South Korea"
+    },
+    {
+      "rank": 31,
+      "name": "Jon Rahm",
+      "points_average": 2.9055,
+      "country": "Spain"
+    },
+    {
+      "rank": 32,
+      "name": "Ryan Gerard",
+      "points_average": 2.8901,
+      "country": "United States"
+    },
+    {
+      "rank": 33,
+      "name": "Patrick Cantlay",
+      "points_average": 2.7769,
+      "country": "United States"
+    },
+    {
+      "rank": 34,
+      "name": "Shane Lowry",
+      "points_average": 2.7152,
+      "country": "Ireland"
+    },
+    {
+      "rank": 35,
+      "name": "Kurt Kitayama",
+      "points_average": 2.622,
+      "country": "United States"
+    },
+    {
+      "rank": 36,
+      "name": "Jake Knapp",
+      "points_average": 2.5423,
+      "country": "United States"
+    },
+    {
+      "rank": 37,
+      "name": "Marco Penge",
+      "points_average": 2.5356,
+      "country": "England"
+    },
+    {
+      "rank": 38,
+      "name": "Nicolai Hojgaard",
+      "points_average": 2.5257,
+      "country": "Denmark"
+    },
+    {
+      "rank": 39,
+      "name": "Jason Day",
+      "points_average": 2.4997,
+      "country": "Australia"
+    },
+    {
+      "rank": 40,
+      "name": "Daniel Berger",
+      "points_average": 2.3773,
+      "country": "United States"
+    },
+    {
+      "rank": 41,
+      "name": "Aaron Rai",
+      "points_average": 2.3021,
+      "country": "England"
+    },
+    {
+      "rank": 42,
+      "name": "Nicolas Echavarria",
+      "points_average": 2.2972,
+      "country": "Colombia"
+    },
+    {
+      "rank": 43,
+      "name": "Corey Conners",
+      "points_average": 2.2558,
+      "country": "Canada"
+    },
+    {
+      "rank": 44,
+      "name": "Michael Kim",
+      "points_average": 2.228,
+      "country": "United States"
+    },
+    {
+      "rank": 45,
+      "name": "Samuel Stevens",
+      "points_average": 2.2121,
+      "country": "United States"
+    },
+    {
+      "rank": 46,
+      "name": "Kristoffer Reitan",
+      "points_average": 2.1292,
+      "country": "Norway"
+    },
+    {
+      "rank": 47,
+      "name": "Michael Brennan",
+      "points_average": 2.1151,
+      "country": "United States"
+    },
+    {
+      "rank": 48,
+      "name": "Matt McCarty",
+      "points_average": 2.0827,
+      "country": "United States"
+    },
+    {
+      "rank": 49,
+      "name": "Gary Woodland",
+      "points_average": 2.0476,
+      "country": "United States"
+    },
+    {
+      "rank": 50,
+      "name": "Brian Harman",
+      "points_average": 2.0453,
+      "country": "United States"
+    }
+  ]
+}
