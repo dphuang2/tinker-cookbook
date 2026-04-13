@@ -2,13 +2,14 @@
 
 ## Slack message for #when-in-doubt
 
-:bufo-gives-an-idea: I want to post a thread on X about a fun autoresearch experiment for training a golf forecasting model I ran over the weekend. Wanted to get feedback on whether this is interesting enough and appropriate to share publicly. The vibe I'm going for is similar to Karpathy's autonomous research posts where he shows the full trajectory of experiments (including failures).
+:bufo-gives-an-idea: I want to post a thread on X about a fun autoresearch experiment I ran over the weekend. I pointed a cloud-hosted coding agent (Claude Code on the web) at Tinker and told it to build a golf forecasting system from scratch. It ran 108 experiments over 49 hours with no human in the loop, driving the benchmark from 2.81 to 0.54.
 
-Result: backtesting the model against the 2026 Masters that just finished and showing it identified contrarian edges against Kalshi in both directions.
+I backtested the best system on the Masters that just finished. The model was more confident than Kalshi in McIlroy's 6-shot lead (85% vs 65%) and was right -- McIlroy won. The vibe I'm going for is similar to Karpathy's autonomous research posts (full experiment trajectory including failures).
+
+Wanted to get a read on whether this is good to share publicly. Proposed X posts in the thread.
 
 Full session link (internal): https://claude.ai/code/session_01VzCzqLRWq3ttDiWQRqpPtV
 Code branch: https://github.com/dphuang2/tinker-cookbook/tree/claude/golf-forecasting-setup-VIpRZ/tinker_cookbook/recipes/golf_forecasting
-Proposed X posts in the thread here
 
 ---
 
@@ -22,7 +23,7 @@ It ran 108 experiments. Here's the full trajectory, including the ones that made
 
 **Post 2:**
 
-The setup: given a mid-tournament leaderboard, produce calibrated win probabilities. The agent chose models, training methods, prompts, data sources, and eval design. The only fixed constraint was a frozen benchmark so I could measure real progress.
+The setup: given a mid-tournament leaderboard, predict who wins. The agent chose models, training methods, prompts, data sources, and eval design. The only fixed constraint was a frozen benchmark so I could measure real progress.
 
 Starting point: a heuristic baseline at log-loss 2.81. The best system got it down to 0.54.
 
@@ -36,31 +37,23 @@ Starting point: a heuristic baseline at log-loss 2.81. The best system got it do
 
 **Post 4:**
 
-I backtested the best system on this weekend's Masters using its fine-tuned 1B model.
+I backtested the best system on the Masters that just finished, using the fine-tuned 1B model the agent trained.
 
-After R2, McIlroy held a historic 6-shot lead. Kalshi priced him at ~65%. The model gave him 85%.
+After R2, McIlroy held a historic 6-shot lead. Kalshi had him at ~65%. The model gave him 85%.
 
-McIlroy did win. The model was more confident than the market and was right.
+McIlroy won. The model was more confident than the market -- and was right. [attach: trading_timeline.png]
 
 **Post 5:**
 
-After R3, McIlroy's lead had collapsed -- tied with Cameron Young after shooting 73. Kalshi had him at 36%. The model dropped to 35%. Roughly in agreement.
+After R3, McIlroy's lead had collapsed. He shot 73 and was tied with Cameron Young. Kalshi had him at 36%. The model: 35%.
+
+The model and market agreed when the situation was ambiguous. The edge was R2 -- correctly reading a dominant lead that the market underpriced.
 
 McIlroy held on to win by one.
 
-The model's edge was R2: it correctly read the 6-shot lead as dominant, while the market underpriced it. [attach: trading_timeline.png]
-
 **Post 6:**
 
-I also ran raw Claude Opus 4.6 on the same prompts (no fine-tuning, no knowledge of the outcome):
-
-After R2: Claude said 42%. The market said 65%. The fine-tuned 1B said 85%.
-
-The fine-tuned model was the most confident of all three -- and the closest to what actually happened.
-
-**Post 7:**
-
-This worked because of Tinker. The agent needed to train, distill, and evaluate dozens of models across 108 experiments -- switching between model families, RL and SFT, different prediction formats -- without managing GPUs or distributed training. Tinker handled all of that. Claude Code on the web provided the agent loop.
+This worked because of Tinker. The agent trained, distilled, and evaluated dozens of models across 108 experiments -- switching between model families, RL and SFT, different prediction formats -- all without managing GPUs. Tinker handled the training infrastructure. Claude Code on the web ran the agent loop.
 
 Code and results are open:
 
@@ -72,47 +65,32 @@ https://github.com/dphuang2/tinker-cookbook/tree/claude/golf-forecasting-setup-V
 
 ## Attachments
 
-1. `masters_2026_trading_timeline.png` -- the hero chart (model vs market lines + P&L waterfall)
-2. `experiment_progress.png` -- Karpathy-style 108-experiment progress chart
-3. Optional: git log screenshot, `change_type_breakdown.png`
+1. `experiment_progress.png` -- Karpathy-style 108-experiment progress chart (hero image for Post 1)
+2. `masters_2026_trading_timeline.png` -- model vs Kalshi at each round (Post 4)
 
 ## Risk assessment for reviewers
 
 **Strong positives:**
-- Timely: Masters literally just finished today
+- Timely: Masters just finished today
 - Engaging: prediction markets + golf + AI research is a fun combo
-- Honest: shows 48% failure rate, explicitly says "one data point, not a beat-the-market claim"
+- Honest: shows 52% failure rate, one tournament backtest framed as one data point
 - Technical depth: the discoveries (1B matching 8B, RL hurting calibration) are genuinely interesting
-- The Kalshi comparison has a concrete "so what" that non-ML people can understand
+- The Kalshi comparison gives a concrete "so what" that non-ML people understand
+- Code is fully open, every experiment is in git
 
 **Potential concerns:**
 
-1. **Competitive intelligence / signaling what we're building** -- Some of our customers use Tinker for forecasting workloads. Posting a polished forecasting demo could signal to competitors what our platform is good at and what kinds of use cases we're investing in. Even though golf is a toy domain, the underlying pipeline (calibrated probability distributions, proper scoring rules, SFT distillation for forecasting, multi-model routing) maps directly to real customer workflows. Possible mitigations:
-   - Reframe the post to lead with "autonomous AI research agent" rather than "forecasting." The hero story is Claude Code running 100 experiments unattended, not Tinker's forecasting stack.
-   - Downplay the Tinker-specific details (reward functions, training infra) and emphasize the agent loop + discoveries.
-   - Or: decide we're comfortable with this signal because the recipe is already open-source in tinker-cookbook anyway.
-   - **This is the concern I'm most uncertain about -- would appreciate team input.**
+1. **Competitive intelligence / signaling what we're building** -- Some customers use Tinker for forecasting workloads. A polished forecasting demo could signal what the platform is good at. Mitigations:
+   - Golf is a toy domain, and the recipe is already open-source in tinker-cookbook
+   - The post leads with "autonomous agent" not "forecasting platform"
+   - **Would appreciate team input on this one**
 
-2. "AI can beat prediction markets" reading -- **mitigated** by explicitly calling it one data point and framing it as calibration, not a trading strategy
+2. **"AI can beat prediction markets" reading** -- The model was right on one tournament. The post frames it as "the model was more confident and happened to be right" not "we found an edge." One data point, explicitly stated.
 
-3. Encouraging sports betting -- **mitigated** by framing around calibration quality, not "here's how to make money"
+3. **Encouraging sports betting** -- Framed around calibration quality, not trading strategy. No P&L calculations in the post.
 
-4. Competitor model names (DeepSeek, Kimi, Qwen) -- these are just the models the agent evaluated, showing breadth of search
+4. **Competitor model names (DeepSeek, Kimi)** -- These are just models the agent evaluated during its search. Shows breadth.
 
-5. "Autonomous AI" could feel overhyped -- **mitigated** by 48% failure rate and noting it followed a structured program.md
+5. **"Autonomous AI" overhype** -- Mitigated by the 52% failure rate and linking the full code so people can see it followed a structured program.
 
-**Tone:** Technical but accessible. The claim is narrow: "the model's calibration was interesting in ways that disagreed with the market." Not: "we cracked sports betting."
-
-## Alternative framing (if concern #1 is serious)
-
-If the team thinks the forecasting angle is too revealing, the post could be reframed to focus purely on the autonomous research loop:
-
-- Lead: "I let Claude Code run 100 experiments in 49 hours with zero intervention"
-- Hero visual: the Karpathy-style experiment progress chart
-- Findings: 1B matching 8B, RL hurting calibration, agent inventing multi-model routing
-- Skip or minimize: the Kalshi backtest, the forecasting-specific details
-- Mention Tinker only as "our training platform" without detailing the forecasting pipeline
-
-This version is less spicy (no prediction market angle) but also less revealing about what the platform does well. It's more of a "look at what coding agents can do" post than a "look at what our forecasting stack can do" post.
-
-The tradeoff: the Kalshi angle is what makes this post stand out from generic "I let an AI agent run" posts. Without it, we're competing with every other autonomous agent demo. With it, we have a concrete, testable, timely hook that nobody else has.
+**Tone:** Technical, understated. The claim is: "an autonomous agent drove real benchmark improvement, and the resulting model had an interesting opinion about the Masters." Not: "we cracked prediction markets."
