@@ -31,8 +31,6 @@ Starting point: a heuristic baseline at log-loss 2.81. The best system got it do
 - RL degraded calibration every time it was tried (4 attempts, different configs).
 - Chain-of-thought made predictions worse. Calibration suffered when models overthought.
 
-The agent eventually built a multi-model router on its own -- Kimi-K2.5 for early rounds, DeepSeek for the final round.
-
 **Post 4:**
 
 I backtested the system on this weekend's Masters.
@@ -45,7 +43,7 @@ McIlroy then shot 73 in R3 and nearly lost the tournament. [attach: trading_time
 
 After R3, McIlroy was tied with Cameron Young. Kalshi dropped him to 36%.
 
-One thing the agent discovered: by the final round, fewer contenders are realistic, so it switches to a binary prediction (leader vs field). With that config, the model gave McIlroy 55% -- while the market had him at 36%.
+The agent discovered that different rounds call for different approaches. Early on, it predicts across multiple contenders. By the final round, fewer players are realistic, so it switches to binary (leader vs field) and routes to a different model. With that config, the model gave McIlroy 55% -- while the market had him at 36%.
 
 McIlroy held on to win by one.
 
