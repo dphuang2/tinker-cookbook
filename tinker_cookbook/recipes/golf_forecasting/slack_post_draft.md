@@ -13,13 +13,13 @@ I want to post a thread on X about an autoresearch experiment I ran using Claude
 
 **Post 1:**
 
-We pointed Claude Code at an open-ended research task -- build a golf forecasting system -- and let it run for 49 hours on Tinker. No human in the loop.
+I pointed Claude Code at an open-ended research task -- build a golf forecasting system -- and let it run for 49 hours on Tinker. No human in the loop.
 
 It ran 108 experiments. Here's the full trajectory, including the ones that made things worse. [attach: experiment_progress.png]
 
 **Post 2:**
 
-The setup: given a mid-tournament leaderboard, produce calibrated win probabilities. The agent chose models, training methods, prompts, data sources, and eval design. The only fixed constraint was a frozen benchmark so we could measure real progress.
+The setup: given a mid-tournament leaderboard, produce calibrated win probabilities. The agent chose models, training methods, prompts, data sources, and eval design. The only fixed constraint was a frozen benchmark so I could measure real progress.
 
 Starting point: a heuristic baseline at log-loss 2.81. Final system: 0.73.
 
@@ -35,7 +35,7 @@ The agent eventually built a multi-model router on its own -- Kimi-K2.5 for earl
 
 **Post 4:**
 
-We backtested the system on this weekend's Masters.
+I backtested the system on this weekend's Masters.
 
 After R2, McIlroy held a historic 6-shot lead. Sportsbooks priced him at 74%. The model gave him 34%.
 
@@ -61,7 +61,7 @@ One tournament. Not a system. But the shape of the disagreement is interesting -
 
 **Post 7:**
 
-We also ran raw Claude Opus 4.6 on the same prompts (no fine-tuning, no knowledge of the outcome):
+I also ran raw Claude Opus 4.6 on the same prompts (no fine-tuning, no knowledge of the outcome):
 
 After R2: Claude said 42%. Closer to the model's 34% than the market's 74%.
 After R3: Claude said 32%. Exactly the model's number.
