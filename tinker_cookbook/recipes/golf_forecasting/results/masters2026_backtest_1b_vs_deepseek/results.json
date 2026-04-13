@@ -1,0 +1,102 @@
+{
+  "1b_finetuned": [
+    {
+      "example_id": "masters2026-r1",
+      "round": 1,
+      "leader": "Rory McIlroy",
+      "target_winner": "Rory McIlroy",
+      "effective_target": "Rory McIlroy",
+      "forecast": {
+        "Rory McIlroy": 0.18063872255489022,
+        "other": 0.8193612774451098
+      },
+      "log_loss": 1.7112562503789843,
+      "brier": 1.3427058059529644,
+      "target_prob": 0.18063872255489022,
+      "top1_correct": 0.0,
+      "format_valid": 1.0
+    },
+    {
+      "example_id": "masters2026-r2",
+      "round": 2,
+      "leader": "Rory McIlroy",
+      "target_winner": "Rory McIlroy",
+      "effective_target": "Rory McIlroy",
+      "forecast": {
+        "Rory McIlroy": 0.8493013972055888,
+        "other": 0.15069860279441116
+      },
+      "log_loss": 0.16334115307143596,
+      "brier": 0.04542013776837542,
+      "target_prob": 0.8493013972055888,
+      "top1_correct": 1.0,
+      "format_valid": 1.0
+    },
+    {
+      "example_id": "masters2026-r3",
+      "round": 3,
+      "leader": "Rory McIlroy",
+      "target_winner": "Rory McIlroy",
+      "effective_target": "Rory McIlroy",
+      "forecast": {
+        "Rory McIlroy": 0.3502994011976048,
+        "other": 0.6497005988023953
+      },
+      "log_loss": 1.0489670581789443,
+      "brier": 0.8442217361683819,
+      "target_prob": 0.3502994011976048,
+      "top1_correct": 0.0,
+      "format_valid": 1.0
+    }
+  ],
+  "deepseek_teacher": [
+    {
+      "example_id": "masters2026-r1",
+      "round": 1,
+      "leader": "Rory McIlroy",
+      "target_winner": "Rory McIlroy",
+      "effective_target": "Rory McIlroy",
+      "forecast": {
+        "Rory McIlroy": 0.250499001996008,
+        "other": 0.7495009980039921
+      },
+      "log_loss": 1.3843003425130262,
+      "brier": 1.12350349201796,
+      "target_prob": 0.250499001996008,
+      "top1_correct": 0.0,
+      "format_valid": 1.0
+    },
+    {
+      "example_id": "masters2026-r2",
+      "round": 2,
+      "leader": "Rory McIlroy",
+      "target_winner": "Rory McIlroy",
+      "effective_target": "Rory McIlroy",
+      "forecast": {
+        "Rory McIlroy": 0.8493013972055888,
+        "other": 0.15069860279441116
+      },
+      "log_loss": 0.16334115307143596,
+      "brier": 0.04542013776837542,
+      "target_prob": 0.8493013972055888,
+      "top1_correct": 1.0,
+      "format_valid": 1.0
+    },
+    {
+      "example_id": "masters2026-r3",
+      "round": 3,
+      "leader": "Rory McIlroy",
+      "target_winner": "Rory McIlroy",
+      "effective_target": "Rory McIlroy",
+      "forecast": {
+        "Rory McIlroy": 0.4500998003992016,
+        "other": 0.5499001996007985
+      },
+      "log_loss": 0.7982859421421318,
+      "brier": 0.604780459041996,
+      "target_prob": 0.4500998003992016,
+      "top1_correct": 0.0,
+      "format_valid": 1.0
+    }
+  ]
+}
