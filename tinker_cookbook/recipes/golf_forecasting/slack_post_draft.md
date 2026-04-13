@@ -64,11 +64,13 @@ Base Opus is already more skeptical than prediction markets. Fine-tuning sharpen
 
 **Post 8:**
 
+This worked because of Tinker. The agent needed to train, distill, and evaluate dozens of models across 108 experiments -- switching between model families, RL and SFT, different prediction formats -- without managing GPUs or distributed training. Tinker handled all of that. Claude Code on the web provided the agent loop.
+
 Code and results are open:
 
 https://github.com/dphuang2/tinker-cookbook/tree/claude/golf-forecasting-setup-VIpRZ/tinker_cookbook/recipes/golf_forecasting
 
-108 experiments, 100 git commits, every hypothesis logged. Built on Tinker and Claude Code on the web.
+108 experiments, 100 git commits, every hypothesis logged.
 
 ---
 
