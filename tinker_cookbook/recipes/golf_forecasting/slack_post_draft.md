@@ -13,7 +13,7 @@ I want to post a thread on X about an autoresearch experiment I ran using Claude
 
 **Post 1:**
 
-I pointed Claude Code at an open-ended research task -- build a golf forecasting system -- and let it run for 49 hours on Tinker. No human in the loop.
+I pointed a cloud-hosted coding agent at an open-ended research task -- build a golf forecasting system -- and let it run for 49 hours on Tinker. No human in the loop.
 
 It ran 108 experiments. Here's the full trajectory, including the ones that made things worse. [attach: experiment_progress.png]
 
