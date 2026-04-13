@@ -43,11 +43,11 @@ McIlroy then shot 73 in R3 and nearly lost the tournament. [attach: trading_time
 
 **Post 5:**
 
-After R3, McIlroy was tied with Cameron Young. Kalshi dropped him to 36%. The model had him at 32% -- roughly in line with the market.
+After R3, McIlroy was tied with Cameron Young. Kalshi dropped him to 36%.
+
+One thing the agent discovered: by the final round, fewer contenders are realistic, so it switches to a binary prediction (leader vs field). With that config, the model gave McIlroy 55% -- while the market had him at 36%.
 
 McIlroy held on to win by one.
-
-The model's one big contrarian call was R2: the 6-shot lead was overpriced. That turned out to be right.
 
 **Post 6:**
 
@@ -60,9 +60,9 @@ One tournament. Not a system. But the model identified the mispricing.
 I also ran raw Claude Opus 4.6 on the same prompts (no fine-tuning, no knowledge of the outcome):
 
 After R2: Claude said 42%. Closer to the model's 34% than the market's 74%.
-After R3: Claude said 32%. Same as the fine-tuned model.
+After R3: Claude said 32%.
 
-Base Opus is already more skeptical than prediction markets. Fine-tuning sharpens that further in extreme situations.
+Base Opus is already more skeptical than prediction markets. Fine-tuning sharpens that -- especially at R2, where the fine-tuned model was more disciplined about the 6-shot lead (34% vs Claude's 42%).
 
 **Post 8:**
 
