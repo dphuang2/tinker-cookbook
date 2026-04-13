@@ -77,7 +77,21 @@ Then after R3: BUY McIlroy YES at 36c (model flips, says 55%). Hold through Sund
 
 Total: +$1.02 on 26c of initial capital.
 
-**Post 8 (the real takeaway):**
+**Post 8 (sanity check: raw Claude Opus 4.6 on the same prompts):**
+
+I also ran the same prompts through raw Claude Opus 4.6 (no fine-tuning) to see how it compares:
+
+|       | Fine-tuned | Claude Opus | Kalshi | Sportsbook |
+|-------|-----------|-------------|--------|------------|
+| R1    | 12%       | 18%         | 25%    | 25%        |
+| R2    | 34%       | 42%         | 65%    | 74%        |
+| R3    | 32%       | 32%         | 36%    | 43%        |
+
+Claude is already more skeptical than the market at R2 (42% vs 74%) but the fine-tuned model is even more disciplined (34%). After R3 they agree exactly (32%). The fine-tuning's value shows up in extreme situations where the crowd overreacts.
+
+Caveat: Claude likely knows the 2026 Masters result from training data, so take this with a grain of salt. The fine-tuned model was trained on pre-2026 data only.
+
+**Post 9 (the real takeaway):**
 
 This isn't a "beat the market" claim from one tournament. It's one data point.
 
@@ -87,7 +101,7 @@ But what's interesting is HOW the model disagreed. It correctly identified that 
 
 That's the pattern well-calibrated models exploit: they fade emotional extremes.
 
-**Post 9 (what this means for AI research):**
+**Post 10 (what this means for AI research):**
 
 49 hours. 100 experiments. Zero human intervention.
 
