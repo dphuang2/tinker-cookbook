@@ -34,6 +34,7 @@ Some findings along the way:
 - A 1B student distilled from DeepSeek-V3.1 matched 8B and 70B models. Teacher labels were the bottleneck, not student capacity.
 - RL degraded calibration every time it was tried (4 attempts, different configs).
 - Chain-of-thought made predictions worse. Overthinking hurt calibration.
+- The agent explored output formats (top-5, top-3, leader vs field) and found simple binary ("does the leader win?") scored best. Simpler framing, sharper calibration.
 
 The winning system: DeepSeek-V3.1 as teacher with a prompt the agent iterated into (binary prediction with explicit lead margin context), distilled into a 1B model via SFT. The 1B matches the teacher and runs on a phone.
 
