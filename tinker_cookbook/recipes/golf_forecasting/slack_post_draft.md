@@ -11,107 +11,71 @@ I want to post a thread on X about an autoresearch experiment I ran using Claude
 
 ## Proposed X post (thread format)
 
-**Post 1 (hook):**
+**Post 1:**
 
-I let Claude Code run autonomously for 49 hours to build a golf forecasting model from scratch. 100 experiments, zero human intervention.
+We pointed Claude Code at an open-ended research task -- build a golf forecasting system -- and let it run for 49 hours on Tinker. No human in the loop.
 
-Then I backtested it against this weekend's Masters and compared it to Kalshi. The model correctly faded the crowd in both directions. [attach: trading_timeline.png]
+It ran 108 experiments. Here's the full trajectory, including the ones that made things worse. [attach: experiment_progress.png]
 
-**Post 2 (setup):**
+**Post 2:**
 
-The task: given a mid-tournament golf leaderboard, predict who wins. The agent had full freedom -- models, training, prompts, data, eval design. One constraint: maintain a frozen benchmark.
+The setup: given a mid-tournament leaderboard, produce calibrated win probabilities. The agent chose models, training methods, prompts, data sources, and eval design. The only fixed constraint was a frozen benchmark so we could measure real progress.
 
-It started with a heuristic baseline (log-loss 2.81) and a broken zero-shot LLM (7.36). 108 experiments later, it built a system at 0.73 -- a 74% improvement.
+Starting point: a heuristic baseline at log-loss 2.81. Final system: 0.73.
 
-[attach: experiment_progress.png]
+**Post 3:**
 
-**Post 3 (the journey):**
+52% of experiments were reverted. Some findings along the way:
 
-Only 48% of experiments were kept. The rest regressed or didn't help. That's the real story.
+- A 1B student distilled from DeepSeek-V3.1 matched 8B and 70B models. The teacher's labels were the bottleneck, not the student's capacity.
+- RL degraded calibration every time it was tried (4 attempts, different configs).
+- Chain-of-thought made predictions worse. Calibration suffered when models overthought.
 
-The agent tried 9+ model families (1B to 235B), RL vs SFT, prompt engineering, multi-teacher distillation, chain-of-thought, and round-dependent routing. It invented a multi-model router on its own.
+The agent eventually built a multi-model router on its own -- Kimi-K2.5 for early rounds, DeepSeek for the final round.
 
-**Post 4 (key discoveries):**
+**Post 4:**
 
-All discovered autonomously:
+We backtested the system on this weekend's Masters.
 
-1. Teacher quality >> student capacity. A 1B model matches 8B and 70B when distilled from the same teacher. Labels matter, not parameters.
+After R2, McIlroy held a historic 6-shot lead. Sportsbooks priced him at 74%. The model gave him 34%.
 
-2. RL consistently destroyed SFT calibration. 4 attempts, all worse.
+McIlroy then shot 73 in R3 and nearly lost the tournament.
 
-3. Chain-of-thought made predictions WORSE. Overthinking hurts calibration.
+**Post 5:**
 
-4. Best system: Kimi-K2.5 (thinking model) for early rounds + DeepSeek for the final round.
+After R3, McIlroy was tied with Cameron Young. The market dropped him to 36%. The model moved the other direction: 55%.
 
-**Post 5 (the Masters backtest -- this is the good part):**
+McIlroy held on to win by one.
 
-McIlroy just won his second straight Masters. I ran the model on the actual 2026 leaderboard after each round and compared to Kalshi/sportsbook odds:
+The model disagreed with the market in both directions and was closer to what actually happened both times. [attach: trading_timeline.png]
 
-After R2 (McIlroy with historic 6-shot lead):
-- Sportsbooks: 74% McIlroy
-- Kalshi: ~65%
-- Our model: 34%
+**Post 6:**
 
-The model was *dramatically* more skeptical of the massive lead. What happened next? McIlroy shot 73 in R3 and nearly blew the entire tournament.
+On Kalshi, that sequence looks like this:
 
-**Post 6 (the flip):**
+After R2: buy McIlroy NO at 26c.
+After R3: sell NO at 64c (+38c, no outcome risk).
+After R3: buy YES at 36c. McIlroy wins, pays $1 (+64c).
 
-After R3 (McIlroy tied with Cameron Young, lead gone):
-- Kalshi: 36% McIlroy (market panicked)
-- Our model: 55% McIlroy
+One tournament. Not a system. But the shape of the disagreement is interesting -- the model faded emotional extremes on both sides.
 
-The model FLIPPED. When everyone panicked about the collapse, the model said: he's still the best player on the board.
+**Post 7:**
 
-McIlroy held on to win by one shot.
+We also ran raw Claude Opus 4.6 on the same prompts (no fine-tuning, no knowledge of the outcome):
 
-**Post 7 (the trade):**
+After R2: Claude said 42%. Closer to the model's 34% than the market's 74%.
+After R3: Claude said 32%. Exactly the model's number.
 
-If you followed the model on Kalshi:
+Base Opus is already more skeptical than prediction markets. Fine-tuning sharpens that further in extreme situations.
 
-After R2: BUY McIlroy NO at 26c (market prices YES at 74%, model says only 34%)
-After R3: SELL McIlroy NO at 64c (market panicked, NO jumped from 26c to 64c)
+**Post 8:**
 
-NO round-trip: +38c profit per contract. 146% return. No outcome risk -- you're flat before Sunday.
+The full session, code, and results are open:
 
-Then after R3: BUY McIlroy YES at 36c (model flips, says 55%). Hold through Sunday. McIlroy wins. Pays $1. Another +64c.
+- Claude Code session: [link]
+- Code: [link]
 
-Total: +$1.02 on 26c of initial capital.
-
-**Post 8 (sanity check: raw Claude Opus 4.6 on the same prompts):**
-
-I also gave the same prompts to raw Claude Opus 4.6 -- no fine-tuning, no golf-specific training. Its knowledge cutoff is before the 2026 Masters so it doesn't know the outcome.
-
-After R2 (6-shot lead):
-- Sportsbook: 74%
-- Kalshi: 65%
-- Claude Opus (raw): 42%
-- Fine-tuned model: 34%
-
-After R3 (lead collapsed):
-- Sportsbook: 43%
-- Kalshi: 36%
-- Claude Opus (raw): 32%
-- Fine-tuned model: 32%
-
-Raw Opus is already more skeptical than the market (42% vs 74%) but the fine-tuned model is even more disciplined (34%). After R3 they agree exactly. Fine-tuning's value shows up in the extreme situations where crowds overreact.
-
-**Post 9 (the real takeaway):**
-
-This isn't a "beat the market" claim from one tournament. It's one data point.
-
-But what's interesting is HOW the model disagreed. It correctly identified that the crowd:
-- Overpriced certainty after the 6-shot lead
-- Overreacted to the subsequent stumble
-
-That's the pattern well-calibrated models exploit: they fade emotional extremes.
-
-**Post 10 (what this means for AI research):**
-
-49 hours. 100 experiments. Zero human intervention.
-
-The agent formed hypotheses, tested them, learned from failures, and made genuinely surprising discoveries. Then the model it built had opinions that disagreed with prediction markets in interesting, testable ways.
-
-Built with @ThinkingMachinesLab's Tinker + Claude Code on the web.
+108 experiments, 100 git commits, every hypothesis logged. Built on Tinker and Claude Code on the web.
 
 ---
 
