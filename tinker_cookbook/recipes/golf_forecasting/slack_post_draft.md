@@ -79,17 +79,21 @@ Total: +$1.02 on 26c of initial capital.
 
 **Post 8 (sanity check: raw Claude Opus 4.6 on the same prompts):**
 
-I also ran the same prompts through raw Claude Opus 4.6 (no fine-tuning) to see how it compares:
+I also gave the same prompts to raw Claude Opus 4.6 -- no fine-tuning, no golf-specific training. Its knowledge cutoff is before the 2026 Masters so it doesn't know the outcome.
 
-|       | Fine-tuned | Claude Opus | Kalshi | Sportsbook |
-|-------|-----------|-------------|--------|------------|
-| R1    | 12%       | 18%         | 25%    | 25%        |
-| R2    | 34%       | 42%         | 65%    | 74%        |
-| R3    | 32%       | 32%         | 36%    | 43%        |
+After R2 (6-shot lead):
+- Sportsbook: 74%
+- Kalshi: 65%
+- Claude Opus (raw): 42%
+- Fine-tuned model: 34%
 
-Claude is already more skeptical than the market at R2 (42% vs 74%) but the fine-tuned model is even more disciplined (34%). After R3 they agree exactly (32%). The fine-tuning's value shows up in extreme situations where the crowd overreacts.
+After R3 (lead collapsed):
+- Sportsbook: 43%
+- Kalshi: 36%
+- Claude Opus (raw): 32%
+- Fine-tuned model: 32%
 
-Caveat: Claude likely knows the 2026 Masters result from training data, so take this with a grain of salt. The fine-tuned model was trained on pre-2026 data only.
+Raw Opus is already more skeptical than the market (42% vs 74%) but the fine-tuned model is even more disciplined (34%). After R3 they agree exactly. Fine-tuning's value shows up in the extreme situations where crowds overreact.
 
 **Post 9 (the real takeaway):**
 
