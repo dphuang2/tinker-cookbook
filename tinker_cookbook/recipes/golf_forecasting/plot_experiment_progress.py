@@ -42,7 +42,7 @@ def plot_progress_chart(experiments, output_path):
     best_xs, best_ys = [], []
     best_so_far = float("inf")
 
-    # Track the index of key milestones for annotation placement
+    # Track the actual best experiment for the improvement arrow
     best_exp_x, best_exp_y = None, None
 
     for i, e in enumerate(experiments):
@@ -71,7 +71,7 @@ def plot_progress_chart(experiments, output_path):
             best_xs.append(i + 1)
             best_ys.append(ll)
 
-        if e["name"] == "exp92-multi-model":
+        if e["name"] == "exp79-binary-margin":
             best_exp_x, best_exp_y = i + 1, ll
 
     # Plot all experiments as scatter
@@ -96,12 +96,10 @@ def plot_progress_chart(experiments, output_path):
     # Format: (exp_x, exp_y, label, text_x, text_y) -- text positions are absolute
     milestones = [
         (1, 2.81, "Heuristic\nbaseline", 6, 3.8),
-        (9, 1.90, "Bug fix +\nprob floor", 14, 2.9),
+        (9, 1.90, "Bug fix", 14, 2.9),
         (18, 1.27, "Top-3\ncandidates", 24, 2.2),
-        (36, 1.23, "SFT distill\n(DeepSeek\u21928B)", 42, 1.8),
+        (36, 1.23, "SFT distillation", 42, 1.8),
         (64, 1.23, "1B matches 8B!", 58, 1.65),
-        (86, 0.54, "Binary + margin", 78, 1.5),
-        (99, 0.73, "Multi-model\nrouter (best)", 105, 1.45),
     ]
 
     for mx, my, label, tx, ty in milestones:
@@ -143,7 +141,7 @@ def plot_progress_chart(experiments, output_path):
     # Point the improvement annotation at the actual best experiment
     if best_exp_x and best_exp_y:
         ax.annotate(
-            "74% improvement\n(2.81 \u2192 0.73)",
+            "81% improvement\n(2.81 \u2192 0.54)",
             xy=(best_exp_x, best_exp_y),
             xytext=(75, 1.7),
             fontsize=11,
