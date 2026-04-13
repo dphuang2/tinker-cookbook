@@ -21,7 +21,7 @@ It ran 108 experiments. Here's the full trajectory, including the ones that made
 
 The setup: given a mid-tournament leaderboard, produce calibrated win probabilities. The agent chose models, training methods, prompts, data sources, and eval design. The only fixed constraint was a frozen benchmark so I could measure real progress.
 
-Starting point: a heuristic baseline at log-loss 2.81. Final system: 0.73.
+Starting point: a heuristic baseline at log-loss 2.81. The best system got it down to 0.54.
 
 **Post 3:**
 
