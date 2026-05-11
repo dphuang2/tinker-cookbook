@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 class CLIConfig:
     # Models
     model_name: str = "Qwen/Qwen3-4B-Instruct-2507"
-    teacher_model: str = "Qwen/Qwen3-8B"
+    teacher_model: str = "Qwen/Qwen3-30B-A3B-Instruct-2507"
     teacher_checkpoint: str | None = None
     load_checkpoint_path: str | None = None
 

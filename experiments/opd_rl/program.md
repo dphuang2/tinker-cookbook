@@ -80,9 +80,12 @@ rewrites — they are part of the experimental record.
 These are the *first* picks, not commitments. The loop is allowed and
 expected to replace them if they don't make the claims discoverable.
 
-- **Teacher (initial):** `Qwen/Qwen3-8B`. Among supported Qwen3 dense
-  models on Tinker; plausibly decent on Countdown without being at the
-  task ceiling.
+- **Teacher (initial):** `Qwen/Qwen3-30B-A3B-Instruct-2507`. Matches
+  student's `qwen3_instruct` renderer (no thinking-mode mismatch); MoE
+  with 3B active params so teacher logprob cost is modest; clear capacity
+  gap over a 4B student. Iter01 showed that the thinking-mode Qwen3-8B
+  teacher pulls the student off-format under OPD — renderer parity
+  matters more than raw size when both must score the same token stream.
 - **Student (initial):** `Qwen/Qwen3-4B-Instruct-2507`. Smallest dense
   Qwen3-instruct hosted by Tinker; has non-trivial IFEval so Claim B is
   observable. Note: `Qwen3-1.7B` / `Qwen3-4B` (non-2507) are *not*
