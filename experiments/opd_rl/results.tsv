@@ -1,1 +1,3 @@
 commit	variant	teacher	student	env_version	steps	task_reward_E	forgetting_score	kl_to_teacher	vs_teacher_gap	status	notes
+12f8006	student_zero_shot	Qwen/Qwen3-8B	Qwen/Qwen3-4B-Instruct-2507	countdown-v1	0	0.284		0.473		keep	step-0 rollouts from iter01 OPD run; 34% correct zero-shot, 41% format
+12f8006	student_opd	Qwen/Qwen3-8B	Qwen/Qwen3-4B-Instruct-2507	countdown-v1	10	-0.100		0.253		keep	OPD collapse — format and correct drop to 0 by step 7. Cause: renderer mismatch (student=qwen3_instruct, teacher=qwen3-thinking). Teacher KL pulls student toward <think> traces it can't produce. Next: swap teacher to Qwen3-30B-A3B-Instruct-2507 for matching qwen3_instruct renderer.
