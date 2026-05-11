@@ -166,7 +166,8 @@ async def main(cli: CLIConfig):
     for prompt, rule in PROMPTS:
         msgs = [{"role": "user", "content": prompt}]
         try:
-            resp_text = await completer(msgs)
+            resp_msg = await completer(msgs)
+            resp_text = resp_msg.get("content", "") if isinstance(resp_msg, dict) else str(resp_msg)
         except Exception as e:
             scores.append((prompt, 0.0, f"error:{type(e).__name__}", ""))
             continue
