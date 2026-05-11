@@ -67,6 +67,17 @@ PROMPTS = [
     ("Explain in one sentence what photosynthesis is.", "sentence"),
     # Constraint
     ("Write a four-line poem about the moon, no rhymes required.", "lines4"),
+    # --- Harder rubric prompts (iter11): tighter constraints; base scores expected 50-80%.
+    ("Write a sentence that is exactly 12 words long. Just the sentence, no other text.", "word_count12"),
+    ("Respond with a JSON object: {\"city\": <a city in Japan>, \"population\": <integer in millions>, \"famous_for\": [<string>, <string>, <string>]}. No prose, just JSON.", "json_nested"),
+    ("Name exactly 7 elements from the periodic table, one per line, each followed by its atomic number in parentheses. Example: Hydrogen (1)", "elements7"),
+    ("Translate 'the rain in Spain falls mainly on the plain' to French. Reply with only the French sentence, ending in a period.", "french_rain"),
+    ("Write the numbers 1 through 10 spelled out in English, separated by commas, all lowercase. No other text.", "numbers10"),
+    ("Reply with the output of 47 + 89, then on a new line the output of 47 * 89. Just the two numbers, nothing else.", "two_numbers"),
+    ("Compose a sentence in which every word starts with the letter 'b'. Just the sentence.", "all_b"),
+    ("List 4 prime numbers between 30 and 60. Format as `prime_1, prime_2, prime_3, prime_4`. No other text.", "primes4"),
+    ("Reply with exactly two paragraphs separated by a blank line. First paragraph is about cats. Second is about dogs.", "two_paragraphs"),
+    ("Output a CSV-style line with these fields in order, separated by commas: red, 5, true, hello. Then on a new line, the same line in reverse order. No other text.", "csv_reverse"),
 ]
 
 
@@ -128,6 +139,87 @@ def _score(rule: str, response: str) -> tuple[float, str]:
         # one-sentence answer ≈ no \n in middle, ends with period
         ok = "\n" not in r.strip() and r.strip().endswith((".", "!", "?")) and len(words) >= 3
         return (1.0 if ok else 0.5), f"len={len(words)} multiline={chr(10) in r}"
+    # --- Harder rubric prompts ---
+    if rule == "word_count12":
+        # count words on a single-line response only
+        lines = [l for l in r.splitlines() if l.strip()]
+        if len(lines) != 1:
+            return 0.3, f"lines={len(lines)}"
+        return (1.0 if len(lines[0].split()) == 12 else 0.3), f"words={len(lines[0].split())}"
+    if rule == "json_nested":
+        try:
+            obj = json.loads(r if r.startswith("{") else r[r.find("{"):r.rfind("}") + 1])
+            ok = (
+                isinstance(obj, dict)
+                and "city" in obj and isinstance(obj["city"], str)
+                and "population" in obj and isinstance(obj["population"], (int, float))
+                and "famous_for" in obj and isinstance(obj["famous_for"], list) and len(obj["famous_for"]) == 3
+                and all(isinstance(x, str) for x in obj["famous_for"])
+            )
+            return (1.0 if ok else 0.4), "json_nested_ok" if ok else "json_nested_bad"
+        except Exception:
+            return 0.0, "json_nested_invalid"
+    if rule == "elements7":
+        lines = [l.strip() for l in r.splitlines() if l.strip()]
+        ok = len(lines) == 7 and all(re.search(r"\(\s*\d+\s*\)", l) for l in lines)
+        return (1.0 if ok else 0.3), f"lines={len(lines)} paren_ok"
+    if rule == "french_rain":
+        # cheap: must contain french-ish words and end with period, single line
+        rl = r.lower().strip()
+        has_french = any(w in rl for w in (" pluie", "espagne", "tombe", "plaine"))
+        ok = has_french and rl.endswith(".") and "\n" not in rl
+        return (1.0 if ok else 0.3), f"has_french={has_french}"
+    if rule == "numbers10":
+        # comma-separated, all lowercase, all spelled-out numbers
+        items = [s.strip() for s in r.split(",")]
+        expected = {"one","two","three","four","five","six","seven","eight","nine","ten"}
+        ok = len(items) == 10 and {i.lower() for i in items} == expected and all(s == s.lower() for s in items)
+        return (1.0 if ok else 0.4), f"items={len(items)}"
+    if rule == "two_numbers":
+        lines = [l.strip() for l in r.splitlines() if l.strip()]
+        if len(lines) != 2:
+            return 0.3, f"lines={len(lines)}"
+        try:
+            a, b = int(lines[0]), int(lines[1])
+            return (1.0 if a == 47+89 and b == 47*89 else 0.4), f"got=({a},{b})"
+        except Exception:
+            return 0.0, "non_integer"
+    if rule == "all_b":
+        # all words start with b (case-insensitive); a single line
+        lines = [l.strip() for l in r.splitlines() if l.strip()]
+        if len(lines) != 1:
+            return 0.3, f"lines={len(lines)}"
+        ws = [re.sub(r"[^a-zA-Z]", "", w) for w in lines[0].split()]
+        ws = [w for w in ws if w]
+        ok = len(ws) >= 4 and all(w[0].lower() == "b" for w in ws)
+        return (1.0 if ok else 0.3), f"words={len(ws)} all_b={ok}"
+    if rule == "primes4":
+        # Expect comma-separated 4 primes in 30-60
+        nums = re.findall(r"\b\d+\b", r)
+        if len(nums) != 4:
+            return 0.3, f"nums={len(nums)}"
+        def _is_prime(n: int) -> bool:
+            if n < 2: return False
+            for i in range(2, int(n**0.5)+1):
+                if n % i == 0: return False
+            return True
+        vals = [int(x) for x in nums]
+        ok = all(30 <= v <= 60 and _is_prime(v) for v in vals)
+        return (1.0 if ok else 0.4), f"vals={vals}"
+    if rule == "two_paragraphs":
+        # exactly two paragraphs separated by blank line; both non-empty
+        parts = [p.strip() for p in re.split(r"\n\s*\n", r) if p.strip()]
+        ok = len(parts) == 2 and "cat" in parts[0].lower() and "dog" in parts[1].lower()
+        return (1.0 if ok else 0.4), f"parts={len(parts)}"
+    if rule == "csv_reverse":
+        lines = [l.strip() for l in r.splitlines() if l.strip()]
+        if len(lines) != 2:
+            return 0.3, f"lines={len(lines)}"
+        a = [s.strip().strip('"') for s in lines[0].split(",")]
+        b = [s.strip().strip('"') for s in lines[1].split(",")]
+        expected = ["red","5","true","hello"]
+        ok = a == expected and b == expected[::-1]
+        return (1.0 if ok else 0.4), f"a={a} b={b}"
     return 0.5, "unknown_rule"
 
 
