@@ -2,7 +2,7 @@
 
 Thin wrapper around tinker_cookbook.distillation.train_on_policy that swaps the
 default DeepMath/Tulu3 dataset for our CountdownDatasetBuilder. Models default
-to the pair chosen in program.md (Qwen3-1.7B instruct student, Qwen3-8B teacher).
+to the pair chosen in program.md (Qwen3-4B-Instruct-2507 student, Qwen3-8B teacher).
 
 Example:
     python -m experiments.opd_rl.launch_opd_countdown \
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 @chz.chz
 class CLIConfig:
     # Models
-    model_name: str = "Qwen/Qwen3-1.7B"
+    model_name: str = "Qwen/Qwen3-4B-Instruct-2507"
     teacher_model: str = "Qwen/Qwen3-8B"
     teacher_checkpoint: str | None = None
     load_checkpoint_path: str | None = None
@@ -78,8 +78,8 @@ async def cli_main(cli: CLIConfig) -> None:
             cli,
             log_path=f"/tmp/dylan/opd-rl/{datetime.now().strftime('%Y-%m-%d-%H-%M')}",
         )
+    cli_utils.check_log_dir(cli.log_path, cli.behavior_if_log_dir_exists)
     Path(cli.log_path).mkdir(parents=True, exist_ok=True)
-    cli_utils.maybe_warn_about_log_dir(cli.log_path, cli.behavior_if_log_dir_exists)
 
     dataset_builder = CountdownDatasetBuilder(
         batch_size=cli.groups_per_batch,
@@ -129,7 +129,8 @@ async def cli_main(cli: CLIConfig) -> None:
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO)
-    chz.entrypoint(lambda cli: asyncio.run(cli_main(cli)), CLIConfig)
+    cli_config = chz.entrypoint(CLIConfig)
+    asyncio.run(cli_main(cli_config))
 
 
 if __name__ == "__main__":

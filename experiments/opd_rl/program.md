@@ -80,10 +80,13 @@ rewrites — they are part of the experimental record.
 These are the *first* picks, not commitments. The loop is allowed and
 expected to replace them if they don't make the claims discoverable.
 
-- **Teacher (initial):** `Qwen/Qwen3-8B` (instruct, thinking off). Plausibly
-  decent on Countdown without being at ceiling.
-- **Student (initial):** `Qwen/Qwen3-1.7B` (instruct). Small enough to
-  iterate cheaply.
+- **Teacher (initial):** `Qwen/Qwen3-8B`. Among supported Qwen3 dense
+  models on Tinker; plausibly decent on Countdown without being at the
+  task ceiling.
+- **Student (initial):** `Qwen/Qwen3-4B-Instruct-2507`. Smallest dense
+  Qwen3-instruct hosted by Tinker; has non-trivial IFEval so Claim B is
+  observable. Note: `Qwen3-1.7B` / `Qwen3-4B` (non-2507) are *not*
+  supported by the Tinker service — that constrains the small-end pair.
 - **Env (initial):** Countdown numbers game, 4 sources, target ≤ 100,
   +,−,*,/, strict AST verifier. Solvable-by-construction sampler.
 - **Forgetting eval (initial):** IFEval + a 500-question MMLU slice.
