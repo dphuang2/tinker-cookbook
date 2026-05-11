@@ -1,1 +1,1 @@
-commit	variant	steps	task_reward_E	forgetting_score	kl_to_teacher	vs_teacher_gap	status	notes
+commit	variant	teacher	student	env_version	steps	task_reward_E	forgetting_score	kl_to_teacher	vs_teacher_gap	status	notes
