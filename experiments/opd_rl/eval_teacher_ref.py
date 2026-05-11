@@ -61,18 +61,16 @@ async def main(cli: CLIConfig) -> dict[str, Any]:
     rewards: list[float] = []
     corrects: list[float] = []
     formats: list[float] = []
-    tasks = [do_group_rollout(completer, gb) for gb in env_group_builders]
+    tasks = [do_group_rollout(gb, completer) for gb in env_group_builders]
     groups = await asyncio.gather(*tasks)
     for tg in groups:
         if tg is None:
             continue
-        for traj in tg.trajectories:
-            r = float(traj.final_reward)
+        for r in tg.get_total_rewards():
+            r = float(r)
             rewards.append(r)
-            # ProblemEnv exposes per-step reward; here we just use final_reward.
-            # check_answer -> correct gets format_coef + 1.0; format-only -> format_coef; else -<format_coef>
-            # We can recover correct/format breakdown from metrics in the trajectory.
-            # Fallback: derive from reward sign and magnitude.
+            # ProblemEnv rewards: correct -> 1 + format_coef, format-only -> format_coef,
+            # neither -> -format_coef. With format_coef=0.1: correct≈1.1, format≈0.1, fail≈-0.1.
             corrects.append(1.0 if r > 0.5 else 0.0)
             formats.append(1.0 if r > 0.0 else 0.0)
 
