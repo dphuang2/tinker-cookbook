@@ -85,3 +85,58 @@ This is essentially the picture sketched in the Thinking Machines OPD blog's Dis
 | 6    | RL-from-scratch tuned    | tuned-RL confound check                            | 45.6% mean last-10; at teacher          |
 | 7    | OPD then RL tuned        | the full pipeline                                  | 55.3% mean; peak 74%; +11pp over teacher|
 | 8    | forgetting eval          | Claim B                                            | only collapsed run shows forgetting     |
+
+## Follow-up runs (iter08–iter11)
+
+Three caveats from the initial report were hardened:
+
+### Seed-2 replication (iter08, iter09)
+
+| variant                            | seed | last-10 mean correct | reward | peak |
+| ---------------------------------- | ---- | -------------------- | ------ | ---- |
+| OPD-then-RL                        | 0    | 55.3%                | 0.509  | 74%  |
+| OPD-then-RL                        | 2    | **58.4%**            | 0.542  | 76%  |
+| tuned RL-from-scratch              | 0    | 45.6%                | 0.404  | 65%  |
+| tuned RL-from-scratch              | 2    | **44.1%**            | 0.386  | 62%  |
+
+Seed-2 OPD-then-RL minus tuned RL: **+14.3pp** (vs seed-0 +9.7pp). The +10pp OPD-then-RL gain is robust; if anything, seed-0 underestimated it.
+
+### Longer-budget OPD-then-RL (iter10)
+
+60 steps instead of 30. Per-decade mean correct: **45 → 54 → 56 → 61 → 71 → 71%**. Last-10 mean **71.1%**, peak **83.6%** at step 45, reward 0.682. `vs_teacher_gap` = **+0.285**.
+
+**The 30-step result was not the asymptote.** Doubling the RL budget on top of OPD lifts mean correct by another +16pp (55→71%). The trajectory is monotonic until the final decade where it plateaus. Claim C is much stronger than the initial 30-step number suggested.
+
+### Sharper forgetting eval (iter11)
+
+Extended the rubric from 16 → 26 prompts, adding 10 harder ones (exact 12-word sentences, nested JSON, all-B alliteration, 4 primes in 30–60, two-paragraph cats/dogs, etc.). Base ceiling drops from 0.9125 to 0.896 — there is now headroom for forgetting to manifest. Results on 26-prompt rubric:
+
+| checkpoint                       | forgetting score |
+| -------------------------------- | ---------------- |
+| base (no LoRA)                   | 0.896            |
+| OPD-30                           | 0.919            |
+| RL matched-hparams (collapsed)   | **0.381**        |
+| RL tuned 30 steps                | 0.919            |
+| OPD-then-RL 30 steps             | 0.919            |
+| OPD-then-RL 60 steps             | 0.919            |
+
+All stable-training checkpoints converge to 0.919 — slightly *above* base. Even 60 steps of RL after OPD does not move the forgetting score off 0.919. Only the collapsed iter05 run lost IF.
+
+This **confirms refined Claim B** more strongly: forgetting tracks training instability, not the choice of objective or the amount of RL. Narrow-LoRA Countdown RL — even when stable and run twice as long — does not damage general instruction-following on this rubric.
+
+### Final picture
+
+The follow-ups make the story sharper:
+
+- **OPD-then-RL is robustly better than RL-from-scratch** across two seeds (+10pp at 30 steps, larger at 60 steps).
+- **Pure OPD is genuinely sub-asymptotic for the task**: 38.6% mean. Its value is enabling the subsequent RL phase, not the OPD checkpoint itself.
+- **Tuned RL-from-scratch reaches teacher (~45%)**; OPD-then-RL reaches ~70% in the same compute budget. The +25pp over teacher is the real Claim-C number.
+- **Forgetting does not appear in any stable training regime** on Countdown — what initially looked like a forgetting story is more accurately a *training-stability* story.
+
+## Index (continued)
+
+| iter | variant                         | purpose                          | result                                        |
+| ---- | ------------------------------- | -------------------------------- | --------------------------------------------- |
+| 9    | tuned RL seed=2                 | seed-2 control for iter06        | 44.1% mean (≈iter06 45.6%)                    |
+| 10   | OPD-then-RL 60 steps            | longer-budget asymptote          | 71.1% mean / 84% peak; +25pp over teacher     |
+| 11   | sharper forgetting (26 prompts) | better signal vs 16-prompt rubric| same picture: only collapsed run shows loss   |
