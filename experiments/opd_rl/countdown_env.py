@@ -161,6 +161,7 @@ class CountdownDataset(RLDataset):
         group_size: int,
         n_batches: int = 200,
         n_sources: int = 4,
+        seed: int = 0,
     ):
         self._rng = np.random.RandomState(None)
         self.batch_size = batch_size
@@ -168,9 +169,10 @@ class CountdownDataset(RLDataset):
         self.renderer = renderer
         self.n_batches = n_batches
         self.n_sources = n_sources
+        self.seed = seed
 
     def get_batch(self, index: int) -> Sequence[EnvGroupBuilder]:
-        self._rng.seed(index)
+        self._rng.seed(self.seed * 1_000_003 + index)
         return [self._make(self._rng) for _ in range(self.batch_size)]
 
     def _make(self, rng: np.random.RandomState) -> ProblemGroupBuilder:
@@ -192,6 +194,7 @@ class CountdownDatasetBuilder(RLDatasetBuilder):
     n_batches: int = 200
     group_size: int = 8
     n_sources: int = 4
+    seed: int = 0
 
     async def __call__(self) -> tuple[CountdownDataset, None]:
         tokenizer = get_tokenizer(self.model_name_for_tokenizer)
@@ -201,4 +204,5 @@ class CountdownDatasetBuilder(RLDatasetBuilder):
             n_batches=self.n_batches,
             group_size=self.group_size,
             n_sources=self.n_sources,
+            seed=self.seed,
         ), None
