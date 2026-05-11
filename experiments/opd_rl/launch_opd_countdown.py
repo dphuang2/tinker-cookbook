@@ -2,7 +2,7 @@
 
 Thin wrapper around tinker_cookbook.distillation.train_on_policy that swaps the
 default DeepMath/Tulu3 dataset for our CountdownDatasetBuilder. Models default
-to the pair chosen in program.md (Qwen3-1.7B-Base student, Qwen3-8B teacher).
+to the pair chosen in program.md (Qwen3-1.7B instruct student, Qwen3-8B teacher).
 
 Example:
     python -m experiments.opd_rl.launch_opd_countdown \
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 @chz.chz
 class CLIConfig:
     # Models
-    model_name: str = "Qwen/Qwen3-1.7B-Base"
+    model_name: str = "Qwen/Qwen3-1.7B"
     teacher_model: str = "Qwen/Qwen3-8B"
     teacher_checkpoint: str | None = None
     load_checkpoint_path: str | None = None

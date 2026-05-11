@@ -47,10 +47,13 @@ Models (committed up front, do not change mid-run):
 
 - **Teacher**: `Qwen/Qwen3-8B` (instruct). Strong on compositional reasoning,
   cheap enough to log-prob on Tinker at LoRA-free inference cost.
-- **Student**: `Qwen/Qwen3-1.7B-Base`. Small enough that a single OPD step is
-  cheap; weak enough that the teacher gap is large at init. Using the *base*
-  model (not instruct) so OPD has something real to teach — instruct-tuning
-  would already partially close the gap and confound the measurement.
+- **Student**: `Qwen/Qwen3-1.7B` (instruct). Small enough that a single OPD
+  step is cheap; weak enough on compositional reasoning that the teacher gap
+  on Countdown is large. We deliberately start from the **instruct** model,
+  not the base model: Claim B (no catastrophic forgetting on IFEval/MMLU) is
+  only meaningful if the student starts with non-trivial instruction-
+  following and general-knowledge capability that can be lost. A base model
+  scores near zero on IFEval, so "preservation" would be vacuous.
 
 RL environment: **Countdown numbers game.** Given a target integer and 4–6
 source integers, the model must produce an arithmetic expression using each
@@ -59,8 +62,8 @@ expression parses, uses only allowed sources, and equals the target; small
 format-bonus otherwise. Reasons this env is the right test bed:
 
 - *Cheap, unambiguous verifier* — no LLM-judge noise.
-- *Compositional* — needs multi-step reasoning that a 1.7B-Base model is
-  genuinely bad at, so the teacher gap is real.
+- *Compositional* — needs multi-step reasoning that a 1.7B model is genuinely
+  bad at, so the teacher gap is real.
 - *Narrow* — the env is small enough that a 1.7B student plausibly has the
   capacity to *exceed* an 8B model after enough RL, which is what makes
   Claim C testable.
