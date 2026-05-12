@@ -274,3 +274,14 @@ This is a substantive refinement to the original `findings.md` claim. The origin
 | 17   | OPD-then-RL on v2                    | 9.1% — *degrades* OPD warmstart     |
 | 18   | SFT on v2 (276 teacher-correct ex)   | 32.8% pass@1                        |
 | 19   | SFT-then-RL on v2                    | **48.7% mean / 64% peak**           |
+
+### Untested: SFT-then-OPD (iter20 hang)
+
+We attempted to test whether OPD helps refine a rejection-sampled SFT init on the cold env (iter20: load iter18 SFT checkpoint, then 30 OPD steps on countdown-v2). The run hung in `epoll_wait` for 26+ min during the initial-rollout phase before any metrics step completed — same pattern as iter16's hang. Loading a supervised-training checkpoint into the OPD trainer may be hitting a Tinker API contention or compatibility issue that we did not debug from the experiment layer.
+
+The hypothesis remains untested. Two open questions stay open:
+
+1. **Does OPD help refine a rejection-sampled (SFT) init on a cold env?** The blog's reasoning pipeline (SFT-on-broad-reasoning → OPD-on-target-task) suggests yes when SFT bootstrapped instruct/reasoning capability. Whether it helps when SFT was instead narrow task specialization (our setup) is unknown.
+2. **Does forward-KL on-policy distillation perform differently than reverse-KL on cold envs?** A separate orthogonal axis (KL direction × sample distribution) we did not run. Mass-covering forward KL might propagate teacher errors *more*, or might be better if the teacher's diversity is partially correct — we don't know.
+
+These are real experiments to run if someone picks this thread back up. The infra fix for the iter20 hang would unblock the first.
