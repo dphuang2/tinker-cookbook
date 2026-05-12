@@ -1,0 +1,105 @@
+{
+  "label": "rl_matched",
+  "model": "Qwen/Qwen3-4B-Instruct-2507",
+  "checkpoint": "tinker://cff30c66-d1ea-5bad-9248-8b7cef88e855:train:0/sampler_weights/final",
+  "n_prompts": 16,
+  "forgetting_score": 0.3,
+  "per_prompt": [
+    {
+      "prompt": "Answer with exactly one word: what is the capital of France?",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "Paris. So: What is the capital of France? Just one word: so: France's capital is Paris.\n\nSo: The capital of France is: Paris.\n\nSo: The capital of France is: Paris.\n\nSo: The capital of France is: Paris"
+    },
+    {
+      "prompt": "Reply with only the digit (no words, no punctuation): how many sides does a triangle have?",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "3\n\nSo: how many sides does a triangle have?\n\nA triangle has 3 sides.\n\nSo: how many sides does a triangle have? = 3\n\nSo: how many sides does a triangle have? = 3\n\nSo: how many sides does a triangle hav"
+    },
+    {
+      "prompt": "Respond with a JSON object containing keys 'name' and 'age' for a fictional person.",
+      "score": 0.0,
+      "reason": "json_invalid",
+      "resp": "So I need to make: {\"name\": \"??\", \"age\": \"??\"}\n\nSo: {\"name\": \"??\", \"age\": \"??\"}\n\nSo: {\"name\": \"??\", \"age\": \"??\"}\n\nSo: {\"name\": \"??\", \"age\": \"??\"}\n\nSo: {\"name\": \"??\", \"age\": \"??\"}\n\nSo: {\"name\": \"??\", \""
+    },
+    {
+      "prompt": "List three colors, comma-separated, lowercase, no other text.",
+      "score": 1.0,
+      "reason": "items=3",
+      "resp": "red, blue, green"
+    },
+    {
+      "prompt": "Repeat after me: hello world.",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "So: \"hello world\" is just: hello world.\n\nSo: hello world.\n\nSo: hello world.\n\nSo: hello world.\n\nSo: hello world.\n\nSo: hello world.\n\nSo: hello world.\n\nSo: hello world.\n\nSo: hello world.\n\nSo: hello world"
+    },
+    {
+      "prompt": "Write a haiku about autumn. Three lines, no rhyme.",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "So: autumn is... just leaves falling, so: autumn is just leaves falling.\n\nSo: autumn is... just leaves falling, so: autumn is just leaves falling.\n\nSo: autumn is... just leaves falling, so: autumn is "
+    },
+    {
+      "prompt": "What is 17 times 23? Reply with only the number.",
+      "score": 0.2,
+      "reason": "first=So:",
+      "resp": "So: 17 is only 1 more than 17, so: 17 is only 1 more than 17, so: 17 is only 1 more than 17, so: 17 is only 1 more than 17, so: 17 is only 1 more than 17, so: 17 is only 1 more than 17, so: 17 is only"
+    },
+    {
+      "prompt": "Round 3.14159 to two decimal places. Reply with only the number.",
+      "score": 0.2,
+      "reason": "first=So:",
+      "resp": "So: round 3.14159 to two decimal places: so: 3.14159 is just: 3.14159 so: 3.14159 is just: 3.14159 so: 3.14159 is just: 3.14159 so: 3.14159 is just: 3.14159 so: 3.14159 is just: 3.14159 so: 3.14159 is"
+    },
+    {
+      "prompt": "Name five planets in our solar system, one per line.",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "Sure! Here are five planets in our solar system:\n\n1. Mercury  \n2. Venus  \n3. Earth  \n4. Mars  \n5. Jupiter\n\nSo:  \n1. Mercury  \n2. Venus  \n3. Earth  \n4. Mars  \n5. Jupiter\n\nSo: five planets: just: Mercur"
+    },
+    {
+      "prompt": "Repeat back to me: 'The quick brown fox jumps over the lazy dog.'",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "So, I need to just: \"The quick brown fox jumps over the lazy dog.\"\n\nSo: \"The quick brown fox jumps over the lazy dog.\" So: \"The quick brown fox jumps over the lazy dog.\" So: \"The quick brown fox jumps"
+    },
+    {
+      "prompt": "Write a sentence that is exactly 5 words long.",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "So: need to make: \"So: need to make: So: need to make: So: need to make: So: need to make: So: need to make: So: need to make: So: need to make: So: need to make: So: need to make: So: need to make: S"
+    },
+    {
+      "prompt": "Reply with the answer to 'what is 2+2' inside <answer> tags.",
+      "score": 0.0,
+      "reason": "no_answer_tag",
+      "resp": "So: 2 is how much? So: 2 is how much? So: 2 is how much? So: 2 is how much? So: 2 is how much? So: 2 is how much? So: 2 is how much? So: 2 is how much? So: 2 is how much? So: 2 is how much? So: 2 is h"
+    },
+    {
+      "prompt": "Say 'thank you' in Spanish. Reply with only the Spanish phrase.",
+      "score": 1.0,
+      "reason": "spanish",
+      "resp": "Gracias."
+    },
+    {
+      "prompt": "Is water wet? Yes or no.",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "So: Is water wet? So: Is water wet?\n\nSo: Is water wet?\n\nSo: Is water wet?\n\nSo: Is water wet?\n\nSo: Is water wet?\n\nSo: Is water wet?\n\nSo: Is water wet?\n\nSo: Is water wet?\n\nSo: Is water wet?\n\nSo: Is wate"
+    },
+    {
+      "prompt": "Explain in one sentence what photosynthesis is.",
+      "score": 0.5,
+      "reason": "len=230 multiline=False",
+      "resp": "Photosynthesis is the process by which green plants make their own food using sunlight, turning carbon dioxide and water into glucose (sugar) and oxygen. So: Photosynthesis is how plants make food: 6C"
+    },
+    {
+      "prompt": "Write a four-line poem about the moon, no rhymes required.",
+      "score": 0.3,
+      "reason": "lines=50",
+      "resp": "So, just: a four-line poem about the moon. So: Moon is just a celestial body. So: just: how do I do it?\n\nSo: just: how do I do it?\n\nSo: just: how do I do it?\n\nSo: just: how do I do it?\n\nSo: just: how "
+    }
+  ]
+}

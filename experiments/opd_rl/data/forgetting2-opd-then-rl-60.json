@@ -1,0 +1,165 @@
+{
+  "label": "opd_then_rl_60_hard",
+  "model": "Qwen/Qwen3-4B-Instruct-2507",
+  "checkpoint": "tinker://69bb8c20-f6c4-5230-a8a6-507cce233743:train:0/sampler_weights/final",
+  "n_prompts": 26,
+  "forgetting_score": 0.9192307692307692,
+  "per_prompt": [
+    {
+      "prompt": "Answer with exactly one word: what is the capital of France?",
+      "score": 1.0,
+      "reason": "words=1",
+      "resp": "Paris"
+    },
+    {
+      "prompt": "Reply with only the digit (no words, no punctuation): how many sides does a triangle have?",
+      "score": 1.0,
+      "reason": "first=3",
+      "resp": "3"
+    },
+    {
+      "prompt": "Respond with a JSON object containing keys 'name' and 'age' for a fictional person.",
+      "score": 1.0,
+      "reason": "json_ok",
+      "resp": "{\n  \"name\": \"Aria Moon\",\n  \"age\": 28\n}"
+    },
+    {
+      "prompt": "List three colors, comma-separated, lowercase, no other text.",
+      "score": 1.0,
+      "reason": "items=3",
+      "resp": "blue, green, red"
+    },
+    {
+      "prompt": "Repeat after me: hello world.",
+      "score": 1.0,
+      "reason": "echo",
+      "resp": "Hello world."
+    },
+    {
+      "prompt": "Write a haiku about autumn. Three lines, no rhyme.",
+      "score": 1.0,
+      "reason": "lines=3",
+      "resp": "Crimson leaves drift down,  \nCrisp air whispers through the trees\u2014  \nAutumn's quiet hush."
+    },
+    {
+      "prompt": "What is 17 times 23? Reply with only the number.",
+      "score": 1.0,
+      "reason": "first=401",
+      "resp": "401"
+    },
+    {
+      "prompt": "Round 3.14159 to two decimal places. Reply with only the number.",
+      "score": 1.0,
+      "reason": "first=3.14",
+      "resp": "3.14"
+    },
+    {
+      "prompt": "Name five planets in our solar system, one per line.",
+      "score": 1.0,
+      "reason": "lines=5",
+      "resp": "Mercury  \nVenus  \nEarth  \nMars  \nJupiter"
+    },
+    {
+      "prompt": "Repeat back to me: 'The quick brown fox jumps over the lazy dog.'",
+      "score": 1.0,
+      "reason": "echo_fox",
+      "resp": "The quick brown fox jumps over the lazy dog."
+    },
+    {
+      "prompt": "Write a sentence that is exactly 5 words long.",
+      "score": 0.3,
+      "reason": "words=4",
+      "resp": "Sun rises over mountains."
+    },
+    {
+      "prompt": "Reply with the answer to 'what is 2+2' inside <answer> tags.",
+      "score": 1.0,
+      "reason": "inner=4",
+      "resp": "<answer>4</answer>"
+    },
+    {
+      "prompt": "Say 'thank you' in Spanish. Reply with only the Spanish phrase.",
+      "score": 1.0,
+      "reason": "spanish",
+      "resp": "Gracias"
+    },
+    {
+      "prompt": "Is water wet? Yes or no.",
+      "score": 0.3,
+      "reason": "head=the",
+      "resp": "The question \"Is water wet?\" is a classic example of a philosophical or linguistic puzzle.\n\n**Answer: No \u2014 water is not wet.**\n\nHere's why:\n\n- The word \"wet\" describes a *state* of being in contact wi"
+    },
+    {
+      "prompt": "Explain in one sentence what photosynthesis is.",
+      "score": 1.0,
+      "reason": "len=28 multiline=False",
+      "resp": "Photosynthesis is the process by which green plants, algae, and some bacteria use sunlight to convert carbon dioxide and water into glucose (a form of sugar) and oxygen."
+    },
+    {
+      "prompt": "Write a four-line poem about the moon, no rhymes required.",
+      "score": 1.0,
+      "reason": "lines=4",
+      "resp": "The moon hangs low, a silver eye,  \nWatching tides with quiet grace.  \nIt paints the night with soft, pale light,  \nA silent witness to our place."
+    },
+    {
+      "prompt": "Write a sentence that is exactly 12 words long. Just the sentence, no other text.",
+      "score": 0.3,
+      "reason": "words=16",
+      "resp": "The sun set behind the mountains, painting the sky in warm hues of orange and pink."
+    },
+    {
+      "prompt": "Respond with a JSON object: {\"city\": <a city in Japan>, \"population\": <integer in millions>, \"famous_for\": [<string>, <string>, <string>]}. No prose, just JSON.",
+      "score": 1.0,
+      "reason": "json_nested_ok",
+      "resp": "{\"city\": \"Kyoto\", \"population\": 14, \"famous_for\": [\"temples\", \"traditional tea ceremonies\", \"geisha culture\"]}"
+    },
+    {
+      "prompt": "Name exactly 7 elements from the periodic table, one per line, each followed by its atomic number in parentheses. Example: Hydrogen (1)",
+      "score": 1.0,
+      "reason": "lines=7 paren_ok",
+      "resp": "Hydrogen (1)  \nHelium (2)  \nLithium (3)  \nBeryllium (4)  \nBoron (5)  \nCarbon (6)  \nNitrogen (7)"
+    },
+    {
+      "prompt": "Translate 'the rain in Spain falls mainly on the plain' to French. Reply with only the French sentence, ending in a period.",
+      "score": 1.0,
+      "reason": "has_french=True",
+      "resp": "La pluie en Espagne tombe principalement dans la plaine."
+    },
+    {
+      "prompt": "Write the numbers 1 through 10 spelled out in English, separated by commas, all lowercase. No other text.",
+      "score": 1.0,
+      "reason": "items=10",
+      "resp": "one, two, three, four, five, six, seven, eight, nine, ten"
+    },
+    {
+      "prompt": "Reply with the output of 47 + 89, then on a new line the output of 47 * 89. Just the two numbers, nothing else.",
+      "score": 1.0,
+      "reason": "got=(136,4183)",
+      "resp": "136  \n4183"
+    },
+    {
+      "prompt": "Compose a sentence in which every word starts with the letter 'b'. Just the sentence.",
+      "score": 1.0,
+      "reason": "words=5 all_b=True",
+      "resp": "Benevolent beings build beautiful bridges."
+    },
+    {
+      "prompt": "List 4 prime numbers between 30 and 60. Format as `prime_1, prime_2, prime_3, prime_4`. No other text.",
+      "score": 1.0,
+      "reason": "vals=[31, 37, 41, 43]",
+      "resp": "31, 37, 41, 43"
+    },
+    {
+      "prompt": "Reply with exactly two paragraphs separated by a blank line. First paragraph is about cats. Second is about dogs.",
+      "score": 1.0,
+      "reason": "parts=2",
+      "resp": "Cats are often admired for their independence, quiet demeanor, and natural grace. They typically prefer to observe their surroundings rather than engage in constant activity, making them ideal compani"
+    },
+    {
+      "prompt": "Output a CSV-style line with these fields in order, separated by commas: red, 5, true, hello. Then on a new line, the same line in reverse order. No other text.",
+      "score": 1.0,
+      "reason": "a=['red', '5', 'true', 'hello'] b=['hello', 'true', '5', 'red']",
+      "resp": "red,5,true,hello\nhello,true,5,red"
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "label": "opd_then_rl",
+  "model": "Qwen/Qwen3-4B-Instruct-2507",
+  "checkpoint": "tinker://e0ce8996-db72-5465-a6a5-87c115d1da67:train:0/sampler_weights/final",
+  "n_prompts": 16,
+  "forgetting_score": 0.9125,
+  "per_prompt": [
+    {
+      "prompt": "Answer with exactly one word: what is the capital of France?",
+      "score": 1.0,
+      "reason": "words=1",
+      "resp": "Paris"
+    },
+    {
+      "prompt": "Reply with only the digit (no words, no punctuation): how many sides does a triangle have?",
+      "score": 1.0,
+      "reason": "first=3",
+      "resp": "3"
+    },
+    {
+      "prompt": "Respond with a JSON object containing keys 'name' and 'age' for a fictional person.",
+      "score": 1.0,
+      "reason": "json_ok",
+      "resp": "{\n  \"name\": \"Aria Moon\",\n  \"age\": 28\n}"
+    },
+    {
+      "prompt": "List three colors, comma-separated, lowercase, no other text.",
+      "score": 1.0,
+      "reason": "items=3",
+      "resp": "blue, green, red"
+    },
+    {
+      "prompt": "Repeat after me: hello world.",
+      "score": 1.0,
+      "reason": "echo",
+      "resp": "Hello world."
+    },
+    {
+      "prompt": "Write a haiku about autumn. Three lines, no rhyme.",
+      "score": 1.0,
+      "reason": "lines=3",
+      "resp": "Crimson leaves drift down,  \nCrisp air whispers through the trees\u2014  \nAutumn's quiet hush."
+    },
+    {
+      "prompt": "What is 17 times 23? Reply with only the number.",
+      "score": 1.0,
+      "reason": "first=401",
+      "resp": "401"
+    },
+    {
+      "prompt": "Round 3.14159 to two decimal places. Reply with only the number.",
+      "score": 1.0,
+      "reason": "first=3.14",
+      "resp": "3.14"
+    },
+    {
+      "prompt": "Name five planets in our solar system, one per line.",
+      "score": 1.0,
+      "reason": "lines=5",
+      "resp": "Mercury  \nVenus  \nEarth  \nMars  \nJupiter"
+    },
+    {
+      "prompt": "Repeat back to me: 'The quick brown fox jumps over the lazy dog.'",
+      "score": 1.0,
+      "reason": "echo_fox",
+      "resp": "The quick brown fox jumps over the lazy dog."
+    },
+    {
+      "prompt": "Write a sentence that is exactly 5 words long.",
+      "score": 0.3,
+      "reason": "words=4",
+      "resp": "Sun rises over mountains."
+    },
+    {
+      "prompt": "Reply with the answer to 'what is 2+2' inside <answer> tags.",
+      "score": 1.0,
+      "reason": "inner=4",
+      "resp": "<answer>4</answer>"
+    },
+    {
+      "prompt": "Say 'thank you' in Spanish. Reply with only the Spanish phrase.",
+      "score": 1.0,
+      "reason": "spanish",
+      "resp": "Gracias"
+    },
+    {
+      "prompt": "Is water wet? Yes or no.",
+      "score": 0.3,
+      "reason": "head=the",
+      "resp": "The question \"Is water wet?\" is a classic example of a philosophical or linguistic puzzle, not a straightforward scientific one.\n\nLet\u2019s break it down:\n\n- **\"Wet\"** is a property of *things* that are i"
+    },
+    {
+      "prompt": "Explain in one sentence what photosynthesis is.",
+      "score": 1.0,
+      "reason": "len=28 multiline=False",
+      "resp": "Photosynthesis is the process by which green plants, algae, and some bacteria use sunlight to convert carbon dioxide and water into glucose (a form of sugar) and oxygen."
+    },
+    {
+      "prompt": "Write a four-line poem about the moon, no rhymes required.",
+      "score": 1.0,
+      "reason": "lines=4",
+      "resp": "The moon hangs low, a silver eye,  \nWatching tides with quiet grace.  \nIt paints the night with soft, pale light,  \nA silent witness to our place."
+    }
+  ]
+}

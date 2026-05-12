@@ -22,7 +22,31 @@ The initial pair (Qwen3-8B thinking teacher) was swapped after iter01 because th
 | student + RL tuned (LR=1e-5, gs=8, 30 steps)   | 0.404       | 45.6%        | +0.01      | 0.9125           |
 | student + **OPD then RL tuned** (30 steps)     | **0.509**   | **55.3%**    | **+0.11**  | 0.9125           |
 
-Peaks (single step) — OPD-then-RL hit **74.2% correct** at step 25.
+Peaks (single step) — OPD-then-RL hit **74.2% correct** at step 25 (30 steps), **83.6%** at step 45 (60 steps).
+
+## Figures
+
+All plots are regenerated from raw data with `uv run python -m experiments.opd_rl.make_figures`. Raw metrics live under [`experiments/opd_rl/data/`](data/) — one `metrics.jsonl` + `config.json` per training run, plus the forgetting-eval and teacher-ref JSONs.
+
+**Training curves across all variants.** Light lines are raw per-batch correct rate; dark lines are 5-step rolling means. Dashed black line is the teacher's zero-shot accuracy (45.3%).
+
+![Training curves](figures/training_curves.png)
+
+**Last-10-step asymptote, by variant.** Vertical dashed line is teacher zero-shot.
+
+![Asymptote bar](figures/asymptote_bar.png)
+
+**OPD's teacher-KL trajectory.** During pure OPD (iter04), reverse KL to the teacher drops from ~0.23 at step 0 to ~0.12 by step 30 — student is approaching the teacher in distribution.
+
+![OPD KL](figures/opd_kl.png)
+
+**60-step OPD-then-RL per-decade trajectory (iter10).** Mean correct climbs monotonically through 5 of 6 decades.
+
+![Iter10 decades](figures/iter10_decades.png)
+
+**Forgetting eval across checkpoints, two rubric sizes.** Only the collapsed matched-hp RL run loses instruction-following on either rubric.
+
+![Forgetting](figures/forgetting_bar.png)
 
 ## Claim-by-claim verdict
 

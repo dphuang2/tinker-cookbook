@@ -1,0 +1,165 @@
+{
+  "label": "rl_matched_hard",
+  "model": "Qwen/Qwen3-4B-Instruct-2507",
+  "checkpoint": "tinker://cff30c66-d1ea-5bad-9248-8b7cef88e855:train:0/sampler_weights/final",
+  "n_prompts": 26,
+  "forgetting_score": 0.3807692307692308,
+  "per_prompt": [
+    {
+      "prompt": "Answer with exactly one word: what is the capital of France?",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "Paris. So: What is the capital of France? Just one word: so: France's capital is Paris.\n\nSo: The capital of France is: Paris.\n\nSo: The capital of France is: Paris.\n\nSo: The capital of France is: Paris"
+    },
+    {
+      "prompt": "Reply with only the digit (no words, no punctuation): how many sides does a triangle have?",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "3\n\nSo: how many sides does a triangle have?\n\nA triangle has 3 sides.\n\nSo: how many sides does a triangle have? = 3\n\nSo: how many sides does a triangle have? = 3\n\nSo: how many sides does a triangle hav"
+    },
+    {
+      "prompt": "Respond with a JSON object containing keys 'name' and 'age' for a fictional person.",
+      "score": 0.0,
+      "reason": "json_invalid",
+      "resp": "So I need to make: {\"name\": \"??\", \"age\": \"??\"}\n\nSo: {\"name\": \"??\", \"age\": \"??\"}\n\nSo: {\"name\": \"??\", \"age\": \"??\"}\n\nSo: {\"name\": \"??\", \"age\": \"??\"}\n\nSo: {\"name\": \"??\", \"age\": \"??\"}\n\nSo: {\"name\": \"??\", \""
+    },
+    {
+      "prompt": "List three colors, comma-separated, lowercase, no other text.",
+      "score": 1.0,
+      "reason": "items=3",
+      "resp": "red, blue, green"
+    },
+    {
+      "prompt": "Repeat after me: hello world.",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "So: \"hello world\" is just: hello world.\n\nSo: hello world.\n\nSo: hello world.\n\nSo: hello world.\n\nSo: hello world.\n\nSo: hello world.\n\nSo: hello world.\n\nSo: hello world.\n\nSo: hello world.\n\nSo: hello world"
+    },
+    {
+      "prompt": "Write a haiku about autumn. Three lines, no rhyme.",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "So: autumn is... just leaves falling, so: autumn is just leaves falling.\n\nSo: autumn is... just leaves falling, so: autumn is just leaves falling.\n\nSo: autumn is... just leaves falling, so: autumn is "
+    },
+    {
+      "prompt": "What is 17 times 23? Reply with only the number.",
+      "score": 0.2,
+      "reason": "first=So:",
+      "resp": "So: 17 is only 1 more than 17, so: 17 is only 1 more than 17, so: 17 is only 1 more than 17, so: 17 is only 1 more than 17, so: 17 is only 1 more than 17, so: 17 is only 1 more than 17, so: 17 is only"
+    },
+    {
+      "prompt": "Round 3.14159 to two decimal places. Reply with only the number.",
+      "score": 0.2,
+      "reason": "first=So:",
+      "resp": "So: round 3.14159 to two decimal places: so: 3.14159 is just: 3.14159 so: 3.14159 is just: 3.14159 so: 3.14159 is just: 3.14159 so: 3.14159 is just: 3.14159 so: 3.14159 is just: 3.14159 so: 3.14159 is"
+    },
+    {
+      "prompt": "Name five planets in our solar system, one per line.",
+      "score": 1.0,
+      "reason": "lines=13",
+      "resp": "Sure! Here are five planets in our solar system:\n\n1. Mercury  \n2. Venus  \n3. Earth  \n4. Mars  \n5. Jupiter\n\nSo:  \n1. Mercury  \n2. Venus  \n3. Earth  \n4. Mars  \n5. Jupiter\n\nSo: Just five: so: just: so: j"
+    },
+    {
+      "prompt": "Repeat back to me: 'The quick brown fox jumps over the lazy dog.'",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "So, I need to just say: \"The quick brown fox jumps over the lazy dog.\"\n\nSo: \"The quick brown fox jumps over the lazy dog.\"\n\nSo: \"The quick brown fox jumps over the lazy dog.\"\n\nSo: \"The quick brown fox"
+    },
+    {
+      "prompt": "Write a sentence that is exactly 5 words long.",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "So: need to make: \"So: need to make: So: need to make: So: need to make: So: need to make: So: need to make: So: need to make: So: need to make: So: need to make: So: need to make: So: need to make: S"
+    },
+    {
+      "prompt": "Reply with the answer to 'what is 2+2' inside <answer> tags.",
+      "score": 0.0,
+      "reason": "no_answer_tag",
+      "resp": "So: 2 is how much? So: 2 is how much? So: 2 is how much? So: 2 is how much? So: 2 is how much? So: 2 is how much? So: 2 is how much? So: 2 is how much? So: 2 is how much? So: 2 is how much? So: 2 is h"
+    },
+    {
+      "prompt": "Say 'thank you' in Spanish. Reply with only the Spanish phrase.",
+      "score": 1.0,
+      "reason": "spanish",
+      "resp": "Gracias."
+    },
+    {
+      "prompt": "Is water wet? Yes or no.",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "So: Is water wet? So: Is water wet?\n\nSo: Is water wet?\n\nSo: Is water wet?\n\nSo: Is water wet?\n\nSo: Is water wet?\n\nSo: Is water wet?\n\nSo: Is water wet?\n\nSo: Is water wet?\n\nSo: Is water wet?\n\nSo: Is wate"
+    },
+    {
+      "prompt": "Explain in one sentence what photosynthesis is.",
+      "score": 0.5,
+      "reason": "len=230 multiline=False",
+      "resp": "Photosynthesis is the process by which green plants make their own food using sunlight, turning carbon dioxide and water into glucose (sugar) and oxygen. So: Photosynthesis is how plants make food: 6C"
+    },
+    {
+      "prompt": "Write a four-line poem about the moon, no rhymes required.",
+      "score": 0.3,
+      "reason": "lines=50",
+      "resp": "So, just: a four-line poem about the moon. So: Moon is just a celestial body. So: just: how do I do it?\n\nSo: just: how do I do it?\n\nSo: just: how do I do it?\n\nSo: just: how do I do it?\n\nSo: just: how "
+    },
+    {
+      "prompt": "Write a sentence that is exactly 12 words long. Just the sentence, no other text.",
+      "score": 0.3,
+      "reason": "words=291",
+      "resp": "So: 12 words is only 12, so: 12 is only so: 12 is only so: 12 is only so: 12 is only so: 12 is only so: 12 is only so: 12 is only so: 12 is only so: 12 is only so: 12 is only so: 12 is only so: 12 is "
+    },
+    {
+      "prompt": "Respond with a JSON object: {\"city\": <a city in Japan>, \"population\": <integer in millions>, \"famous_for\": [<string>, <string>, <string>]}. No prose, just JSON.",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "So I need to make: {\"city\": <a city in Japan>, \"population\": <integer in millions>, \"famous_for\": [<string>, <string>, <string>]}\n\nSo: {\"city\": <a city in Japan>, \"population\": <integer in millions>, "
+    },
+    {
+      "prompt": "Name exactly 7 elements from the periodic table, one per line, each followed by its atomic number in parentheses. Example: Hydrogen (1)",
+      "score": 0.3,
+      "reason": "lines=1 paren_ok",
+      "resp": "So I need to make: just: Name exactly 7 elements... so: just: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so: so"
+    },
+    {
+      "prompt": "Translate 'the rain in Spain falls mainly on the plain' to French. Reply with only the French sentence, ending in a period.",
+      "score": 1.0,
+      "reason": "has_french=True",
+      "resp": "La pluie en Espagne tombe principalement dans la plaine."
+    },
+    {
+      "prompt": "Write the numbers 1 through 10 spelled out in English, separated by commas, all lowercase. No other text.",
+      "score": 0.4,
+      "reason": "items=17",
+      "resp": "So I need to just write: \"Write the numbers 1 through 10 spelled out in English, so: 1 to 10.\n\nSo: how do I do: \"Write the numbers 1 through 10 spelled out in English, so: 1 to 10.\n\nSo: how do I do: \""
+    },
+    {
+      "prompt": "Reply with the output of 47 + 89, then on a new line the output of 47 * 89. Just the two numbers, nothing else.",
+      "score": 0.3,
+      "reason": "lines=1",
+      "resp": "So: 47 is just how much: 47 is just how much: so: 47 is just how much: so: 47 is just how much: so: 47 is just how much: so: 47 is just how much: so: 47 is just how much: so: 47 is just how much: so: "
+    },
+    {
+      "prompt": "Compose a sentence in which every word starts with the letter 'b'. Just the sentence.",
+      "score": 0.3,
+      "reason": "words=206 all_b=False",
+      "resp": "So: make a sentence: \"B = ?\" so: B = ? So: B = ? So: B = ? So: B = ? So: B = ? So: B = ? So: B = ? So: B = ? So: B = ? So: B = ? So: B = ? So: B = ? So: B = ? So: B = ? So: B = ? So: B = ? So: B = ? S"
+    },
+    {
+      "prompt": "List 4 prime numbers between 30 and 60. Format as `prime_1, prime_2, prime_3, prime_4`. No other text.",
+      "score": 0.2,
+      "reason": "too_long",
+      "resp": "So: how many prime numbers are between 30 and 60: so: how many prime numbers are between 30 and 60: so: how many prime numbers are between 30 and 60: so: how many prime numbers are between 30 and 60: "
+    },
+    {
+      "prompt": "Reply with exactly two paragraphs separated by a blank line. First paragraph is about cats. Second is about dogs.",
+      "score": 1.0,
+      "reason": "parts=2",
+      "resp": "Cats are often seen as independent and aloof, with a strong sense of personal space. They are naturally solitary animals, so they tend to be more self-reliant than many other pets. This independence d"
+    },
+    {
+      "prompt": "Output a CSV-style line with these fields in order, separated by commas: red, 5, true, hello. Then on a new line, the same line in reverse order. No other text.",
+      "score": 0.3,
+      "reason": "lines=47",
+      "resp": "So: make: red, 5, true, hello.\n\nSo: red, 5, true, hello.\n\nSo: red, 5, true, hello.\n\nSo: red, 5, true, hello.\n\nSo: red, 5, true, hello.\n\nSo: red, 5, true, hello.\n\nSo: red, 5, true, hello.\n\nSo: red, 5, "
+    }
+  ]
+}
