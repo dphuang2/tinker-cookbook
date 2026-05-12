@@ -51,6 +51,7 @@ runs = [
     ("04", "OPD only (30 steps)", "tab:blue", "-"),
     ("05", "RL matched-hparams (collapse)", "tab:red", "-"),
     ("06", "RL tuned (30 steps)", "tab:orange", "-"),
+    ("12", "RL tuned (60 steps)", "tab:orange", "--"),
     ("07", "OPD-then-RL (30 steps)", "tab:green", "-"),
     ("10", "OPD-then-RL (60 steps)", "tab:green", "--"),
     ("08", "OPD-then-RL seed=2", "tab:cyan", ":"),
@@ -101,6 +102,7 @@ variants = [
     ("OPD only (30)", "04", last10_mean("04"), "tab:blue"),
     ("RL matched (30)", "05", last10_mean("05"), "tab:red"),
     ("RL tuned (30)", "06", last10_mean("06"), "tab:orange"),
+    ("RL tuned (60)", "12", last10_mean("12"), "tab:brown"),
     ("OPD-then-RL (30)", "07", last10_mean("07"), "tab:green"),
     ("OPD-then-RL seed=2 (30)", "08", last10_mean("08"), "tab:cyan"),
     ("RL tuned seed=2 (30)", "09", last10_mean("09"), "tab:olive"),
@@ -137,7 +139,7 @@ scores16 = [
     json.loads((DATA / "forgetting-rl-tuned.json").read_text())["forgetting_score"],
     json.loads((DATA / "forgetting-opd-then-rl.json").read_text())["forgetting_score"],
 ]
-labels26 = labels16 + ["OPD-then-RL-60"]
+labels26 = labels16 + ["OPD-then-RL-60", "RL-tuned-60"]
 scores26 = [
     json.loads((DATA / "forgetting2-base.json").read_text())["forgetting_score"],
     json.loads((DATA / "forgetting2-opd30.json").read_text())["forgetting_score"],
@@ -145,6 +147,7 @@ scores26 = [
     json.loads((DATA / "forgetting2-rl-tuned.json").read_text())["forgetting_score"],
     json.loads((DATA / "forgetting2-opd-then-rl.json").read_text())["forgetting_score"],
     json.loads((DATA / "forgetting2-opd-then-rl-60.json").read_text())["forgetting_score"],
+    json.loads((DATA / "forgetting2-rl-tuned-60.json").read_text())["forgetting_score"],
 ]
 
 fig, ax = plt.subplots(figsize=(10, 5))
@@ -170,7 +173,26 @@ print("wrote", FIG / "forgetting_bar.png")
 plt.close(fig)
 
 
-# ---- Figure 5: per-decade trajectory iter10 ----
+# ---- Figure 5b: fair 60-step head-to-head ----
+fig, ax = plt.subplots(figsize=(10, 5.5))
+for iter_id, label, color in [("10", "OPD-then-RL (60 steps)", "tab:purple"), ("12", "RL tuned (60 steps)", "tab:brown")]:
+    s, c = get_curve(iter_id)
+    ax.plot(s, c, color=color, alpha=0.3)
+    ax.plot(s, smooth(c, 5), color=color, label=label, linewidth=2.2)
+ax.axhline(teacher_correct, color="black", linestyle="--", linewidth=1.2, label=f"teacher zero-shot ({teacher_correct:.1%})")
+ax.set_xlabel("training step")
+ax.set_ylabel("env correct rate (per-batch mean)")
+ax.set_title("Apples-to-apples at 60 steps: OPD-then-RL vs RL-tuned (both with same hparams)")
+ax.set_ylim(0, 0.9)
+ax.legend(loc="lower right", fontsize=11)
+ax.grid(True, alpha=0.3)
+fig.tight_layout()
+fig.savefig(FIG / "fair_60step.png", dpi=140)
+print("wrote", FIG / "fair_60step.png")
+plt.close(fig)
+
+
+# ---- Figure 6: per-decade trajectory iter10 ----
 s, c = get_curve("10")
 decades = [(0, 10), (10, 20), (20, 30), (30, 40), (40, 50), (50, 60)]
 means = [float(np.mean(c[a:b])) for a, b in decades]

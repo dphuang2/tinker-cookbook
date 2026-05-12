@@ -22,7 +22,14 @@ The initial pair (Qwen3-8B thinking teacher) was swapped after iter01 because th
 | student + RL tuned (LR=1e-5, gs=8, 30 steps)   | 0.404       | 45.6%        | +0.01      | 0.9125           |
 | student + **OPD then RL tuned** (30 steps)     | **0.509**   | **55.3%**    | **+0.11**  | 0.9125           |
 
-Peaks (single step) — OPD-then-RL hit **74.2% correct** at step 25 (30 steps), **83.6%** at step 45 (60 steps).
+At matched 60-step budget:
+
+|                                          | task_reward | mean correct | vs teacher | forgetting score |
+| ---------------------------------------- | ----------- | ------------ | ---------- | ---------------- |
+| student + RL tuned (60 steps, iter12)    | 0.594       | 63.0%        | +0.20      | 0.9192           |
+| student + **OPD-then-RL tuned** (60, iter10) | **0.682** | **71.1%**    | **+0.29**  | 0.9192           |
+
+Peaks (single step) — OPD-then-RL hit **74.2% correct** at step 25 (30 steps), **83.6%** at step 45 (60 steps). RL tuned hit **68.8%** at step 44 (60 steps).
 
 **Variant legend:**
 
@@ -58,9 +65,13 @@ Reviewers can read `data/iter07/rollouts.jsonl` etc. to see exactly what the stu
 
 ![Iter10 decades](figures/iter10_decades.png)
 
-**Forgetting eval across checkpoints, two rubric sizes.** Only the collapsed matched-hp RL run loses instruction-following on either rubric.
+**Forgetting eval across checkpoints, two rubric sizes.** Only the collapsed matched-hp RL run loses instruction-following on either rubric. iter12 (60-step tuned RL) scores 0.919, identical to every other stable run.
 
 ![Forgetting](figures/forgetting_bar.png)
+
+**Fair budget comparison (iter10 vs iter12).** Same 60-step budget, same tuned hparams (LR=1e-5, group_size=8). Only difference: iter10 starts from the OPD-iter04 checkpoint; iter12 starts from base. OPD-warmstart wins by **+8.1pp last-10 mean** and **+14.8pp peak**.
+
+![Fair 60-step](figures/fair_60step.png)
 
 ## Claim-by-claim verdict
 
@@ -157,18 +168,33 @@ Extended the rubric from 16 → 26 prompts, adding 10 harder ones (exact 12-word
 | RL tuned 30 steps                | 0.919            |
 | OPD-then-RL 30 steps             | 0.919            |
 | OPD-then-RL 60 steps             | 0.919            |
+| RL tuned 60 steps (iter12)       | 0.919            |
 
-All stable-training checkpoints converge to 0.919 — slightly *above* base. Even 60 steps of RL after OPD does not move the forgetting score off 0.919. Only the collapsed iter05 run lost IF.
+All stable-training checkpoints converge to 0.919 — slightly *above* base. Even 60 steps of either OPD-then-RL or pure tuned RL does not move the forgetting score off 0.919. Only the collapsed iter05 run lost IF.
 
 This **confirms refined Claim B** more strongly: forgetting tracks training instability, not the choice of objective or the amount of RL. Narrow-LoRA Countdown RL — even when stable and run twice as long — does not damage general instruction-following on this rubric.
+
+### Apples-to-apples 60-step comparison (iter12)
+
+The initial 60-step OPD-then-RL → 30-step tuned-RL comparison was unfair on budget. Re-ran tuned RL for 60 steps (iter12) to make it fair.
+
+| metric              | iter10 OPD-then-RL (60) | iter12 tuned RL (60) | Δ                   |
+|---------------------|-------------------------|----------------------|---------------------|
+| last-10 mean correct| 71.1%                   | 63.0%                | **+8.1pp** OPD-then-RL |
+| peak correct        | 83.6%                   | 68.8%                | **+14.8pp** OPD-then-RL |
+| reward              | 0.682                   | 0.594                | +0.088              |
+| vs_teacher_gap      | +0.285                  | +0.197               | +0.088              |
+| per-decade trend    | 45/54/56/61/71/71 (plateau) | 36/40/44/50/54/63 (still climbing) | — |
+
+The gap **shrinks** from the unfair +25pp (vs 30-step RL) to **+8.1pp last-10 / +14.8pp peak** under matched 60-step budget — but it does not close. Notably iter12's trajectory is still monotonically climbing in the last decade (54→63%), so even more budget could narrow it further. iter10 has plateaued (last two decades both 71%), suggesting OPD-then-RL converges sooner.
 
 ### Final picture
 
 The follow-ups make the story sharper:
 
-- **OPD-then-RL is robustly better than RL-from-scratch** across two seeds (+10pp at 30 steps, larger at 60 steps).
+- **OPD-then-RL is robustly better than RL-from-scratch** across two seeds AND under matched budget (+8pp at 60 steps).
 - **Pure OPD is genuinely sub-asymptotic for the task**: 38.6% mean. Its value is enabling the subsequent RL phase, not the OPD checkpoint itself.
-- **Tuned RL-from-scratch reaches teacher (~45%)**; OPD-then-RL reaches ~70% in the same compute budget. The +25pp over teacher is the real Claim-C number.
+- **Tuned RL-from-scratch reaches teacher (~45%) at 30 steps and ~63% at 60 steps**; OPD-then-RL reaches 71% at 60 steps. The +25pp-over-teacher and +8pp-over-RL numbers are the real Claim-C wins.
 - **Forgetting does not appear in any stable training regime** on Countdown — what initially looked like a forgetting story is more accurately a *training-stability* story.
 
 ## Index (continued)
@@ -178,3 +204,4 @@ The follow-ups make the story sharper:
 | 9    | tuned RL seed=2                 | seed-2 control for iter06        | 44.1% mean (≈iter06 45.6%)                    |
 | 10   | OPD-then-RL 60 steps            | longer-budget asymptote          | 71.1% mean / 84% peak; +25pp over teacher     |
 | 11   | sharper forgetting (26 prompts) | better signal vs 16-prompt rubric| same picture: only collapsed run shows loss   |
+| 12   | tuned RL 60 steps               | apples-to-apples vs iter10 OPD-then-RL | 63.0% mean / 69% peak; gap to iter10 = +8.1pp |
