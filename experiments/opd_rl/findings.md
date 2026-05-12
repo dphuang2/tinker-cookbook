@@ -24,6 +24,13 @@ The initial pair (Qwen3-8B thinking teacher) was swapped after iter01 because th
 
 Peaks (single step) — OPD-then-RL hit **74.2% correct** at step 25 (30 steps), **83.6%** at step 45 (60 steps).
 
+**Variant legend:**
+
+- **OPD** = on-policy distillation only; student samples, teacher provides per-token reverse-KL targets, no env reward.
+- **RL matched-hparams** = RL-from-scratch with the *same* hparams as the OPD run (`lora_rank=8`, `group_size=4`, `groups_per_batch=16`, default LoRA LR ≈ 5e-4 from `hyperparam_utils.get_lr`). This is the apples-to-apples comparison vs OPD — same knobs, no teacher.
+- **RL tuned** = RL-from-scratch with hparams chosen to *stabilize* RL: LR=1e-5 (10× smaller) and `group_size=8` (2× larger). This is the steelman of the RL baseline.
+- **OPD-then-RL** = load the final checkpoint of an OPD run, then continue training with RL-tuned hparams.
+
 ## Figures
 
 All plots are regenerated from raw data with `uv run python -m experiments.opd_rl.make_figures`. Raw metrics live under [`experiments/opd_rl/data/`](data/) — one `metrics.jsonl` + `config.json` per training run, plus the forgetting-eval and teacher-ref JSONs.
