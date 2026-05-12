@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 class CLIConfig:
     model_name: str = "Qwen/Qwen3-30B-A3B-Instruct-2507"
     renderer_name: str | None = None
+    checkpoint_path: str | None = None  # if set, load LoRA from this sampler path
     n_problems: int = 64
     group_size: int = 1
     n_sources: int = 4
@@ -47,7 +48,10 @@ class CLIConfig:
 async def main(cli: CLIConfig) -> dict[str, Any]:
     renderer_name = cli.renderer_name or model_info.get_recommended_renderer_name(cli.model_name)
     service_client = tinker.ServiceClient()
-    sampling_client = await service_client.create_sampling_client_async(base_model=cli.model_name)
+    if cli.checkpoint_path:
+        sampling_client = await service_client.create_sampling_client_async(base_model=cli.model_name, model_path=cli.checkpoint_path)
+    else:
+        sampling_client = await service_client.create_sampling_client_async(base_model=cli.model_name)
     completer = TinkerTokenCompleter(sampling_client=sampling_client, max_tokens=cli.max_tokens, temperature=cli.temperature)
 
     builder = CountdownDatasetBuilder(
