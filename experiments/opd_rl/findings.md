@@ -33,7 +33,14 @@ Peaks (single step) — OPD-then-RL hit **74.2% correct** at step 25 (30 steps),
 
 ## Figures
 
-All plots are regenerated from raw data with `uv run python -m experiments.opd_rl.make_figures`. Raw metrics live under [`experiments/opd_rl/data/`](data/) — one `metrics.jsonl` + `config.json` per training run, plus the forgetting-eval and teacher-ref JSONs.
+All plots are regenerated from raw data with `uv run python -m experiments.opd_rl.make_figures`. Raw artifacts live under [`experiments/opd_rl/data/`](data/) (see [`data/README.md`](data/README.md) for full schemas):
+
+- `iter<NN>/metrics.jsonl` + `config.json` per training run
+- `iter<NN>/rollouts.jsonl` per RL/OPD-then-RL run — one line per trajectory with the env prompt, the student's full response, and the final reward
+- `teacher_ref.json` — teacher zero-shot eval anchor
+- `forgetting-*.json` (16-prompt) and `forgetting2-*.json` (26-prompt) — per-checkpoint instruction-following scores with full per-prompt audit trails
+
+Reviewers can read `data/iter07/rollouts.jsonl` etc. to see exactly what the student emitted at each step.
 
 **Training curves across all variants.** Light lines are raw per-batch correct rate; dark lines are 5-step rolling means. Dashed black line is the teacher's zero-shot accuracy (45.3%).
 
