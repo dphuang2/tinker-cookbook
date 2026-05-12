@@ -41,6 +41,9 @@ class CLIConfig:
     groups_per_batch: int = 16
     n_batches: int = 1000
     seed: int = 0
+    max_source: int = 25
+    max_target: int = 100
+    require_division: bool = False
 
     # Training
     learning_rate: float | None = None  # defaults to hyperparam_utils.get_lr
@@ -82,6 +85,9 @@ async def cli_main(cli: CLIConfig) -> None:
         group_size=cli.group_size,
         n_sources=cli.n_sources,
         seed=cli.seed,
+        max_source=cli.max_source,
+        max_target=cli.max_target,
+        require_division=cli.require_division,
     )
 
     config = Config(

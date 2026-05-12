@@ -131,16 +131,31 @@ class CountdownEnv(ProblemEnv):
         return f"<answer>(expression equal to {self.target} using {list(self.sources)})</answer>"
 
 
-def _sample_problem(rng: np.random.RandomState, n_sources: int = 4, max_source: int = 25, max_target: int = 100) -> tuple[int, tuple[int, ...]]:
+def _sample_problem(
+    rng: np.random.RandomState,
+    n_sources: int = 4,
+    max_source: int = 25,
+    max_target: int = 100,
+    require_division: bool = False,
+) -> tuple[int, tuple[int, ...]]:
     """Sample a problem guaranteed solvable by construction.
 
     Picks `n_sources` ints in [1, max_source], builds a random left-associative
     expression over +,-,*,/, and uses its value as the target if it is a
-    positive integer in [1, max_target]. Retries up to 50 times.
+    positive integer in [1, max_target]. Retries up to 200 times.
+
+    If `require_division` is True, at least one `/` operator is forced into the
+    constructor; this biases problems toward needing division (often a harder
+    cold-start regime for the student because the student must produce
+    integer-valued divisions, e.g. (6/2)).
     """
-    for _ in range(50):
+    ops_pool = ["+", "-", "*", "/"] if require_division else ["+", "-", "*"]
+    for _ in range(200):
         srcs = tuple(int(rng.randint(1, max_source + 1)) for _ in range(n_sources))
-        ops = [rng.choice(["+", "-", "*"]) for _ in range(n_sources - 1)]
+        ops = [rng.choice(ops_pool) for _ in range(n_sources - 1)]
+        if require_division and "/" not in ops:
+            # Force at least one division
+            ops[rng.randint(0, len(ops))] = "/"
         expr = str(srcs[0])
         for op, s in zip(ops, srcs[1:]):
             expr = f"({expr}{op}{s})"
@@ -162,6 +177,9 @@ class CountdownDataset(RLDataset):
         n_batches: int = 200,
         n_sources: int = 4,
         seed: int = 0,
+        max_source: int = 25,
+        max_target: int = 100,
+        require_division: bool = False,
     ):
         self._rng = np.random.RandomState(None)
         self.batch_size = batch_size
@@ -170,13 +188,22 @@ class CountdownDataset(RLDataset):
         self.n_batches = n_batches
         self.n_sources = n_sources
         self.seed = seed
+        self.max_source = max_source
+        self.max_target = max_target
+        self.require_division = require_division
 
     def get_batch(self, index: int) -> Sequence[EnvGroupBuilder]:
         self._rng.seed(self.seed * 1_000_003 + index)
         return [self._make(self._rng) for _ in range(self.batch_size)]
 
     def _make(self, rng: np.random.RandomState) -> ProblemGroupBuilder:
-        target, sources = _sample_problem(rng, n_sources=self.n_sources)
+        target, sources = _sample_problem(
+            rng,
+            n_sources=self.n_sources,
+            max_source=self.max_source,
+            max_target=self.max_target,
+            require_division=self.require_division,
+        )
         return ProblemGroupBuilder(
             env_thunk=partial(CountdownEnv, target, sources, renderer=self.renderer),
             num_envs=self.group_size,
@@ -195,6 +222,9 @@ class CountdownDatasetBuilder(RLDatasetBuilder):
     group_size: int = 8
     n_sources: int = 4
     seed: int = 0
+    max_source: int = 25
+    max_target: int = 100
+    require_division: bool = False
 
     async def __call__(self) -> tuple[CountdownDataset, None]:
         tokenizer = get_tokenizer(self.model_name_for_tokenizer)
@@ -205,4 +235,7 @@ class CountdownDatasetBuilder(RLDatasetBuilder):
             group_size=self.group_size,
             n_sources=self.n_sources,
             seed=self.seed,
+            max_source=self.max_source,
+            max_target=self.max_target,
+            require_division=self.require_division,
         ), None

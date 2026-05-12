@@ -36,6 +36,9 @@ class CLIConfig:
     n_problems: int = 64
     group_size: int = 1
     n_sources: int = 4
+    max_source: int = 25
+    max_target: int = 100
+    require_division: bool = False
     max_tokens: int = 512
     temperature: float = 1.0
     out_json: str | None = None  # if set, write a json summary here
@@ -54,6 +57,9 @@ async def main(cli: CLIConfig) -> dict[str, Any]:
         n_batches=1,
         group_size=cli.group_size,
         n_sources=cli.n_sources,
+        max_source=cli.max_source,
+        max_target=cli.max_target,
+        require_division=cli.require_division,
     )
     dataset, _ = await builder()
     env_group_builders = dataset.get_batch(0)
