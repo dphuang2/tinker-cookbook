@@ -216,13 +216,13 @@ Tested whether the OPD-then-RL win scales with student "cold-start" — i.e. whe
 
 ### Five-way comparison on countdown-v2
 
-| variant                | last-10 mean correct | notes                                                        |
-| ---------------------- | -------------------- | ------------------------------------------------------------ |
-| RL-only (iter15)       | 16.5%                | RL barely moves from step-0 floor — signal too sparse        |
-| OPD-only (iter16)      | 12.4% (27/30 steps¹) | **WORSE than RL** — teacher KL pulls student toward teacher's already-weak distribution |
-| OPD-then-RL (iter17)   | 9.1%                 | peak 32% at step 17, then **declines** — RL gradient on cold env *degrades* the OPD warmstart |
-| SFT-only (iter18)      | 32.8% pass@1 / 45% pass@8 (step-0 iter19) | filtered-correct teacher data (276 examples), 4 epochs       |
-| **SFT-then-RL (iter19)** | **48.7% (peak 64%)** | per-decade 43→49→49% — RL builds on SFT init                |
+| variant                | last-10 mean correct | forgetting (26-prompt) | notes                                                        |
+| ---------------------- | -------------------- | ----- | ------------------------------------------------------------ |
+| RL-only (iter15)       | 16.5%                | (n/a) | RL barely moves from step-0 floor — signal too sparse        |
+| OPD-only (iter16)      | 12.4% (27/30 steps¹) | (n/a) | **WORSE than RL** — teacher KL pulls student toward teacher's already-weak distribution |
+| OPD-then-RL (iter17)   | 9.1%                 | (n/a) | peak 32% at step 17, then **declines** — RL gradient on cold env *degrades* the OPD warmstart |
+| SFT-only (iter18)      | 32.8% pass@1 / 45% pass@8 (step-0 iter19) | **0.896** | filtered-correct teacher data (276 examples), 4 epochs; **no forgetting** |
+| **SFT-then-RL (iter19)** | **48.7% (peak 64%)** | **0.896** | per-decade 43→49→49% — RL builds on SFT init; **no forgetting** |
 
 ¹ iter16 stalled at step 27 due to Tinker API contention with parallel teacher-data gen; the trajectory was flat at ~10% so the truncation does not change the conclusion.
 
@@ -239,6 +239,10 @@ When you then continue with RL (iter17), the gradient signal is sparse (frac_all
 SFT on `gen_teacher_data.py` filters to **only correct teacher trajectories** before training. The student sees 276 hand-verified-correct examples instead of the teacher's full distribution. The student learns the *successful subset* of the teacher's behavior, even when the teacher's overall pass rate is low. This filtering step is missing from OPD's loss by construction (you can't filter KL targets; KL is over the full token distribution).
 
 SFT-then-RL adds an additional +16pp on top of SFT-only (32.8% → 48.7%), so RL still helps — it just needs an initialization that wasn't already corrupted by OPD-on-cold-env.
+
+### Does SFT cause catastrophic forgetting?
+
+No — same as everything else in the stable-training regime. SFT-only and SFT-then-RL both score **0.896** on the 26-prompt IF rubric, identical to the untrained base (0.896). The narrow LoRA + filtered teacher data doesn't drag the student off general instruction-following. Forgetting on countdown is still entirely a function of training-time stability (only the collapsed iter05 matched-hp RL run lost IF — 0.30/0.38). This holds across every algorithm tested: OPD, tuned RL, OPD-then-RL, SFT, SFT-then-RL.
 
 ### The full picture: warm vs cold
 

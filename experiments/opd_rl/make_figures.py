@@ -139,7 +139,7 @@ scores16 = [
     json.loads((DATA / "forgetting-rl-tuned.json").read_text())["forgetting_score"],
     json.loads((DATA / "forgetting-opd-then-rl.json").read_text())["forgetting_score"],
 ]
-labels26 = labels16 + ["OPD-then-RL-60", "RL-tuned-60"]
+labels26 = labels16 + ["OPD-then-RL-60", "RL-tuned-60", "SFT (cold)", "SFT-then-RL (cold)"]
 scores26 = [
     json.loads((DATA / "forgetting2-base.json").read_text())["forgetting_score"],
     json.loads((DATA / "forgetting2-opd30.json").read_text())["forgetting_score"],
@@ -148,6 +148,8 @@ scores26 = [
     json.loads((DATA / "forgetting2-opd-then-rl.json").read_text())["forgetting_score"],
     json.loads((DATA / "forgetting2-opd-then-rl-60.json").read_text())["forgetting_score"],
     json.loads((DATA / "forgetting2-rl-tuned-60.json").read_text())["forgetting_score"],
+    json.loads((DATA / "forgetting2-sft-v2.json").read_text())["forgetting_score"],
+    json.loads((DATA / "forgetting2-sft-then-rl-v2.json").read_text())["forgetting_score"],
 ]
 
 fig, ax = plt.subplots(figsize=(10, 5))
