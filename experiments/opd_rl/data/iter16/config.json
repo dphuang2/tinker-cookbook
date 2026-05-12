@@ -1,0 +1,46 @@
+{
+  "learning_rate": 0.0004905250962784578,
+  "dataset_configs": [
+    {
+      "dataset_builder": {
+        "batch_size": 16,
+        "model_name_for_tokenizer": "Qwen/Qwen3-4B-Instruct-2507",
+        "renderer_name": "qwen3_instruct",
+        "n_batches": 1000,
+        "group_size": 8,
+        "n_sources": 6,
+        "seed": 0,
+        "max_source": 50,
+        "max_target": 1000,
+        "require_division": false
+      },
+      "teacher_config": {
+        "base_model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+        "load_checkpoint_path": null
+      },
+      "groups_per_batch": 16
+    }
+  ],
+  "model_name": "Qwen/Qwen3-4B-Instruct-2507",
+  "renderer_name": "qwen3_instruct",
+  "max_tokens": 1024,
+  "temperature": 1.0,
+  "compute_post_kl": false,
+  "evaluator_builders": [],
+  "lora_rank": 8,
+  "kl_penalty_coef": 1.0,
+  "kl_discount_factor": 0.0,
+  "loss_fn": "importance_sampling",
+  "loss_fn_config": null,
+  "num_substeps": 1,
+  "wandb_project": "opd_rl",
+  "wandb_name": "iter16-opd-v2",
+  "log_path": "/tmp/dylan/opd-rl/iter16-opd-v2-2026-05-12-07-28-44",
+  "base_url": null,
+  "enable_trace": false,
+  "span_chart_every": 0,
+  "eval_every": 20,
+  "save_every": 20,
+  "load_checkpoint_path": null,
+  "max_steps": 30
+}

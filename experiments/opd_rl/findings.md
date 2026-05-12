@@ -205,3 +205,68 @@ The follow-ups make the story sharper:
 | 10   | OPD-then-RL 60 steps            | longer-budget asymptote          | 71.1% mean / 84% peak; +25pp over teacher     |
 | 11   | sharper forgetting (26 prompts) | better signal vs 16-prompt rubric| same picture: only collapsed run shows loss   |
 | 12   | tuned RL 60 steps               | apples-to-apples vs iter10 OPD-then-RL | 63.0% mean / 69% peak; gap to iter10 = +8.1pp |
+
+## Cold-start regime: when OPD fails and SFT wins (iter13–iter19)
+
+Tested whether the OPD-then-RL win scales with student "cold-start" — i.e. whether OPD's advantage grows when the student gets ~0% reward zero-shot. **The answer was the opposite of what we expected.**
+
+### Setup
+
+**countdown-v2**: 6 sources, max_source=50, max_target=1000, max_tokens=1024. Probed teacher pass@1 = 6.25% (training-time group_size=8 step-0 = 17.2%). Confirmed cold: tuned RL-from-scratch (iter15) stalls at 16.5% last-10 mean, barely moving from its step-0 floor (frac_all_bad bounces 25-80%, signal sparse).
+
+### Five-way comparison on countdown-v2
+
+| variant                | last-10 mean correct | notes                                                        |
+| ---------------------- | -------------------- | ------------------------------------------------------------ |
+| RL-only (iter15)       | 16.5%                | RL barely moves from step-0 floor — signal too sparse        |
+| OPD-only (iter16)      | 12.4% (27/30 steps¹) | **WORSE than RL** — teacher KL pulls student toward teacher's already-weak distribution |
+| OPD-then-RL (iter17)   | 9.1%                 | peak 32% at step 17, then **declines** — RL gradient on cold env *degrades* the OPD warmstart |
+| SFT-only (iter18)      | 32.8% pass@1 / 45% pass@8 (step-0 iter19) | filtered-correct teacher data (276 examples), 4 epochs       |
+| **SFT-then-RL (iter19)** | **48.7% (peak 64%)** | per-decade 43→49→49% — RL builds on SFT init                |
+
+¹ iter16 stalled at step 27 due to Tinker API contention with parallel teacher-data gen; the trajectory was flat at ~10% so the truncation does not change the conclusion.
+
+![Cold-start countdown-v2](figures/cold_start_v2.png)
+
+### Why OPD fails on cold envs
+
+OPD's per-token reverse-KL trains the student to match the teacher's *distribution* over every token, including the many tokens the teacher gets wrong on a hard env. On countdown-v2 the teacher itself is at ~17% pass@8 — the teacher's distribution has substantial probability mass on incorrect tokens. The student diligently learns to imitate that distribution and ends up no better than the teacher; on this env that's *worse than nothing* (12.4% < 16.5%).
+
+When you then continue with RL (iter17), the gradient signal is sparse (frac_all_bad bouncing 25–75%) and pulls the OPD-warmstart in low-variance noisy directions. The peak at step 17 (32%) followed by decline to ~5–10% in the last decade shows the policy losing structure under unstable gradients.
+
+### Why SFT wins on cold envs
+
+SFT on `gen_teacher_data.py` filters to **only correct teacher trajectories** before training. The student sees 276 hand-verified-correct examples instead of the teacher's full distribution. The student learns the *successful subset* of the teacher's behavior, even when the teacher's overall pass rate is low. This filtering step is missing from OPD's loss by construction (you can't filter KL targets; KL is over the full token distribution).
+
+SFT-then-RL adds an additional +16pp on top of SFT-only (32.8% → 48.7%), so RL still helps — it just needs an initialization that wasn't already corrupted by OPD-on-cold-env.
+
+### The full picture: warm vs cold
+
+The story now has two regimes:
+
+| regime           | teacher zero-shot | RL-from-scratch | OPD-then-RL    | SFT-then-RL    | winner          |
+| ---------------- | ----------------- | --------------- | -------------- | -------------- | --------------- |
+| **warm** (v1)    | 45%               | 45.6% (matches) | **71% (60-step)** | not tested     | OPD-then-RL     |
+| **cold** (v2)    | ~17% pass@8       | 16.5%           | 9.1% (degrades) | **48.7%**      | SFT-then-RL     |
+
+OPD's effectiveness is bounded by the **teacher's distribution quality** on the env. When teacher is competent (warm regime), OPD's full distribution is a useful target and OPD-then-RL dominates. When teacher is weak (cold regime), OPD's loss imports too much of the teacher's failure mode and SFT-filtered-correct wins.
+
+**Practical guidance**:
+
+- If teacher pass-rate on the env is ≳40%: use OPD-then-RL.
+- If teacher pass-rate on the env is ≲20%: use **SFT-then-RL** with filtered correct trajectories. OPD will likely hurt.
+- The crossover region (teacher ~20–40%) was not directly tested but the v2b probe (teacher 31%) showed neither pure RL nor pure OPD was clean — worth running a third regime to map the boundary.
+
+This is a substantive refinement to the original `findings.md` claim. The original "OPD is best understood as a hyperparameter-free stabilizer and a strong RL initialization" remains true *in the warm regime*. In the cold regime, OPD is actively harmful and SFT-on-filtered-teacher-data is the better initialization.
+
+### Index (cold-start runs)
+
+| iter | variant                              | result                              |
+| ---- | ------------------------------------ | ----------------------------------- |
+| 13   | env probes (v2/v2a/v2b/v2d)          | v2 selected as cold env             |
+| 14   | tuned RL on v2b                      | 32.4% — v2b not cold enough         |
+| 15   | tuned RL on v2 (cold)                | 16.5% — confirms cold               |
+| 16   | OPD on v2 (cold, 27/30 partial)      | 12.4% — *worse* than RL             |
+| 17   | OPD-then-RL on v2                    | 9.1% — *degrades* OPD warmstart     |
+| 18   | SFT on v2 (276 teacher-correct ex)   | 32.8% pass@1                        |
+| 19   | SFT-then-RL on v2                    | **48.7% mean / 64% peak**           |

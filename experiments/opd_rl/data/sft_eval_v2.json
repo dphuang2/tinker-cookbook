@@ -1,0 +1,14 @@
+{
+  "model": "Qwen/Qwen3-4B-Instruct-2507",
+  "n_problems": 64,
+  "group_size": 1,
+  "n_sources": 6,
+  "max_tokens": 1024,
+  "temperature": 1.0,
+  "renderer": "qwen3_instruct",
+  "n_rollouts": 64,
+  "reward_mean": 0.24999999999999997,
+  "reward_std": 0.501560066193472,
+  "correct_mean": 0.328125,
+  "format_mean": 0.328125
+}

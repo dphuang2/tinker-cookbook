@@ -173,6 +173,40 @@ print("wrote", FIG / "forgetting_bar.png")
 plt.close(fig)
 
 
+# ---- Figure 5c: cold-start regime (countdown-v2) ----
+cold_runs = [
+    ("15", "RL-only", "tab:red"),
+    ("16", "OPD-only", "tab:blue"),
+    ("17", "OPD-then-RL", "tab:purple"),
+    ("19", "SFT-then-RL", "tab:green"),
+]
+fig, ax = plt.subplots(figsize=(10, 5.5))
+for iter_id, label, color in cold_runs:
+    try:
+        s, c = get_curve(iter_id)
+        ax.plot(s, c, color=color, alpha=0.3)
+        ax.plot(s, smooth(c, 5), color=color, label=label, linewidth=2)
+    except FileNotFoundError:
+        continue
+# Add SFT-only horizontal line from sft_eval_v2.json
+try:
+    import json as _json
+    sft_eval = _json.loads((DATA / "sft_eval_v2.json").read_text())
+    ax.axhline(sft_eval["correct_mean"], color="tab:olive", linestyle=":", linewidth=2, label=f"SFT-only pass@1 ({sft_eval['correct_mean']:.1%})")
+except Exception:
+    pass
+ax.set_xlabel("training step")
+ax.set_ylabel("env correct rate (per-batch mean)")
+ax.set_title("Cold-start regime (countdown-v2): OPD fails, SFT wins")
+ax.set_ylim(0, 0.75)
+ax.legend(loc="upper left", fontsize=10)
+ax.grid(True, alpha=0.3)
+fig.tight_layout()
+fig.savefig(FIG / "cold_start_v2.png", dpi=140)
+print("wrote", FIG / "cold_start_v2.png")
+plt.close(fig)
+
+
 # ---- Figure 5b: fair 60-step head-to-head ----
 fig, ax = plt.subplots(figsize=(10, 5.5))
 for iter_id, label, color in [("10", "OPD-then-RL (60 steps)", "tab:purple"), ("12", "RL tuned (60 steps)", "tab:brown")]:
