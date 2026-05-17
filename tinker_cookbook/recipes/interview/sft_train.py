@@ -48,13 +48,23 @@ MAX_TOOL_RECORDS = 0  # 0007 found 800 records too few (cadence collapse); disab
 
 PROGRESS_TOOL_SPEC: ToolSpec = {
     "name": "checkpoint",
-    "description": "Record a brief progress note while reasoning.",
+    "description": (
+        "Pause your thinking to record a checkpoint summarizing where you "
+        "are in your reasoning. This is for YOUR OWN bookkeeping while you "
+        "work through the problem -- use it whenever you finish a logical "
+        "subtask, switch approach, or want to consolidate progress. Call it "
+        "freely; the user will read the summaries to follow along."
+    ),
     "parameters": {
         "type": "object",
         "properties": {
             "message": {
                 "type": "string",
-                "description": "One short sentence on your current progress.",
+                "description": (
+                    "One short first-person sentence describing the current "
+                    "reasoning state, e.g. 'Tried u-substitution but the "
+                    "cross term didn't cancel - switching to partial fractions.'"
+                ),
             },
         },
         "required": ["message"],
@@ -66,7 +76,15 @@ USER_INSTRUCTION_SUFFIX = (
     "unnecessarily, especially when you have a reasonable degree of confidence."
 )
 
-SYSTEM_PROMPT = ""  # 0016 found explicit cadence directive hurts; empty is best
+# 0022 (prompt-only): bias against tool calls on easy problems to recover
+# the accuracy lost to tool-spec distraction.
+SYSTEM_PROMPT = (
+    "Solve the math problem efficiently. The checkpoint tool is available "
+    "for tracking progress on hard multi-step problems, but use it sparingly "
+    "-- only when you genuinely change approach or finish a substantial "
+    "sub-task. For simple problems, just think and answer directly without "
+    "calling the tool."
+)
 
 # 0018: mask loss on <think> block tokens to preserve base reasoning capability.
 # Qwen3 token IDs for the thinking-block boundaries.
