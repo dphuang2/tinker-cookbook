@@ -43,7 +43,8 @@ MAX_LENGTH = 32768
 BATCH_SIZE = 16
 NUM_EPOCHS = 1
 LORA_RANK = 32
-MIN_TOTAL_THINKING_CHARS = 4000  # 0006: filter out records whose original thinking was short
+MIN_TOTAL_THINKING_CHARS = 0  # 0006 found 4000-char filter was a no-op
+MAX_TOOL_RECORDS = 800  # 0007: subsample SFT records to test data efficiency
 
 PROGRESS_TOOL_SPEC: ToolSpec = {
     "name": "progress_update",
@@ -188,6 +189,7 @@ class InterviewSFTBuilder(ChatDatasetBuilder):
     pure_math_path: str = PURE_MATH_PATH
     pure_math_count: int = PURE_MATH_COUNT
     min_total_thinking_chars: int = MIN_TOTAL_THINKING_CHARS
+    max_tool_records: int = MAX_TOOL_RECORDS
     test_size: int = 100
     shuffle_seed: int = 0
 
@@ -206,6 +208,17 @@ class InterviewSFTBuilder(ChatDatasetBuilder):
             )
         else:
             tool_records = tool_records_all
+        if self.max_tool_records > 0 and len(tool_records) > self.max_tool_records:
+            # Deterministic subsample using shuffle_seed.
+            import random
+
+            rng = random.Random(self.shuffle_seed)
+            rng.shuffle(tool_records)
+            tool_records = tool_records[: self.max_tool_records]
+            logger.info(
+                f"Subsampled tool-call records to {self.max_tool_records} "
+                f"(seed={self.shuffle_seed})"
+            )
         for r in tool_records:
             r["_kind"] = "tool"
         logger.info(f"Loaded {len(tool_records)} tool-call records from {self.file_path}")
