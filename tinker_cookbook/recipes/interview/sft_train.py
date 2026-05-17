@@ -37,12 +37,12 @@ logger = logging.getLogger(__name__)
 MODEL_NAME = "Qwen/Qwen3-30B-A3B"
 SFT_DATASET_PATH = "/tmp/tinker-examples/interview/sft_dataset.json"
 PURE_MATH_PATH = "/tmp/tinker-examples/interview/deepmath_train_traces.json"
-PURE_MATH_COUNT = 1000  # 0004: mix in N pure-math no-tool records to preserve base reasoning
+PURE_MATH_COUNT = 0  # 0004 found mixing collapsed cadence; default off
 LOG_PATH = "/tmp/tinker-examples/interview/sft_run"
 MAX_LENGTH = 32768
 BATCH_SIZE = 16
 NUM_EPOCHS = 1
-LORA_RANK = 32
+LORA_RANK = 8  # 0005: smaller rank, less capacity to corrupt base reasoning
 
 PROGRESS_TOOL_SPEC: ToolSpec = {
     "name": "progress_update",

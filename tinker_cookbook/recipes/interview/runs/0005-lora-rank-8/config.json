@@ -1,0 +1,43 @@
+{
+  "log_path": "/tmp/tinker-examples/interview/sft_run",
+  "model_name": "Qwen/Qwen3-30B-A3B",
+  "load_checkpoint_path": null,
+  "renderer_name": "qwen3",
+  "dataset_builder": {
+    "common_config": {
+      "model_name_for_tokenizer": "Qwen/Qwen3-30B-A3B",
+      "renderer_name": "qwen3",
+      "max_length": 32768,
+      "batch_size": 16,
+      "train_on_what": "all_assistant_messages"
+    },
+    "file_path": "/tmp/tinker-examples/interview/sft_dataset.json",
+    "pure_math_path": "/tmp/tinker-examples/interview/deepmath_train_traces.json",
+    "pure_math_count": 0,
+    "test_size": 100,
+    "shuffle_seed": 0
+  },
+  "learning_rate": 0.0004990818286656736,
+  "lr_schedule": "linear",
+  "num_epochs": 1,
+  "lora_rank": 8,
+  "base_url": null,
+  "evaluator_builders": [],
+  "infrequent_evaluator_builders": [],
+  "save_every": 20,
+  "eval_every": 20,
+  "infrequent_eval_every": 100,
+  "ttl_seconds": 604800,
+  "rolling_save_every": 0,
+  "rolling_ttl_seconds": 7200,
+  "async_periodic_saves": false,
+  "adam_beta1": 0.9,
+  "adam_beta2": 0.95,
+  "adam_eps": 1e-08,
+  "wandb_project": null,
+  "wandb_name": null,
+  "enable_trace": false,
+  "span_chart_every": 0,
+  "max_steps": null,
+  "submit_ahead": 1
+}
