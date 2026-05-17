@@ -39,3 +39,4 @@ b886427	0.7440	0:148,1:242,2:102,3:8	-	2302	discard	0035 0011sft + 0024 prompt: 
 1867c8a	0.7840	0:307,1:159,2:21,3:11,5:1,6:1	-	0	discard	0037 cot-no-directive: dropping directive hurt 2.6pp; sparing is load-bearing
 7ebe801	0.7640	0:297,1:132,2:30,3:27,4:9,5:5	-	0	discard	0038 cot-soft-tool: -4.6pp; soft framing recovers cadence but loses accuracy
 8319121	0.7520	0:500	-	0	anchor	0039 CoT + NO tool: 0.752; tool presence adds +5.8pp on top of CoT
+13bb63f	0.7720	0:466,1:31,2:3	-	0	discard	0040 reason-carefully: phrasing matters; -3.8pp
