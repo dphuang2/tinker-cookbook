@@ -28,6 +28,7 @@ from dotenv import load_dotenv
 from tinker_cookbook import model_info, renderers
 from tinker_cookbook.recipes.interview.sft_train import (
     PROGRESS_TOOL_SPEC,
+    SYSTEM_PROMPT,
     USER_INSTRUCTION_SUFFIX,
 )
 from tinker_cookbook.recipes.math_rl.math_grading import extract_boxed, grade_answer
@@ -67,7 +68,7 @@ async def run_agent(
     problem,
 ) -> dict:
     prefix = renderer.create_conversation_prefix_with_tools(
-        tools=[PROGRESS_TOOL_SPEC], system_prompt=""
+        tools=[PROGRESS_TOOL_SPEC], system_prompt=SYSTEM_PROMPT
     )
     history: list[Message] = list(prefix)
     history.append(

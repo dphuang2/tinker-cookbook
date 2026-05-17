@@ -49,13 +49,11 @@ MAX_TOOL_RECORDS = 0  # 0007 found 800 records too few (cadence collapse); disab
 PROGRESS_TOOL_SPEC: ToolSpec = {
     "name": "checkpoint",
     "description": (
-        "Your private scratchpad for marking progress mid-reasoning. Use it "
-        "as a tool for YOUR OWN thinking process -- pause your <think> block, "
-        "log a one-sentence note about where you are, then continue. Call it "
-        "every time you finish a sub-step, change approach, or make a key "
-        "observation; the more often you use it, the more clearly you can "
-        "track your own reasoning. The user will see these summaries but they "
-        "are not the audience -- they're for you."
+        "Pause your thinking to record a checkpoint summarizing where you "
+        "are in your reasoning. This is for YOUR OWN bookkeeping while you "
+        "work through the problem -- use it whenever you finish a logical "
+        "subtask, switch approach, or want to consolidate progress. Call it "
+        "freely; the user will read the summaries to follow along."
     ),
     "parameters": {
         "type": "object",
@@ -76,6 +74,15 @@ PROGRESS_TOOL_SPEC: ToolSpec = {
 USER_INSTRUCTION_SUFFIX = (
     " Write your answer in \\boxed{} format. Don't think for too long "
     "unnecessarily, especially when you have a reasonable degree of confidence."
+)
+
+# 0016: add a system-prompt directive before the tool spec to bias cadence.
+SYSTEM_PROMPT = (
+    "You are working through a math problem and should use the `checkpoint` "
+    "tool every time you finish a sub-step, change approach, or make a key "
+    "observation. The checkpoint summaries help you track your reasoning "
+    "across multiple turns. Use the tool naturally as part of your problem "
+    "solving; do not skip it."
 )
 
 
@@ -126,7 +133,7 @@ def pure_math_record_to_datum(
     confident" behavior and reduces erosion of base reasoning capability.
     """
     prefix = renderer.create_conversation_prefix_with_tools(
-        tools=[PROGRESS_TOOL_SPEC], system_prompt=""
+        tools=[PROGRESS_TOOL_SPEC], system_prompt=SYSTEM_PROMPT
     )
     messages: list[Message] = list(prefix)
     messages.append(_user_message(record["question"]))
@@ -149,7 +156,7 @@ def record_to_datums(
     renderer), so the model can resume from the prior reasoning state.
     """
     prefix = renderer.create_conversation_prefix_with_tools(
-        tools=[PROGRESS_TOOL_SPEC], system_prompt=""
+        tools=[PROGRESS_TOOL_SPEC], system_prompt=SYSTEM_PROMPT
     )
     history: list[Message] = list(prefix)
     history.append(_user_message(record["question"]))
