@@ -90,7 +90,20 @@ MASK_THINKING_LOSS = False  # 0018 showed masking thinking caused cadence runawa
 
 
 def _user_message(question: str) -> Message:
-    return {"role": "user", "content": question + USER_INSTRUCTION_SUFFIX}
+    # 0046: structured markdown user message instead of question+suffix concat.
+    content = (
+        "## Problem\n\n"
+        f"{question}\n\n"
+        "## Instructions\n\n"
+        "Write your answer in \\boxed{} format. Don't think for too long "
+        "unnecessarily, especially when you have a reasonable degree of "
+        "confidence. The checkpoint tool is available for tracking progress "
+        "on hard multi-step problems, but use it sparingly -- only when you "
+        "genuinely change approach or finish a substantial sub-task. For "
+        "simple problems, just think and answer directly without calling "
+        "the tool."
+    )
+    return {"role": "user", "content": content}
 
 
 def _assistant_turn_with_update(

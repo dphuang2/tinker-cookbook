@@ -45,3 +45,4 @@ b886427	0.7440	0:148,1:242,2:102,3:8	-	2302	discard	0035 0011sft + 0024 prompt: 
 2655cef	0.7920	0:483,1:14,2:3	-	0	discard	0043 lets-think-step-by-step: noise (~0.80 plateau)
 39edc7e	0.7900	0:486,1:12,2:1,4:1	-	0	variance	0044 0036-rerun-3: 0.790; 3-sample mean 0.798 ≈ 0024; cadence is the deciding factor → 0024 wins
 c5bc8f0	0.8040	0:413,1:49,2:23,3:4,4:5,5:1,6:2,7:1,8:2	-	0	variance	0045 0024-rerun: 0.804 (2-sample mean 0.801) — 0024 confirmed best with healthy cadence
+63558b1	0.7940	0:399,1:65,2:20,3:11,4:3,6:1,7:1	-	0	discard	0046 markdown user msg: noise (0.794 within 0024's CI)
