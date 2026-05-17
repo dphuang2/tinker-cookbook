@@ -81,7 +81,7 @@ USER_INSTRUCTION_SUFFIX = (
     "calling the tool."
 )
 
-SYSTEM_PROMPT = ""  # 0025 showed redundancy hurts; user-msg only is best
+SYSTEM_PROMPT = "You are an expert at solving math problems."  # 0042
 
 # 0018: mask loss on <think> block tokens to preserve base reasoning capability.
 # Qwen3 token IDs for the thinking-block boundaries.
