@@ -19,6 +19,7 @@ Usage:
 import asyncio
 import json
 import logging
+import os
 from pathlib import Path
 
 import tinker
@@ -141,7 +142,7 @@ async def main():
     load_dotenv()
     logging.basicConfig(level=logging.INFO)
 
-    sampler_path = find_final_sampler_path(SFT_LOG_DIR)
+    sampler_path = os.environ.get("SAMPLER_PATH") or find_final_sampler_path(SFT_LOG_DIR)
     logger.info(f"Using SFT checkpoint: {sampler_path}")
 
     logger.info("Loading DeepMath-103K dataset...")

@@ -18,3 +18,4 @@ ff82890	0.7220	0:180,1:218,2:101,3:1	0.239	2302	discard	0015 stronger-self-bookk
 4c8590e	0.7080	0:155,1:215,2:119,3:11	0.238	2302	discard	0016 system-prompt-directive: explicit cadence directive regressed 3pp
 d633ad9	0.7380	0:174,1:219,2:95,3:12	0.252	4687	discard	0017 larger-dataset: 2x records (4787 SFT) didn't move accuracy; 0.74 ceiling is structural
 ae2d2cc	0.6580	0:4,2:2,3:149,4:256,5:66,6:10,7:3,8:10	0.225	4687	discard	0018 mask-thinking: cadence exploded to 4-call median; -8.2pp
+b109c68	0.7060	0:149,1:254,2:87,3:10	-	2302	discard	0019 early-stop-step-80: 0011 mid-training checkpoint underperforms final (0.706 vs 0.740)

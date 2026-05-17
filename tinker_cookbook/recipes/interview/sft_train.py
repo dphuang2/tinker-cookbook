@@ -82,7 +82,7 @@ SYSTEM_PROMPT = ""  # 0016 found explicit cadence directive hurts; empty is best
 # Qwen3 token IDs for the thinking-block boundaries.
 THINK_OPEN_TOKEN = 151667  # <think>
 THINK_CLOSE_TOKEN = 151668  # </think>
-MASK_THINKING_LOSS = True  # 0018: zero weights on tokens within <think>...</think>
+MASK_THINKING_LOSS = False  # 0018 showed masking thinking caused cadence runaway
 
 
 def _user_message(question: str) -> Message:
