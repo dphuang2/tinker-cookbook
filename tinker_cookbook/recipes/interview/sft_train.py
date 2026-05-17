@@ -72,13 +72,13 @@ PROGRESS_TOOL_SPEC: ToolSpec = {
 }
 
 USER_INSTRUCTION_SUFFIX = (
-    " Let's think step by step, then write the final answer in \\boxed{} "
-    "format. Don't think for too long unnecessarily, especially when you "
-    "have a reasonable degree of confidence. The checkpoint tool is "
-    "available for tracking progress on hard multi-step problems, but use "
-    "it sparingly -- only when you genuinely change approach or finish a "
-    "substantial sub-task. For simple problems, just think and answer "
-    "directly without calling the tool."
+    " Think step by step, then write your final answer in \\boxed{} format. "
+    "Don't think for too long unnecessarily, especially when you have a "
+    "reasonable degree of confidence. The checkpoint tool is available for "
+    "tracking progress on hard multi-step problems, but use it sparingly -- "
+    "only when you genuinely change approach or finish a substantial "
+    "sub-task. For simple problems, just think and answer directly without "
+    "calling the tool."
 )
 
 SYSTEM_PROMPT = ""  # 0042 found expert framing doesn't help; back to empty

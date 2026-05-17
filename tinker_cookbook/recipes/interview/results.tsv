@@ -43,3 +43,4 @@ b886427	0.7440	0:148,1:242,2:102,3:8	-	2302	discard	0035 0011sft + 0024 prompt: 
 30c6895	0.7940	0:483,1:17	-	0	variance	0041 0036-rerun: 0.794 (vs 0036's 0.810); within noise (eval std ~1.7pp)
 2b6678e	0.7940	0:486,1:12,2:1,4:1	-	0	discard	0042 expert-system-prompt: noise; system prompt does nothing on top of 0036
 2655cef	0.7920	0:483,1:14,2:3	-	0	discard	0043 lets-think-step-by-step: noise (~0.80 plateau)
+39edc7e	0.7900	0:486,1:12,2:1,4:1	-	0	variance	0044 0036-rerun-3: 0.790; 3-sample mean 0.798 ≈ 0024; cadence is the deciding factor → 0024 wins
