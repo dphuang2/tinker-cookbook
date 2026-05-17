@@ -80,7 +80,7 @@ USER_INSTRUCTION_SUFFIX = (
     "just think and answer directly without calling the tool."
 )
 
-SYSTEM_PROMPT = ""  # 0042 found expert framing doesn't help; back to empty
+SYSTEM_PROMPT = ""  # 0056 found example shifts cadence too much; reverted
 
 # 0018: mask loss on <think> block tokens to preserve base reasoning capability.
 # Qwen3 token IDs for the thinking-block boundaries.
