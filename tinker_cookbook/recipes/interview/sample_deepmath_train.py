@@ -1,11 +1,15 @@
 """
-Sample from Qwen3-30B-A3B (thinking mode) on DeepMath problems.
+Sample Qwen3-30B-A3B thinking traces for a slice of DeepMath used as teacher
+input for the progress-update SFT.
 
-Loads 10 problems from DeepMath-103K, samples completions with thinking enabled,
-and saves the results to a JSON file.
+Held-out eval is indices 0-499 (already evaluated). This script samples
+indices 500-2999 (training + dev) and writes one JSON file with all traces.
+
+Submits every request concurrently with a single asyncio.gather — no
+semaphore. Tinker is expected to handle the load.
 
 Usage:
-    python -m tinker_cookbook.recipes.interview.sample_deepmath
+    python -m tinker_cookbook.recipes.interview.sample_deepmath_train
 """
 
 import asyncio
@@ -23,72 +27,67 @@ from tinker_cookbook.tokenizer_utils import get_tokenizer
 logger = logging.getLogger(__name__)
 
 MODEL_NAME = "Qwen/Qwen3-30B-A3B"
-NUM_PROBLEMS = 10
+START_INDEX = 500
+END_INDEX = 3000  # exclusive
 MAX_TOKENS = 16384
 TEMPERATURE = 0.6
-OUTPUT_PATH = Path("/tmp/tinker-examples/interview/deepmath_samples.json")
+OUTPUT_PATH = Path("/tmp/tinker-examples/interview/deepmath_train_traces.json")
 
 
 async def main():
     load_dotenv()
     logging.basicConfig(level=logging.INFO)
 
-    # Load dataset
     logger.info("Loading DeepMath-103K dataset...")
     ds = load_dataset("zwhe99/DeepMath-103K", split="train")
     ds = ds.shuffle(seed=42)
-    problems = [ds[i] for i in range(NUM_PROBLEMS)]
+    problems = [ds[i] for i in range(START_INDEX, END_INDEX)]
+    n = len(problems)
+    logger.info(f"Sampling {n} problems (indices {START_INDEX}..{END_INDEX - 1})")
 
-    # Set up renderer and tokenizer
     renderer_name = model_info.get_recommended_renderer_name(MODEL_NAME)
-    logger.info(f"Using renderer: {renderer_name}")
     tokenizer = get_tokenizer(MODEL_NAME)
     renderer = renderers.get_renderer(renderer_name, tokenizer=tokenizer)
     stop_sequences = renderer.get_stop_sequences()
 
-    # Create sampling client directly from base model
-    logger.info(f"Creating sampling client for {MODEL_NAME}...")
     service_client = tinker.ServiceClient()
     sampling_client = service_client.create_sampling_client(base_model=MODEL_NAME)
 
-    # Build all prompts
     sample_params = tinker.SamplingParams(
         max_tokens=MAX_TOKENS,
         temperature=TEMPERATURE,
         stop=stop_sequences,
     )
+
     prompts = []
     for problem in problems:
-        question = problem["question"]
         messages: list[renderers.Message] = [
             {
                 "role": "user",
-                "content": question
+                "content": problem["question"]
                 + " Write your answer in \\boxed{} format. Don't think for too long unnecessarily, especially when you have a reasonable degree of confidence.",
             },
         ]
         prompts.append(renderer.build_generation_prompt(messages))
 
-    # Fire all sample requests in parallel
-    logger.info(f"Submitting {NUM_PROBLEMS} sample requests in parallel...")
+    logger.info(f"Submitting {n} sample requests concurrently...")
     sample_results = await asyncio.gather(
         *[
             sampling_client.sample_async(
-                prompt=prompt,
+                prompt=p,
                 num_samples=1,
                 sampling_params=sample_params,
             )
-            for prompt in prompts
+            for p in prompts
         ]
     )
 
-    # Process results
     results = []
+    num_clean = 0
     for i, (problem, sample_result) in enumerate(zip(problems, sample_results)):
         response_tokens = sample_result.sequences[0].tokens
         parsed_message, parse_termination = renderer.parse_response(response_tokens)
 
-        # Extract thinking and visible content
         content = parsed_message["content"]
         thinking = ""
         visible = ""
@@ -101,33 +100,27 @@ async def main():
         else:
             visible = content
 
-        result = {
-            "index": i,
-            "question": problem["question"],
-            "ground_truth": problem["final_answer"],
-            "thinking": thinking,
-            "response": visible,
-            "full_raw": tokenizer.decode(response_tokens),
-            "num_tokens": len(response_tokens),
-            "parse_termination": parse_termination.value,
-        }
-        results.append(result)
-        log = logger.info if parse_termination.is_clean else logger.warning
-        log(
-            f"[{i + 1}/{NUM_PROBLEMS}] {len(response_tokens)} tokens, "
-            f"thinking: {len(thinking)} chars, response: {len(visible)} chars, "
-            f"termination: {parse_termination.value}"
+        if parse_termination.is_clean:
+            num_clean += 1
+
+        results.append(
+            {
+                "dataset_index": START_INDEX + i,
+                "question": problem["question"],
+                "ground_truth": problem["final_answer"],
+                "thinking": thinking,
+                "response": visible,
+                "num_tokens": len(response_tokens),
+                "parse_termination": parse_termination.value,
+            }
         )
+        if (i + 1) % 100 == 0 or (i + 1) == n:
+            logger.info(f"Processed {i + 1}/{n} (clean: {num_clean})")
 
-    num_malformed = sum(1 for r in results if r["parse_termination"] == "malformed")
-    if num_malformed:
-        logger.warning(f"{num_malformed}/{len(results)} responses did not terminate cleanly")
-
-    # Save results
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(OUTPUT_PATH, "w") as f:
         json.dump(results, f, indent=2)
-    logger.info(f"Saved {len(results)} results to {OUTPUT_PATH}")
+    logger.info(f"Saved {len(results)} traces to {OUTPUT_PATH} (clean: {num_clean}/{n})")
 
 
 if __name__ == "__main__":
