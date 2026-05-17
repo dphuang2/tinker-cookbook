@@ -1,0 +1,30 @@
+/usr/local/lib/python3.12/dist-packages/google/auth/_default.py:114: UserWarning: Your application has authenticated using end user credentials from Google Cloud SDK without a quota project. You might receive a "quota exceeded" or "API not enabled" error. See the following page for troubleshooting: https://cloud.google.com/docs/authentication/adc-troubleshooting/user-creds. 
+  warnings.warn(_CLOUD_SDK_CREDENTIALS_WARNING)
+WARNING:root:Failed to retrieve Application Default Credentials: Reauthentication is needed. Please run `gcloud auth application-default login` to reauthenticate.
+WARNING:root:Trying to retrieve credentials from gcloud...
+Downloading nvidia-cusparselt-cu13 (210.8MiB)
+ Downloaded nvidia-cusparselt-cu13
+Uninstalled 1 package in 32ms
+warning: Failed to hardlink files; falling back to full copy. This may lead to degraded performance.
+         If the cache and target directories are on different filesystems, hardlinking may not be supported.
+         If this is intentional, set `export UV_LINK_MODE=copy` or use `--link-mode=copy` to suppress this warning.
+Installed 1 package in 57ms
+INFO:__main__:Using BASE model (no SFT checkpoint)
+INFO:__main__:Loading DeepMath-103K dataset...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+INFO:tinker.lib.public_interfaces.service_client:ServiceClient initialized for session 3dfd2fec-f3b2-5ac6-aff3-f79ac2ec36db
+INFO:__main__:Running agent loop on 500 problems concurrently...
+INFO:__main__:[50/500] correct so far: 46 (acc=0.920)
+INFO:__main__:[100/500] correct so far: 84 (acc=0.840)
+INFO:__main__:[150/500] correct so far: 127 (acc=0.847)
+INFO:__main__:[200/500] correct so far: 171 (acc=0.855)
+INFO:__main__:[250/500] correct so far: 209 (acc=0.836)
+INFO:__main__:[300/500] correct so far: 247 (acc=0.823)
+INFO:__main__:[350/500] correct so far: 290 (acc=0.829)
+INFO:__main__:[400/500] correct so far: 330 (acc=0.825)
+INFO:__main__:[450/500] correct so far: 374 (acc=0.831)
+INFO:__main__:[500/500] correct so far: 416 (acc=0.832)
+INFO:__main__:Accuracy: 416/500 = 0.832
+INFO:__main__:Tool-call cadence: [(0, 403), (1, 60), (2, 25), (3, 6), (4, 1), (5, 2), (6, 1), (8, 2)]
+INFO:__main__:Saved eval to /tmp/tinker-examples/interview/deepmath_agent_eval.json
