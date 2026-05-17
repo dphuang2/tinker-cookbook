@@ -43,17 +43,19 @@ MAX_LENGTH = 32768
 BATCH_SIZE = 16
 NUM_EPOCHS = 1
 LORA_RANK = 32
-MIN_TOTAL_THINKING_CHARS = 8000  # 0014: meaningful filter (drops short thinking traces)
+MIN_TOTAL_THINKING_CHARS = 0  # 0014 found filter hurts (data not fungible)
 MAX_TOOL_RECORDS = 0  # 0007 found 800 records too few (cadence collapse); disabled
 
 PROGRESS_TOOL_SPEC: ToolSpec = {
     "name": "checkpoint",
     "description": (
-        "Pause your thinking to record a checkpoint summarizing where you "
-        "are in your reasoning. This is for YOUR OWN bookkeeping while you "
-        "work through the problem -- use it whenever you finish a logical "
-        "subtask, switch approach, or want to consolidate progress. Call it "
-        "freely; the user will read the summaries to follow along."
+        "Your private scratchpad for marking progress mid-reasoning. Use it "
+        "as a tool for YOUR OWN thinking process -- pause your <think> block, "
+        "log a one-sentence note about where you are, then continue. Call it "
+        "every time you finish a sub-step, change approach, or make a key "
+        "observation; the more often you use it, the more clearly you can "
+        "track your own reasoning. The user will see these summaries but they "
+        "are not the audience -- they're for you."
     ),
     "parameters": {
         "type": "object",

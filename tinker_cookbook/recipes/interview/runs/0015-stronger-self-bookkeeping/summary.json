@@ -1,0 +1,28 @@
+{
+  "model": "Qwen/Qwen3-30B-A3B",
+  "sampler_path": "tinker://95f82c71-84fc-5bc7-b6fb-56e303c5ca6e:train:0/sampler_weights/final",
+  "num_problems": 500,
+  "num_correct": 361,
+  "accuracy": 0.722,
+  "tool_call_cadence": [
+    [
+      0,
+      180
+    ],
+    [
+      1,
+      218
+    ],
+    [
+      2,
+      101
+    ],
+    [
+      3,
+      1
+    ]
+  ],
+  "temperature": 0.6,
+  "max_tokens_per_turn": 8192,
+  "max_turns": 8
+}
