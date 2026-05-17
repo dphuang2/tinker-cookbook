@@ -24,3 +24,4 @@ cd53c55	0.7740	0:224,1:203,2:35,3:15,4:6,5:2,6:5,8:10	-	0	keep	0020 prompt-only 
 6545d41	0.7920	0:395,1:57,2:33,3:3,4:6,5:2,6:1,8:2,10:1	-	0	keep	0022 prompt-only + sparing system prompt: +1.8pp over 0020; new best at 0.7920
 ed74cad	0.7880	0:439,1:35,2:17,3:5,4:2,8:2	-	0	discard	0023 optional-tool prompt: more suppression dropped acc to 0.788 (vs 0022 0.792)
 a1f1a51	0.7980	0:412,1:58,2:12,3:11,4:3,5:2,8:2	-	0	keep	0024 directive in user message: new best 0.798 (+0.6pp over 0022)
+25421da	0.7920	0:447,1:33,2:13,3:5,5:1,6:1	-	0	discard	0025 system+user reinforce: redundancy hurt slightly (0.792 < 0024 0.798)

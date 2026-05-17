@@ -80,7 +80,10 @@ USER_INSTRUCTION_SUFFIX = (
     "just think and answer directly without calling the tool."
 )
 
-SYSTEM_PROMPT = ""  # 0024: move directive to user message instead
+SYSTEM_PROMPT = (
+    "You are solving math problems. The checkpoint tool is optional; "
+    "use it only when it genuinely aids your reasoning."
+)  # 0025: brief reinforcement in system prompt on top of 0024 user-msg directive
 
 # 0018: mask loss on <think> block tokens to preserve base reasoning capability.
 # Qwen3 token IDs for the thinking-block boundaries.
