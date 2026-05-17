@@ -7,3 +7,4 @@ a4aa049	0.7180	0:287,1:175,2:35,3:3	0.278	2301	discard	0003 lr-1p5e4 on message-
 8952548	0.7280	0:169,1:222,2:100,3:8,4:1	0.271	2301	discard	0005 lora-rank-8: smaller rank slightly worse than 0002 rank-32
 4b71509	0.7280	0:138,1:258,2:97,3:7	0.260	2216	discard	0006 filter-short-thinking: min 4000 chars dropped only 3.5%; no effect
 ca90f2c	0.7100	0:481,1:17,2:2	0.288	700	discard	0007 subsample-800: cadence collapsed (96% 0-calls); too few records
+fd7bc1e	0.7040	0:178,1:209,2:93,3:20	0.203	2301	discard	0008 epochs-2: overfits (NLL 0.20) but accuracy drops

@@ -41,10 +41,10 @@ PURE_MATH_COUNT = 0  # 0004 found mixing collapsed cadence; default off
 LOG_PATH = "/tmp/tinker-examples/interview/sft_run"
 MAX_LENGTH = 32768
 BATCH_SIZE = 16
-NUM_EPOCHS = 1
+NUM_EPOCHS = 2  # 0008: more gradient steps on the 0002 baseline
 LORA_RANK = 32
 MIN_TOTAL_THINKING_CHARS = 0  # 0006 found 4000-char filter was a no-op
-MAX_TOOL_RECORDS = 800  # 0007: subsample SFT records to test data efficiency
+MAX_TOOL_RECORDS = 0  # 0007 found 800 records too few (cadence collapse); disabled
 
 PROGRESS_TOOL_SPEC: ToolSpec = {
     "name": "progress_update",
