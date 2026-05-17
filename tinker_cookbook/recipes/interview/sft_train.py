@@ -74,7 +74,8 @@ PROGRESS_TOOL_SPEC: ToolSpec = {
 USER_INSTRUCTION_SUFFIX = (
     " Think step by step, then write your final answer in \\boxed{} format. "
     "Don't think for too long unnecessarily, especially when you have a "
-    "reasonable degree of confidence."
+    "reasonable degree of confidence. Use the checkpoint tool when you find "
+    "it helpful for tracking your reasoning on hard problems."
 )
 
 SYSTEM_PROMPT = ""  # 0025 showed redundancy hurts; user-msg only is best
