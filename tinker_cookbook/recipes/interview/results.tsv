@@ -3,3 +3,4 @@ commit	accuracy	cadence	test_nll	training_records	status	description
 c7397e5	0.7080	0:377,1:98,2:21,3:4	0.107	2301	discard	0001 lr-1p5e4: dropped LR to 1.5e-4, no change vs v3 baseline
 11d2b5d	0.7360	0:138,1:250,2:102,3:10	0.270	2301	keep	0002 drop-reasoning-arg: reverted to v1 message-only tool args, +2.8pp vs v3
 a4aa049	0.7180	0:287,1:175,2:35,3:3	0.278	2301	discard	0003 lr-1p5e4 on message-only: LR drop hurts in this format too
+549e967	0.7020	0:432,1:45,2:19,3:4	0.231	3301	discard	0004 mix-1k-pure-math: cadence collapsed (86% 0-calls); pure-math fraction too high

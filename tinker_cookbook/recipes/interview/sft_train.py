@@ -36,6 +36,8 @@ logger = logging.getLogger(__name__)
 
 MODEL_NAME = "Qwen/Qwen3-30B-A3B"
 SFT_DATASET_PATH = "/tmp/tinker-examples/interview/sft_dataset.json"
+PURE_MATH_PATH = "/tmp/tinker-examples/interview/deepmath_train_traces.json"
+PURE_MATH_COUNT = 1000  # 0004: mix in N pure-math no-tool records to preserve base reasoning
 LOG_PATH = "/tmp/tinker-examples/interview/sft_run"
 MAX_LENGTH = 32768
 BATCH_SIZE = 16
@@ -111,6 +113,25 @@ def _tool_ack(call_id: str) -> Message:
     return {"role": "tool", "content": "ok", "tool_call_id": call_id}
 
 
+def pure_math_record_to_datum(
+    record: dict, renderer: Renderer, max_length: int
+) -> tinker.Datum:
+    """Build one Datum for a plain Qwen3 thinking trace (no tool calls).
+
+    Mixing these into training preserves the model's "just answer when
+    confident" behavior and reduces erosion of base reasoning capability.
+    """
+    prefix = renderer.create_conversation_prefix_with_tools(
+        tools=[PROGRESS_TOOL_SPEC], system_prompt=""
+    )
+    messages: list[Message] = list(prefix)
+    messages.append(_user_message(record["question"]))
+    messages.append(_assistant_turn_final(record["thinking"], record["response"]))
+    return conversation_to_datum(
+        messages, renderer, max_length, TrainOnWhat.LAST_ASSISTANT_MESSAGE
+    )
+
+
 def record_to_datums(
     record: dict, renderer: Renderer, max_length: int
 ) -> list[tinker.Datum]:
@@ -163,15 +184,32 @@ class InterviewSFTBuilder(ChatDatasetBuilder):
     """Builds the progress-update SFT dataset from the teacher-rewrite JSON."""
 
     file_path: str = SFT_DATASET_PATH
+    pure_math_path: str = PURE_MATH_PATH
+    pure_math_count: int = PURE_MATH_COUNT
     test_size: int = 100
     shuffle_seed: int = 0
 
     def __call__(self) -> tuple[SupervisedDataset, SupervisedDataset | None]:
         with open(self.file_path) as f:
-            records = json.load(f)
-        logger.info(f"Loaded {len(records)} SFT records from {self.file_path}")
+            tool_records = json.load(f)
+        for r in tool_records:
+            r["_kind"] = "tool"
+        logger.info(f"Loaded {len(tool_records)} tool-call records from {self.file_path}")
 
-        ds = datasets.Dataset.from_list([{"record": json.dumps(r)} for r in records])
+        pure_records: list[dict] = []
+        if self.pure_math_count > 0:
+            with open(self.pure_math_path) as f:
+                raw = json.load(f)
+            clean = [r for r in raw if r.get("parse_termination") == "stop_sequence"]
+            pure_records = clean[: self.pure_math_count]
+            for r in pure_records:
+                r["_kind"] = "pure"
+            logger.info(
+                f"Loaded {len(pure_records)} pure-math records (from {len(clean)} clean)"
+            )
+
+        all_records = tool_records + pure_records
+        ds = datasets.Dataset.from_list([{"record": json.dumps(r)} for r in all_records])
         ds = ds.shuffle(seed=self.shuffle_seed)
 
         if self.test_size > 0 and len(ds) > self.test_size:
@@ -188,7 +226,10 @@ class InterviewSFTBuilder(ChatDatasetBuilder):
         renderer = self.renderer
 
         def flatmap_fn(row: dict) -> list[tinker.Datum]:
-            return record_to_datums(json.loads(row["record"]), renderer, max_length)
+            rec = json.loads(row["record"])
+            if rec.get("_kind") == "pure":
+                return [pure_math_record_to_datum(rec, renderer, max_length)]
+            return record_to_datums(rec, renderer, max_length)
 
         train_dataset = SupervisedDatasetFromHFDataset(
             train_ds, batch_size=self.common_config.batch_size, flatmap_fn=flatmap_fn
@@ -220,7 +261,7 @@ def build_config_blueprint() -> chz.Blueprint[train.Config]:
             "model_name": MODEL_NAME,
             "renderer_name": renderer_name,
             "dataset_builder": dataset,
-            "learning_rate": 1.5e-4,  # 0003: lower LR on top of 0002 message-only format
+            "learning_rate": hyperparam_utils.get_lr(MODEL_NAME, is_lora=True),
             "lora_rank": LORA_RANK,
             "lr_schedule": "linear",
             "num_epochs": NUM_EPOCHS,
