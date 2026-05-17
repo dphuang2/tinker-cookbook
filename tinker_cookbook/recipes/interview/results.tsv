@@ -36,3 +36,4 @@ d0f26c2	0.7820	0:397,1:57,2:26,3:10,4:3,5:4,6:1,8:2	-	0	discard	0032 reorder-dir
 efbd465	0.7980	0:404,1:80,2:10,3:2,4:2,5:1,8:1	-	0	discard	0034 tool-ack-continue: no effect vs 0024
 b886427	0.7440	0:148,1:242,2:102,3:8	-	2302	discard	0035 0011sft + 0024 prompt: SFT + directive hurts (0.744 << base+directive 0.798)
 29f19a6	0.8100	0:487,1:12,2:1	-	0	keep	0036 think-step-by-step: NEW BEST 0.810 (+1.2pp); cadence collapsed to 2.6%
+1867c8a	0.7840	0:307,1:159,2:21,3:11,5:1,6:1	-	0	discard	0037 cot-no-directive: dropping directive hurt 2.6pp; sparing is load-bearing
