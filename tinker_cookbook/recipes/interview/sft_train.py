@@ -42,7 +42,8 @@ LOG_PATH = "/tmp/tinker-examples/interview/sft_run"
 MAX_LENGTH = 32768
 BATCH_SIZE = 16
 NUM_EPOCHS = 1
-LORA_RANK = 8  # 0005: smaller rank, less capacity to corrupt base reasoning
+LORA_RANK = 32
+MIN_TOTAL_THINKING_CHARS = 4000  # 0006: filter out records whose original thinking was short
 
 PROGRESS_TOOL_SPEC: ToolSpec = {
     "name": "progress_update",
@@ -186,12 +187,25 @@ class InterviewSFTBuilder(ChatDatasetBuilder):
     file_path: str = SFT_DATASET_PATH
     pure_math_path: str = PURE_MATH_PATH
     pure_math_count: int = PURE_MATH_COUNT
+    min_total_thinking_chars: int = MIN_TOTAL_THINKING_CHARS
     test_size: int = 100
     shuffle_seed: int = 0
 
     def __call__(self) -> tuple[SupervisedDataset, SupervisedDataset | None]:
         with open(self.file_path) as f:
-            tool_records = json.load(f)
+            tool_records_all = json.load(f)
+        if self.min_total_thinking_chars > 0:
+            tool_records = []
+            for r in tool_records_all:
+                total = sum(len(t.get("thinking", "")) for t in r["turns"])
+                if total >= self.min_total_thinking_chars:
+                    tool_records.append(r)
+            logger.info(
+                f"Filtered tool-call records by thinking>={self.min_total_thinking_chars}: "
+                f"{len(tool_records)}/{len(tool_records_all)} kept"
+            )
+        else:
+            tool_records = tool_records_all
         for r in tool_records:
             r["_kind"] = "tool"
         logger.info(f"Loaded {len(tool_records)} tool-call records from {self.file_path}")
