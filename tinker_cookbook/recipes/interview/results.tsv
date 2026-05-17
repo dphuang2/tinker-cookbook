@@ -11,3 +11,4 @@ fd7bc1e	0.7040	0:178,1:209,2:93,3:20	0.203	2301	discard	0008 epochs-2: overfits 
 d966768	0.7160	0:479,1:20,2:1	0.199	2301	discard	0009 sparser-teacher: cadence collapsed (96% 0-calls); too few tool examples
 7af609f	0.7020	0:218,1:250,2:32	0.243	2302	discard	0010 mid-cadence-teacher: training 100% tool-using but eval cadence drifts to 44% 0-calls
 7c80263	0.7400	0:145,1:237,2:110,3:8	0.239	2302	keep	0011 rename-checkpoint: tool name + self-bookkeeping framing; +0.4pp vs 0002
+a25b642	0.7240	0:138,1:213,2:140,3:9	0.239	2302	discard	0012 lora-rank-16: 16 underperforms 32 by 1.6pp
