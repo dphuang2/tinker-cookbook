@@ -60,7 +60,11 @@ PROGRESS_TOOL_SPEC: ToolSpec = {
         "properties": {
             "message": {
                 "type": "string",
-                "description": "One short sentence describing your current progress.",
+                "description": (
+                    "One short first-person sentence describing the current "
+                    "reasoning state, e.g. 'Tried u-substitution but the "
+                    "cross term didn't cancel - switching to partial fractions.'"
+                ),
             },
         },
         "required": ["message"],
@@ -68,8 +72,7 @@ PROGRESS_TOOL_SPEC: ToolSpec = {
 }
 
 USER_INSTRUCTION_SUFFIX = (
-    " Write your answer in \\boxed{} format. Don't think for too long "
-    "unnecessarily, especially when you have a reasonable degree of confidence. "
+    " Write your answer in \\boxed{} format. "
     "The checkpoint tool is available for tracking progress on hard "
     "multi-step problems, but use it sparingly -- only when you genuinely "
     "change approach or finish a substantial sub-task. For simple problems, "
