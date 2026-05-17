@@ -142,8 +142,13 @@ async def main():
     load_dotenv()
     logging.basicConfig(level=logging.INFO)
 
-    sampler_path = os.environ.get("SAMPLER_PATH") or find_final_sampler_path(SFT_LOG_DIR)
-    logger.info(f"Using SFT checkpoint: {sampler_path}")
+    env_sampler = os.environ.get("SAMPLER_PATH")
+    if env_sampler == "base":
+        sampler_path = None
+        logger.info("Using BASE model (no SFT checkpoint)")
+    else:
+        sampler_path = env_sampler or find_final_sampler_path(SFT_LOG_DIR)
+        logger.info(f"Using SFT checkpoint: {sampler_path}")
 
     logger.info("Loading DeepMath-103K dataset...")
     ds = load_dataset("zwhe99/DeepMath-103K", split="train")
@@ -156,10 +161,13 @@ async def main():
     stop_sequences = renderer.get_stop_sequences()
 
     service_client = tinker.ServiceClient()
-    sampling_client = service_client.create_sampling_client(
-        base_model=MODEL_NAME,
-        model_path=sampler_path,
-    )
+    if sampler_path is None:
+        sampling_client = service_client.create_sampling_client(base_model=MODEL_NAME)
+    else:
+        sampling_client = service_client.create_sampling_client(
+            base_model=MODEL_NAME,
+            model_path=sampler_path,
+        )
     sample_params = tinker.SamplingParams(
         max_tokens=MAX_TOKENS_PER_TURN,
         temperature=TEMPERATURE,
