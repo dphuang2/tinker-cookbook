@@ -63,16 +63,17 @@ characters in the form [@<offset>] inserted between sentences (these
 markers are NOT part of the thinking - they're just landmarks you can
 reference). Pick split offsets that fall at natural reasoning boundaries.
 
-Cadence target: VERY SPARSE. Most traces should get 0 split points.
-Only emit a split when the model genuinely changed approach or hit a
-significant new sub-problem worth flagging. Guidelines:
-- Traces under ~8000 chars: 0 splits.
-- Traces 8000-16000 chars: 0 or 1 split.
-- Traces over 16000 chars: 1 or rarely 2 splits.
-- Never emit more than 2 splits.
+Cadence target: ALWAYS emit at least 1 split. Most traces should get
+1 or 2 splits. Guidelines:
+- Traces under ~6000 chars: exactly 1 split (at the midpoint or natural
+  inflection — never 0, never 2+).
+- Traces 6000-16000 chars: 1 or 2 splits.
+- Traces over 16000 chars: 2 splits.
+- Never emit 0 splits. Never emit more than 2.
 
-When in doubt, emit fewer. A trace that hits the final answer in one
-clean shot should get 0 splits regardless of length.
+Pick split points at natural reasoning boundaries — moments where the
+model changes approach, hits a sub-problem, or summarizes intermediate
+progress. Avoid splitting in the middle of a calculation.
 
 Each progress_update message must be one short first-person sentence
 describing the reasoning state at that point, e.g. "Tried u-substitution
