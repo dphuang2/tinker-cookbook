@@ -47,24 +47,20 @@ MIN_TOTAL_THINKING_CHARS = 0  # 0014 found filter hurts (data not fungible)
 MAX_TOOL_RECORDS = 0  # 0028 found 100 records under-trained adapter; disabled
 
 PROGRESS_TOOL_SPEC: ToolSpec = {
-    "name": "note_to_self",
+    "name": "checkpoint",
     "description": (
-        "Pause your thinking to record a note summarizing where you "
+        "Pause your thinking to record a checkpoint summarizing where you "
         "are in your reasoning. This is for YOUR OWN bookkeeping while you "
         "work through the problem -- use it whenever you finish a logical "
         "subtask, switch approach, or want to consolidate progress. Call it "
-        "freely; the user will read the notes to follow along."
+        "freely; the user will read the summaries to follow along."
     ),
     "parameters": {
         "type": "object",
         "properties": {
             "message": {
                 "type": "string",
-                "description": (
-                    "One short first-person sentence describing the current "
-                    "reasoning state, e.g. 'Tried u-substitution but the "
-                    "cross term didn't cancel - switching to partial fractions.'"
-                ),
+                "description": "One short sentence describing your current progress.",
             },
         },
         "required": ["message"],
@@ -74,7 +70,7 @@ PROGRESS_TOOL_SPEC: ToolSpec = {
 USER_INSTRUCTION_SUFFIX = (
     " Write your answer in \\boxed{} format. Don't think for too long "
     "unnecessarily, especially when you have a reasonable degree of confidence. "
-    "The note_to_self tool is available for tracking progress on hard "
+    "The checkpoint tool is available for tracking progress on hard "
     "multi-step problems, but use it sparingly -- only when you genuinely "
     "change approach or finish a substantial sub-task. For simple problems, "
     "just think and answer directly without calling the tool."
