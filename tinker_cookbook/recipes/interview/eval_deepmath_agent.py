@@ -68,8 +68,9 @@ async def run_agent(
     sample_params,
     problem,
 ) -> dict:
+    tools = [] if os.environ.get("NO_TOOL") else [PROGRESS_TOOL_SPEC]
     prefix = renderer.create_conversation_prefix_with_tools(
-        tools=[PROGRESS_TOOL_SPEC], system_prompt=SYSTEM_PROMPT
+        tools=tools, system_prompt=SYSTEM_PROMPT
     )
     history: list[Message] = list(prefix)
     history.append(
