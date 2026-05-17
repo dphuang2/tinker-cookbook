@@ -44,7 +44,7 @@ BATCH_SIZE = 16
 NUM_EPOCHS = 1
 LORA_RANK = 32
 MIN_TOTAL_THINKING_CHARS = 0  # 0014 found filter hurts (data not fungible)
-MAX_TOOL_RECORDS = 0  # 0007 found 800 records too few (cadence collapse); disabled
+MAX_TOOL_RECORDS = 100  # 0028: tiny SFT on top of prompt-only optimum (0024)
 
 PROGRESS_TOOL_SPEC: ToolSpec = {
     "name": "checkpoint",
@@ -74,7 +74,10 @@ PROGRESS_TOOL_SPEC: ToolSpec = {
 USER_INSTRUCTION_SUFFIX = (
     " Write your answer in \\boxed{} format. Don't think for too long "
     "unnecessarily, especially when you have a reasonable degree of confidence. "
-    "Use the checkpoint tool only on hard problems where you change approach."
+    "The checkpoint tool is available for tracking progress on hard "
+    "multi-step problems, but use it sparingly -- only when you genuinely "
+    "change approach or finish a substantial sub-task. For simple problems, "
+    "just think and answer directly without calling the tool."
 )
 
 SYSTEM_PROMPT = ""  # 0025 showed redundancy hurts; user-msg only is best
