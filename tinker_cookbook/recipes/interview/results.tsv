@@ -13,3 +13,4 @@ d966768	0.7160	0:479,1:20,2:1	0.199	2301	discard	0009 sparser-teacher: cadence c
 7c80263	0.7400	0:145,1:237,2:110,3:8	0.239	2302	keep	0011 rename-checkpoint: tool name + self-bookkeeping framing; +0.4pp vs 0002
 a25b642	0.7240	0:138,1:213,2:140,3:9	0.239	2302	discard	0012 lora-rank-16: 16 underperforms 32 by 1.6pp
 56e8953	0.7320	0:142,1:222,2:128,3:8	0.239	2302	discard	0013 lora-rank-64: rank 64 worse than 32; rank peaks at 32
+cf4b06c	0.7100	0:134,1:279,2:79,3:8	0.234	1778	discard	0014 filter-8k: 22% dropped, accuracy regressed 3pp
