@@ -50,3 +50,4 @@ c5bc8f0	0.8040	0:413,1:49,2:23,3:4,4:5,5:1,6:2,7:1,8:2	-	0	variance	0045 0024-re
 992bfa7	0.7780	0:357,1:117,2:17,3:6,4:1,5:1,7:1	-	0	discard	0048 partial-directive: dropped 'for simple problems' sentence; -2pp
 f221a91	0.7900	0:407,1:63,2:21,3:4,4:2,5:1,8:2	-	0	variance	0049 0024-rerun-3: 0.790 — 3-sample 0024 mean 0.797±0.007; FINAL: 0024 is converged best
 5774a7e	0.7960	0:415,1:48,2:22,3:8,5:4,6:2,8:1	-	0	discard	0050 max-turns-16: no effect (8-cap not binding); reverted
+b4313f8	0.8020	0:397,1:69,2:19,3:8,4:3,5:2,8:2	-	0	variance	0051 0024-rerun-4: 0.802; 4-sample mean 0.799±0.006 (CI [0.787, 0.811])
