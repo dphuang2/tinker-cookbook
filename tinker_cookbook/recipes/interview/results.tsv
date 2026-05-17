@@ -22,3 +22,4 @@ b109c68	0.7060	0:149,1:254,2:87,3:10	-	2302	discard	0019 early-stop-step-80: 001
 cd53c55	0.7740	0:224,1:203,2:35,3:15,4:6,5:2,6:5,8:10	-	0	keep	0020 prompt-only no-SFT BEATS all SFT (0.774 > 0.740); MAJOR result
 613a6af	0.7640	0:287,1:131,2:30,3:14,4:13,5:3,6:3,7:3,8:16	-	0	discard	0021 minimal-description prompt-only: shorter desc hurts (0.764 < 0020 0.774)
 6545d41	0.7920	0:395,1:57,2:33,3:3,4:6,5:2,6:1,8:2,10:1	-	0	keep	0022 prompt-only + sparing system prompt: +1.8pp over 0020; new best at 0.7920
+ed74cad	0.7880	0:439,1:35,2:17,3:5,4:2,8:2	-	0	discard	0023 optional-tool prompt: more suppression dropped acc to 0.788 (vs 0022 0.792)

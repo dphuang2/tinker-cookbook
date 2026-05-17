@@ -76,14 +76,15 @@ USER_INSTRUCTION_SUFFIX = (
     "unnecessarily, especially when you have a reasonable degree of confidence."
 )
 
-# 0022 (prompt-only): bias against tool calls on easy problems to recover
-# the accuracy lost to tool-spec distraction.
+# 0023: stronger anti-distraction prompt — emphasize that the tool is purely
+# optional and accuracy matters more than tool use.
 SYSTEM_PROMPT = (
-    "Solve the math problem efficiently. The checkpoint tool is available "
-    "for tracking progress on hard multi-step problems, but use it sparingly "
-    "-- only when you genuinely change approach or finish a substantial "
-    "sub-task. For simple problems, just think and answer directly without "
-    "calling the tool."
+    "Solve the math problem. Your only goal is to arrive at the correct "
+    "answer. The checkpoint tool is OPTIONAL -- it exists in case you find "
+    "it useful for tracking progress on a hard problem, but it has no "
+    "effect on grading. Most problems should be solved with 0 tool calls. "
+    "Only call checkpoint if it genuinely helps your reasoning -- never "
+    "out of obligation. Always end with the boxed answer."
 )
 
 # 0018: mask loss on <think> block tokens to preserve base reasoning capability.
