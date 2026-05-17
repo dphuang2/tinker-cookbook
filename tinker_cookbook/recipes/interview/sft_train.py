@@ -47,13 +47,13 @@ MIN_TOTAL_THINKING_CHARS = 0  # 0006 found 4000-char filter was a no-op
 MAX_TOOL_RECORDS = 0  # 0007 found 800 records too few (cadence collapse); disabled
 
 PROGRESS_TOOL_SPEC: ToolSpec = {
-    "name": "progress_update",
+    "name": "checkpoint",
     "description": (
-        "Emit a short status update describing your current reasoning state. "
-        "Call this between major reasoning steps so the user can follow along "
-        "with your progress. Do NOT call it after you have already reached a "
-        "confident final answer; in that case, end your thinking and give the "
-        "boxed answer directly."
+        "Pause your thinking to record a checkpoint summarizing where you "
+        "are in your reasoning. This is for YOUR OWN bookkeeping while you "
+        "work through the problem -- use it whenever you finish a logical "
+        "subtask, switch approach, or want to consolidate progress. Call it "
+        "freely; the user will read the summaries to follow along."
     ),
     "parameters": {
         "type": "object",
