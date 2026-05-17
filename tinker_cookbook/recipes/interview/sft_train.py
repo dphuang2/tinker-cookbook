@@ -49,11 +49,15 @@ MAX_TOOL_RECORDS = 0  # 0007 found 800 records too few (cadence collapse); disab
 PROGRESS_TOOL_SPEC: ToolSpec = {
     "name": "checkpoint",
     "description": (
-        "Pause your thinking to record a checkpoint summarizing where you "
-        "are in your reasoning. This is for YOUR OWN bookkeeping while you "
-        "work through the problem -- use it whenever you finish a logical "
-        "subtask, switch approach, or want to consolidate progress. Call it "
-        "freely; the user will read the summaries to follow along."
+        "Record a checkpoint summarizing where you are in your reasoning. "
+        "Useful on hard multi-step problems where the path forward is "
+        "non-obvious; you might call it after testing a hypothesis, "
+        "deriving a key lemma, or deciding to switch approach. "
+        "Example: after spending a paragraph testing whether the integral "
+        "factors and finding it does not, you might call "
+        "checkpoint(message=\"Integration by parts and substitution both "
+        "fail; the cross term suggests trying a contour integral instead\") "
+        "before continuing."
     ),
     "parameters": {
         "type": "object",
@@ -80,10 +84,7 @@ USER_INSTRUCTION_SUFFIX = (
     "just think and answer directly without calling the tool."
 )
 
-SYSTEM_PROMPT = (
-    "You are solving math problems. The checkpoint tool is optional; "
-    "use it only when it genuinely aids your reasoning."
-)  # 0025: brief reinforcement in system prompt on top of 0024 user-msg directive
+SYSTEM_PROMPT = ""  # 0025 showed redundancy hurts; user-msg only is best
 
 # 0018: mask loss on <think> block tokens to preserve base reasoning capability.
 # Qwen3 token IDs for the thinking-block boundaries.
