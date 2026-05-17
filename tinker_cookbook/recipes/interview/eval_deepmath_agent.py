@@ -105,7 +105,7 @@ async def run_agent(
                 history.append(
                     {
                         "role": "tool",
-                        "content": "ok",
+                        "content": "Acknowledged. Continue your reasoning.",
                         "tool_call_id": tc.id or f"call_{turn_idx}",
                     }
                 )
