@@ -44,16 +44,16 @@ BATCH_SIZE = 16
 NUM_EPOCHS = 1
 LORA_RANK = 32
 MIN_TOTAL_THINKING_CHARS = 0  # 0014 found filter hurts (data not fungible)
-MAX_TOOL_RECORDS = 100  # 0028: tiny SFT on top of prompt-only optimum (0024)
+MAX_TOOL_RECORDS = 0  # 0028 found 100 records under-trained adapter; disabled
 
 PROGRESS_TOOL_SPEC: ToolSpec = {
-    "name": "checkpoint",
+    "name": "note_to_self",
     "description": (
-        "Pause your thinking to record a checkpoint summarizing where you "
+        "Pause your thinking to record a note summarizing where you "
         "are in your reasoning. This is for YOUR OWN bookkeeping while you "
         "work through the problem -- use it whenever you finish a logical "
         "subtask, switch approach, or want to consolidate progress. Call it "
-        "freely; the user will read the summaries to follow along."
+        "freely; the user will read the notes to follow along."
     ),
     "parameters": {
         "type": "object",
@@ -74,7 +74,7 @@ PROGRESS_TOOL_SPEC: ToolSpec = {
 USER_INSTRUCTION_SUFFIX = (
     " Write your answer in \\boxed{} format. Don't think for too long "
     "unnecessarily, especially when you have a reasonable degree of confidence. "
-    "The checkpoint tool is available for tracking progress on hard "
+    "The note_to_self tool is available for tracking progress on hard "
     "multi-step problems, but use it sparingly -- only when you genuinely "
     "change approach or finish a substantial sub-task. For simple problems, "
     "just think and answer directly without calling the tool."
