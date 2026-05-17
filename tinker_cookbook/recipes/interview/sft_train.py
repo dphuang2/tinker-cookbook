@@ -78,6 +78,12 @@ USER_INSTRUCTION_SUFFIX = (
 
 SYSTEM_PROMPT = ""  # 0016 found explicit cadence directive hurts; empty is best
 
+# 0018: mask loss on <think> block tokens to preserve base reasoning capability.
+# Qwen3 token IDs for the thinking-block boundaries.
+THINK_OPEN_TOKEN = 151667  # <think>
+THINK_CLOSE_TOKEN = 151668  # </think>
+MASK_THINKING_LOSS = True  # 0018: zero weights on tokens within <think>...</think>
+
 
 def _user_message(question: str) -> Message:
     return {"role": "user", "content": question + USER_INSTRUCTION_SUFFIX}
@@ -115,6 +121,52 @@ def _assistant_turn_final(thinking: str, final_text: str) -> Message:
 
 def _tool_ack(call_id: str) -> Message:
     return {"role": "tool", "content": "ok", "tool_call_id": call_id}
+
+
+def _mask_thinking_weights(datum: tinker.Datum) -> tinker.Datum:
+    """Zero loss weights for tokens within <think>...</think> spans.
+
+    The supervised loss is computed at each target token position. With
+    LAST_ASSISTANT_MESSAGE, weights are non-zero only on the last assistant
+    message tokens. We further zero out positions whose corresponding INPUT
+    token is the thinking content (after <think> and before </think>).
+    This trains the model to emit the tool call / final answer but does not
+    train it to reproduce specific thinking tokens, preserving base reasoning.
+    """
+    if not MASK_THINKING_LOSS:
+        return datum
+    input_tokens = datum.model_input.to_ints()
+    weights = list(datum.loss_fn_inputs["weights"].data)
+    # Weights are aligned to targets: weight[i] is the loss for predicting
+    # token at position i+1. So a thinking-span boundary at token position k
+    # in the input means: weights[k-1] predicts that token, and weights[k]
+    # predicts what follows it. We mask weights[k] where input_tokens[k+1]
+    # is inside a thinking span (so we don't train to predict thinking tokens).
+    # Simpler: walk the input, track whether we're inside <think>...</think>,
+    # and zero weights[i-1] (the prediction of input_tokens[i]) when
+    # input_tokens[i] is between <think> and </think> exclusive of the tags.
+    inside = False
+    n = len(weights)
+    for i, tok in enumerate(input_tokens):
+        if tok == THINK_OPEN_TOKEN:
+            inside = True
+            continue
+        if tok == THINK_CLOSE_TOKEN:
+            inside = False
+            continue
+        if inside and i > 0 and i - 1 < n:
+            weights[i - 1] = 0.0
+    import numpy as np
+
+    new_weights = tinker.types.TensorData.from_numpy(
+        np.array(weights, dtype=np.float32)
+    )
+    new_loss_fn_inputs = dict(datum.loss_fn_inputs)
+    new_loss_fn_inputs["weights"] = new_weights
+    return tinker.Datum(
+        model_input=datum.model_input,
+        loss_fn_inputs=new_loss_fn_inputs,
+    )
 
 
 def pure_math_record_to_datum(
@@ -161,11 +213,13 @@ def record_to_datums(
                 turn["thinking"], turn["progress_update"], call_id
             )
             datums.append(
-                conversation_to_datum(
-                    history + [asst],
-                    renderer,
-                    max_length,
-                    TrainOnWhat.LAST_ASSISTANT_MESSAGE,
+                _mask_thinking_weights(
+                    conversation_to_datum(
+                        history + [asst],
+                        renderer,
+                        max_length,
+                        TrainOnWhat.LAST_ASSISTANT_MESSAGE,
+                    )
                 )
             )
             history.append(asst)
@@ -173,11 +227,13 @@ def record_to_datums(
         else:
             asst = _assistant_turn_final(turn["thinking"], turn["final"])
             datums.append(
-                conversation_to_datum(
-                    history + [asst],
-                    renderer,
-                    max_length,
-                    TrainOnWhat.LAST_ASSISTANT_MESSAGE,
+                _mask_thinking_weights(
+                    conversation_to_datum(
+                        history + [asst],
+                        renderer,
+                        max_length,
+                        TrainOnWhat.LAST_ASSISTANT_MESSAGE,
+                    )
                 )
             )
     return datums

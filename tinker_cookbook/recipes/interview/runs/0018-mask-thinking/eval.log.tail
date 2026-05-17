@@ -1,0 +1,31 @@
+/usr/local/lib/python3.12/dist-packages/google/auth/_default.py:114: UserWarning: Your application has authenticated using end user credentials from Google Cloud SDK without a quota project. You might receive a "quota exceeded" or "API not enabled" error. See the following page for troubleshooting: https://cloud.google.com/docs/authentication/adc-troubleshooting/user-creds. 
+  warnings.warn(_CLOUD_SDK_CREDENTIALS_WARNING)
+WARNING:root:Failed to retrieve Application Default Credentials: Reauthentication is needed. Please run `gcloud auth application-default login` to reauthenticate.
+WARNING:root:Trying to retrieve credentials from gcloud...
+Downloading nvidia-cusparselt-cu13 (210.8MiB)
+ Downloaded nvidia-cusparselt-cu13
+Uninstalled 1 package in 28ms
+warning: Failed to hardlink files; falling back to full copy. This may lead to degraded performance.
+         If the cache and target directories are on different filesystems, hardlinking may not be supported.
+         If this is intentional, set `export UV_LINK_MODE=copy` or use `--link-mode=copy` to suppress this warning.
+Installed 1 package in 73ms
+INFO:__main__:Using SFT checkpoint: tinker://025deb52-db6c-51f0-b94b-3f509273811d:train:0/sampler_weights/final
+INFO:__main__:Loading DeepMath-103K dataset...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+INFO:tinker.lib.public_interfaces.service_client:ServiceClient initialized for session 9bd3d9d7-d9dd-581f-b27d-c5d92026d5fd
+INFO:__main__:Running agent loop on 500 problems concurrently...
+INFO:__main__:[50/500] correct so far: 39 (acc=0.780)
+INFO:__main__:[100/500] correct so far: 68 (acc=0.680)
+INFO:__main__:[150/500] correct so far: 100 (acc=0.667)
+INFO:__main__:[200/500] correct so far: 133 (acc=0.665)
+INFO:__main__:[250/500] correct so far: 159 (acc=0.636)
+INFO:pylatexenc.latexwalker:Ignoring parse error (tolerant parsing mode): Unexpected mismatching closing brace: '}' @(1,17)
+INFO:__main__:[300/500] correct so far: 193 (acc=0.643)
+INFO:__main__:[350/500] correct so far: 222 (acc=0.634)
+INFO:__main__:[400/500] correct so far: 259 (acc=0.647)
+INFO:__main__:[450/500] correct so far: 296 (acc=0.658)
+INFO:__main__:[500/500] correct so far: 329 (acc=0.658)
+INFO:__main__:Accuracy: 329/500 = 0.658
+INFO:__main__:Tool-call cadence: [(0, 4), (2, 2), (3, 149), (4, 256), (5, 66), (6, 10), (7, 3), (8, 10)]
+INFO:__main__:Saved eval to /tmp/tinker-examples/interview/deepmath_agent_eval.json
