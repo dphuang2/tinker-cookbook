@@ -231,7 +231,7 @@ def build_config_blueprint() -> chz.Blueprint[train.Config]:
             "model_name": MODEL_NAME,
             "renderer_name": renderer_name,
             "dataset_builder": dataset,
-            "learning_rate": hyperparam_utils.get_lr(MODEL_NAME, is_lora=True),
+            "learning_rate": 1.5e-4,  # experiment 0001: lower LR than get_lr default (~5e-4)
             "lora_rank": LORA_RANK,
             "lr_schedule": "linear",
             "num_epochs": NUM_EPOCHS,
