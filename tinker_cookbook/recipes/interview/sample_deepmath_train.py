@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 MODEL_NAME = "Qwen/Qwen3-30B-A3B"
 START_INDEX = 500
-END_INDEX = 3000  # exclusive
+END_INDEX = 5500  # exclusive (0017: extended from 3000 to ~5000 records)
 MAX_TOKENS = 16384
 TEMPERATURE = 0.6
 OUTPUT_PATH = Path("/tmp/tinker-examples/interview/deepmath_train_traces.json")

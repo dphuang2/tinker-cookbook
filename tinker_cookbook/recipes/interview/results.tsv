@@ -16,3 +16,4 @@ a25b642	0.7240	0:138,1:213,2:140,3:9	0.239	2302	discard	0012 lora-rank-16: 16 un
 cf4b06c	0.7100	0:134,1:279,2:79,3:8	0.234	1778	discard	0014 filter-8k: 22% dropped, accuracy regressed 3pp
 ff82890	0.7220	0:180,1:218,2:101,3:1	0.239	2302	discard	0015 stronger-self-bookkeeping: too aggressive framing; 0011 mid-level is sweet spot
 4c8590e	0.7080	0:155,1:215,2:119,3:11	0.238	2302	discard	0016 system-prompt-directive: explicit cadence directive regressed 3pp
+d633ad9	0.7380	0:174,1:219,2:95,3:12	0.252	4687	discard	0017 larger-dataset: 2x records (4787 SFT) didn't move accuracy; 0.74 ceiling is structural

@@ -76,14 +76,7 @@ USER_INSTRUCTION_SUFFIX = (
     "unnecessarily, especially when you have a reasonable degree of confidence."
 )
 
-# 0016: add a system-prompt directive before the tool spec to bias cadence.
-SYSTEM_PROMPT = (
-    "You are working through a math problem and should use the `checkpoint` "
-    "tool every time you finish a sub-step, change approach, or make a key "
-    "observation. The checkpoint summaries help you track your reasoning "
-    "across multiple turns. Use the tool naturally as part of your problem "
-    "solving; do not skip it."
-)
+SYSTEM_PROMPT = ""  # 0016 found explicit cadence directive hurts; empty is best
 
 
 def _user_message(question: str) -> Message:
