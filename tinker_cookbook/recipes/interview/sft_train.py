@@ -72,11 +72,12 @@ PROGRESS_TOOL_SPEC: ToolSpec = {
 }
 
 USER_INSTRUCTION_SUFFIX = (
-    " Write your answer in \\boxed{} format. "
-    "The checkpoint tool is available for tracking progress on hard "
+    " The checkpoint tool is available for tracking progress on hard "
     "multi-step problems, but use it sparingly -- only when you genuinely "
     "change approach or finish a substantial sub-task. For simple problems, "
-    "just think and answer directly without calling the tool."
+    "just think and answer directly without calling the tool. "
+    "Write your answer in \\boxed{} format. Don't think for too long "
+    "unnecessarily, especially when you have a reasonable degree of confidence."
 )
 
 SYSTEM_PROMPT = ""  # 0025 showed redundancy hurts; user-msg only is best
