@@ -45,35 +45,25 @@ LORA_RANK = 32
 PROGRESS_TOOL_SPEC: ToolSpec = {
     "name": "progress_update",
     "description": (
-        "Pause your reasoning to record a checkpoint, then resume. Use this "
-        "between major reasoning steps; do NOT call it once you've reached a "
-        "confident final answer (in that case, end your thinking and give the "
-        "boxed answer directly). The arguments capture both a user-facing "
-        "summary AND the underlying reasoning, so the reasoning persists when "
-        "you resume on the next turn."
+        "Emit a short status update describing your current reasoning state. "
+        "Call this between major reasoning steps so the user can follow along "
+        "with your progress. Do NOT call it after you have already reached a "
+        "confident final answer; in that case, end your thinking and give the "
+        "boxed answer directly."
     ),
     "parameters": {
         "type": "object",
         "properties": {
-            "summary": {
+            "message": {
                 "type": "string",
                 "description": (
-                    "One short first-person sentence for the user, e.g. "
-                    "'Tried u-substitution but the cross term didn't cancel "
-                    "- switching to partial fractions.'"
-                ),
-            },
-            "reasoning": {
-                "type": "string",
-                "description": (
-                    "The full reasoning content from the segment of thinking "
-                    "you just completed. This is preserved in your context "
-                    "across turns so you can pick up exactly where you left "
-                    "off after the tool returns."
+                    "One short first-person sentence describing the current "
+                    "reasoning state, e.g. 'Tried u-substitution but the "
+                    "cross term didn't cancel - switching to partial fractions.'"
                 ),
             },
         },
-        "required": ["summary", "reasoning"],
+        "required": ["message"],
     },
 }
 
@@ -90,15 +80,14 @@ def _user_message(question: str) -> Message:
 def _assistant_turn_with_update(
     thinking: str, summary: str, call_id: str
 ) -> Message:
-    # The tool_call's `reasoning` argument carries the same content as the
-    # <think> block. Qwen3 strips <think> from non-last assistant messages
-    # at render time, but tool_call arguments are preserved -- so when this
-    # turn becomes history, the reasoning survives via the tool call.
+    # 0002: revert to v1-style `message`-only tool args (no `reasoning`
+    # duplication). Prior thinking will not survive into the next turn
+    # via tool_call args; that's the v1 baseline behavior.
     tool_call = ToolCall(
         id=call_id,
         function=ToolCall.FunctionBody(
             name="progress_update",
-            arguments=json.dumps({"summary": summary, "reasoning": thinking}),
+            arguments=json.dumps({"message": summary}),
         ),
     )
     return {
@@ -231,7 +220,7 @@ def build_config_blueprint() -> chz.Blueprint[train.Config]:
             "model_name": MODEL_NAME,
             "renderer_name": renderer_name,
             "dataset_builder": dataset,
-            "learning_rate": 1.5e-4,  # experiment 0001: lower LR than get_lr default (~5e-4)
+            "learning_rate": hyperparam_utils.get_lr(MODEL_NAME, is_lora=True),
             "lora_rank": LORA_RANK,
             "lr_schedule": "linear",
             "num_epochs": NUM_EPOCHS,

@@ -1,3 +1,4 @@
 commit	accuracy	cadence	test_nll	training_records	status	description
 591432f	0.7080	0:342,1:137,2:18,3:2,4:1	0.109	2301	keep	v3 baseline reasoning-in-tool-call, LR≈5e-4, lora_rank=32, 1 epoch
 c7397e5	0.7080	0:377,1:98,2:21,3:4	0.107	2301	discard	0001 lr-1p5e4: dropped LR to 1.5e-4, no change vs v3 baseline
+11d2b5d	0.7360	0:138,1:250,2:102,3:10	0.270	2301	keep	0002 drop-reasoning-arg: reverted to v1 message-only tool args, +2.8pp vs v3
