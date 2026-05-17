@@ -42,7 +42,7 @@ LOG_PATH = "/tmp/tinker-examples/interview/sft_run"
 MAX_LENGTH = 32768
 BATCH_SIZE = 16
 NUM_EPOCHS = 1
-LORA_RANK = 16  # 0012: intermediate rank between 8 and 32
+LORA_RANK = 64  # 0013: try rank larger than 32
 MIN_TOTAL_THINKING_CHARS = 0  # 0006 found 4000-char filter was a no-op
 MAX_TOOL_RECORDS = 0  # 0007 found 800 records too few (cadence collapse); disabled
 
