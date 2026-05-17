@@ -63,10 +63,16 @@ characters in the form [@<offset>] inserted between sentences (these
 markers are NOT part of the thinking - they're just landmarks you can
 reference). Pick split offsets that fall at natural reasoning boundaries.
 
-Cadence target: one `progress_update` per ~4000 thinking characters
-(~1000 tokens). Short / confident traces (under ~6000 chars) should
-get 0 split points (no tool calls at all). Long traces get up to 3
-split points. Aim for fewer rather than more.
+Cadence target: VERY SPARSE. Most traces should get 0 split points.
+Only emit a split when the model genuinely changed approach or hit a
+significant new sub-problem worth flagging. Guidelines:
+- Traces under ~8000 chars: 0 splits.
+- Traces 8000-16000 chars: 0 or 1 split.
+- Traces over 16000 chars: 1 or rarely 2 splits.
+- Never emit more than 2 splits.
+
+When in doubt, emit fewer. A trace that hits the final answer in one
+clean shot should get 0 splits regardless of length.
 
 Each progress_update message must be one short first-person sentence
 describing the reasoning state at that point, e.g. "Tried u-substitution
