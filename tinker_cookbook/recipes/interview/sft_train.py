@@ -48,23 +48,13 @@ MAX_TOOL_RECORDS = 0  # 0007 found 800 records too few (cadence collapse); disab
 
 PROGRESS_TOOL_SPEC: ToolSpec = {
     "name": "checkpoint",
-    "description": (
-        "Pause your thinking to record a checkpoint summarizing where you "
-        "are in your reasoning. This is for YOUR OWN bookkeeping while you "
-        "work through the problem -- use it whenever you finish a logical "
-        "subtask, switch approach, or want to consolidate progress. Call it "
-        "freely; the user will read the summaries to follow along."
-    ),
+    "description": "Record a brief progress note while reasoning.",
     "parameters": {
         "type": "object",
         "properties": {
             "message": {
                 "type": "string",
-                "description": (
-                    "One short first-person sentence describing the current "
-                    "reasoning state, e.g. 'Tried u-substitution but the "
-                    "cross term didn't cancel - switching to partial fractions.'"
-                ),
+                "description": "One short sentence on your current progress.",
             },
         },
         "required": ["message"],
