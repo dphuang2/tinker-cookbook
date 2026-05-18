@@ -143,3 +143,4 @@ c11b371	0.8840	0:273,2:2,3:197,4:10,5:6,6:8,7:2,9:2	-	0	variance	0137 0105 post-
 d64892b	0.8680	0:302,1:129,2:27,3:33,4:8,5:1	-	0	variance	0141 no-cadence-anchor: 0.868 (cadence peak at 1 instead of 3; parity acc); reverted
 d7493e6	0.8800	0:276,2:1,3:196,4:14,5:4,6:8,9:1	-	0	keep	0142 drop-anti-rumination-from-0105: 0.880 (at no-tool baseline; shorter prompt; needs corroboration)
 553bfe6	0.8660	0:283,1:1,2:2,3:199,4:8,5:1,6:5,9:1	-	0	variance	0143 0142 variance rerun: 0.866 (2-sample mean 0.873; anti-rumination confirmed non-load-bearing under 0105)
+4a60d36	0.8640	0:280,1:1,2:1,3:192,4:14,5:3,6:5,7:1,9:2,12:1	-	0	variance	0144 0142 variance #3: 0.864 (3-sample mean 0.870; simpler recipe at parity)
