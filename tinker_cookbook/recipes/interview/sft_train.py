@@ -72,12 +72,11 @@ PROGRESS_TOOL_SPEC: ToolSpec = {
 }
 
 USER_INSTRUCTION_SUFFIX = (
-    " Write your answer in \\boxed{} format. Don't think for too long "
-    "unnecessarily, especially when you have a reasonable degree of confidence. "
-    "The checkpoint tool is available for tracking progress on hard "
-    "multi-step problems, but use it sparingly -- only when you genuinely "
-    "change approach or finish a substantial sub-task. For simple problems, "
-    "just think and answer directly without calling the tool."
+    " Think step by step, then write your final answer in \\boxed{} format. "
+    "Don't think for too long unnecessarily, especially when you have a "
+    "reasonable degree of confidence. Use the checkpoint tool when it "
+    "helps you organize hard multi-step problems -- one or two calls "
+    "is plenty for a typical problem."
 )
 
 SYSTEM_PROMPT = ""  # 0072 system-rubric weakened cadence; 0075 variance rerun #3
