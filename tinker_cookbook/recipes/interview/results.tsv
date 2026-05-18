@@ -87,3 +87,4 @@ de1e1c0	0.8680	0:294,1:10,2:22,3:121,4:34,5:7,6:5,7:1,8:1,9:4,10:1	-	0	discard	0
 b7864d8	0.8600	0:82,1:8,2:33,3:265,4:60,5:9,6:20,7:4,8:2,9:6,10:3,12:1,14:1,15:3,18:1,24:1,28:1	-	0	discard	0085 imperative-cadence: 0.860 (over-saturated cadence 16% 0-call; sweet spot lost); reverted
 099aba3	0.8700	0:265,1:17,2:16,3:147,4:38,5:7,6:5,7:1,8:2,9:1,24:1	-	0	variance	0086 0080 variance #4: 0.870 (4-sample mean 0.8745 ± 0.7pp; within 0.55pp of no-tool baseline 0.880)
 0b2d7d9	0.8940	0:189,1:17,2:13,3:204,4:46,5:9,6:12,7:2,8:2,9:3,10:1,16:1,21:1	-	0	keep	0087 cleaner-wording: 0.894 single-sample (+1.4pp vs no-tool baseline; +2σ vs 0080 mean; needs corroboration)
+24f2042	0.8620	0:192,1:17,2:11,3:214,4:43,5:13,6:5,7:1,8:2,10:1,24:1	-	0	variance	0088 0087 variance rerun: 0.862 (2-sample mean 0.878 ~= 0080's 0.8745; 0.894 was variance pull)

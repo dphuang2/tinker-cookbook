@@ -78,7 +78,7 @@ USER_INSTRUCTION_SUFFIX = (
     "organize hard multi-step problems -- two or three calls is typical."
 )
 
-SYSTEM_PROMPT = ""  # 0086 variance rerun #4 of 0080 recipe
+SYSTEM_PROMPT = ""  # 0088 variance rerun of 0087 recipe
 
 # 0018: mask loss on <think> block tokens to preserve base reasoning capability.
 # Qwen3 token IDs for the thinking-block boundaries.
