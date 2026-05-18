@@ -79,7 +79,7 @@ USER_INSTRUCTION_SUFFIX = (
     "is typical for a multi-step problem."
 )
 
-SYSTEM_PROMPT = "You are solving competition math problems."
+SYSTEM_PROMPT = "You are solving competition math problems."  # 0093 variance rerun of 0092
 
 # 0018: mask loss on <think> block tokens to preserve base reasoning capability.
 # Qwen3 token IDs for the thinking-block boundaries.

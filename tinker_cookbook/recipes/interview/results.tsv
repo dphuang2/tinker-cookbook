@@ -92,3 +92,4 @@ de0e859	0.8600	0:198,1:14,2:17,3:189,4:55,5:13,6:10,7:3,9:1	-	0	variance	0089 00
 28c2e09	0.8560	0:269,1:34,2:18,3:123,4:38,5:6,6:5,7:5,9:1,10:1	-	0	discard	0090 action-oriented-param: 0.856 (-1.85pp; u-sub example was load-bearing template); reverted
 e4e9fff	0.8740	0:213,1:23,2:24,3:159,4:50,5:14,6:7,7:3,9:3,12:2,24:2	-	0	discard	0091 add-second-example: 0.874 (within noise; second example decorative); reverted
 97d75fa	0.8780	0:305,1:11,2:11,3:109,4:42,5:13,6:3,7:1,8:1,12:1,15:1,21:1,24:1	-	0	keep	0092 minimal-system-identity: 0.878 (identity-only system prompt; within noise; clean addition)
+3c4ec99	0.8760	0:299,1:13,2:20,3:119,4:33,5:10,6:4,8:2	-	0	keep	0093 0092 variance rerun: 0.876 (2-sample mean 0.877; very tight variance 0.1pp std)
