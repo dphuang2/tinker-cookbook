@@ -82,7 +82,7 @@ USER_INSTRUCTION_SUFFIX = (
 SYSTEM_PROMPT = (
     "You are solving competition math problems. You have access to a "
     "checkpoint tool for tracking progress."
-)  # 0153 variance rerun #21 of 0105
+)  # 0154 variance rerun #22 of 0105
 
 # 0018: mask loss on <think> block tokens to preserve base reasoning capability.
 # Qwen3 token IDs for the thinking-block boundaries.
