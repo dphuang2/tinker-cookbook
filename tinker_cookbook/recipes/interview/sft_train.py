@@ -79,10 +79,7 @@ USER_INSTRUCTION_SUFFIX = (
     "is typical for a multi-step problem."
 )
 
-SYSTEM_PROMPT = (
-    "You are solving competition math problems. You have access to a "
-    "checkpoint tool for tracking progress."
-)  # 0107 variance rerun #3 of 0105
+SYSTEM_PROMPT = ""  # 0108: no system prompt under 0105 wording
 
 # 0018: mask loss on <think> block tokens to preserve base reasoning capability.
 # Qwen3 token IDs for the thinking-block boundaries.
