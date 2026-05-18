@@ -1,0 +1,19 @@
+INFO:__main__:Using BASE model (no SFT checkpoint)
+INFO:__main__:Loading DeepMath-103K dataset...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+INFO:tinker.lib.public_interfaces.service_client:ServiceClient initialized for session 26e7b1f8-6700-5158-83eb-7b0805b00c87
+INFO:__main__:Running agent loop on 500 problems concurrently...
+INFO:__main__:[50/500] correct so far: 46 (acc=0.920)
+INFO:__main__:[100/500] correct so far: 89 (acc=0.890)
+INFO:__main__:[150/500] correct so far: 130 (acc=0.867)
+INFO:__main__:[200/500] correct so far: 173 (acc=0.865)
+INFO:__main__:[250/500] correct so far: 216 (acc=0.864)
+INFO:__main__:[300/500] correct so far: 258 (acc=0.860)
+INFO:__main__:[350/500] correct so far: 302 (acc=0.863)
+INFO:__main__:[400/500] correct so far: 347 (acc=0.868)
+INFO:__main__:[450/500] correct so far: 392 (acc=0.871)
+INFO:__main__:[500/500] correct so far: 436 (acc=0.872)
+INFO:__main__:Accuracy: 436/500 = 0.872
+INFO:__main__:Tool-call cadence: [(0, 251), (1, 6), (3, 216), (4, 10), (5, 5), (6, 10), (7, 1), (12, 1)]
+INFO:__main__:Saved eval to /tmp/tinker-examples/interview/deepmath_agent_eval.json
