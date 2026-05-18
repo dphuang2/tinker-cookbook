@@ -94,3 +94,4 @@ e4e9fff	0.8740	0:213,1:23,2:24,3:159,4:50,5:14,6:7,7:3,9:3,12:2,24:2	-	0	discard
 97d75fa	0.8780	0:305,1:11,2:11,3:109,4:42,5:13,6:3,7:1,8:1,12:1,15:1,21:1,24:1	-	0	keep	0092 minimal-system-identity: 0.878 (identity-only system prompt; within noise; clean addition)
 3c4ec99	0.8760	0:299,1:13,2:20,3:119,4:33,5:10,6:4,8:2	-	0	keep	0093 0092 variance rerun: 0.876 (2-sample mean 0.877; very tight variance 0.1pp std)
 cc2662f	0.8620	0:304,1:14,2:11,3:120,4:41,5:7,6:2,7:1	-	0	variance	0094 0092 variance #3: 0.862 (3-sample mean 0.872; ceiling confirmed ~0.872-0.875)
+e767b7c	0.8800	0:286,1:9,2:9,3:151,4:36,5:4,6:3,7:1,8:1	-	0	keep	0095 system-prompt-tool-meta: 0.880 (at no-tool baseline; needs corroboration)
