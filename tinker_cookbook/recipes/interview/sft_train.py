@@ -79,7 +79,7 @@ USER_INSTRUCTION_SUFFIX = (
     "is plenty for a typical problem."
 )
 
-SYSTEM_PROMPT = ""  # 0072 system-rubric weakened cadence; 0077 variance rerun of 0076
+SYSTEM_PROMPT = ""  # 0072 weakened cadence; 0079 variance rerun #3 of 0076 recipe
 
 # 0018: mask loss on <think> block tokens to preserve base reasoning capability.
 # Qwen3 token IDs for the thinking-block boundaries.
