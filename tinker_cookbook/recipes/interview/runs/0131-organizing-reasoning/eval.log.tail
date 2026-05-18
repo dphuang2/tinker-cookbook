@@ -1,0 +1,17 @@
+INFO:__main__:Using BASE model (no SFT checkpoint)
+INFO:__main__:Loading DeepMath-103K dataset...
+INFO:tinker.lib.public_interfaces.service_client:ServiceClient initialized for session 9da339de-8eed-5e05-9ba9-c81e1b50b0f4
+INFO:__main__:Running agent loop on 500 problems concurrently...
+INFO:__main__:[50/500] correct so far: 47 (acc=0.940)
+INFO:__main__:[100/500] correct so far: 90 (acc=0.900)
+INFO:__main__:[150/500] correct so far: 129 (acc=0.860)
+INFO:__main__:[200/500] correct so far: 174 (acc=0.870)
+INFO:__main__:[250/500] correct so far: 216 (acc=0.864)
+INFO:__main__:[300/500] correct so far: 258 (acc=0.860)
+INFO:__main__:[350/500] correct so far: 303 (acc=0.866)
+INFO:__main__:[400/500] correct so far: 347 (acc=0.868)
+INFO:__main__:[450/500] correct so far: 393 (acc=0.873)
+INFO:__main__:[500/500] correct so far: 438 (acc=0.876)
+INFO:__main__:Accuracy: 438/500 = 0.876
+INFO:__main__:Tool-call cadence: [(0, 247), (1, 1), (3, 220), (4, 16), (5, 3), (6, 8), (7, 2), (9, 1), (10, 1), (15, 1)]
+INFO:__main__:Saved eval to /tmp/tinker-examples/interview/deepmath_agent_eval.json
