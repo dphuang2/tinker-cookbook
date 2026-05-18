@@ -140,3 +140,4 @@ c11b371	0.8840	0:273,2:2,3:197,4:10,5:6,6:8,7:2,9:2	-	0	variance	0137 0105 post-
 6833da0	0.8680	0:274,1:1,2:2,3:193,4:20,5:3,6:6,9:1	-	0	variance	0138 0105 variance #12: 0.868 (12-sample mean 0.8737)
 2c1a57d	0.8620	0:88,1:1,2:5,3:267,4:90,5:21,6:14,7:2,8:1,9:5,10:1,11:2,20:1,24:2	-	0	variance	0139 rename-thought: 0.862 (82% tool use; parity acc); reverted to checkpoint
 0b46f8f	0.8740	0:269,1:1,2:1,3:202,4:14,5:5,6:7,8:1	-	0	variance	0140 0105 variance #13: 0.874 (13-sample mean 0.8740)
+d64892b	0.8680	0:302,1:129,2:27,3:33,4:8,5:1	-	0	variance	0141 no-cadence-anchor: 0.868 (cadence peak at 1 instead of 3; parity acc); reverted
