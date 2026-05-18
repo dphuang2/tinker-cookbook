@@ -101,3 +101,4 @@ ed1a810	0.8740	0:289,1:10,2:13,3:142,4:34,5:5,6:3,8:2,12:1,24:1	-	0	variance	009
 b0cf5c5	0.8820	0:296,1:9,2:6,3:137,4:34,5:10,6:5,9:2,10:1	-	0	keep	0099 0095 variance #4: 0.882 (4-sample mean 0.878 ± 0.3pp; AT/above no-tool baseline 0.880)
 031303a	0.8820	0:292,1:16,2:11,3:122,4:38,5:10,6:7,7:1,8:1,9:1,16:1	-	0	keep	0100 shorter-system-prompt: 0.882 (parity w/ 0095; cleaner wording wins)
 13c079c	0.8700	0:289,1:15,2:12,3:136,4:36,5:8,6:2,9:2	-	0	variance	0101 0100 variance rerun: 0.870 (2-sample mean 0.876; recipe ceiling confirmed)
+e0a2443	0.8820	0:302,1:11,2:9,3:137,4:32,5:8,6:1	-	0	variance	0102 0100 variance #3: 0.882 (3-sample mean 0.878; combined 7-sample mean 0.878 ± 0.5pp; RECIPE LOCKED)
