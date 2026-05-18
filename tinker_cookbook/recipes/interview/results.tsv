@@ -74,3 +74,4 @@ b54eb86	0.8600	0:382,1:75,2:19,3:12,4:2,5:3,6:1,7:1,8:5	-	0	discard	0069 add-ver
 e40bd07	0.8660	0:439,1:38,2:12,3:4,4:2,5:1,6:2,7:1,8:1	-	0	discard	0072 system-prompt-rubric: 0.866 (parity acc; cadence weaker 87.8% 0-call); reverted
 350bb65	0.8580	0:373,1:87,2:26,3:5,4:3,5:2,8:4	-	0	discard	0073 rename-scratchpad: 0.858 (-0.9pp; 'checkpoint' is optimal name); reverted
 3c974b5	0.8620	0:401,1:72,2:21,3:4,8:2	-	0	discard	0074 echo-tool-ack: 0.862 (within noise; echo no-op); reverted
+134df8d	0.8540	0:405,1:50,2:23,3:12,4:2,5:2,6:2,7:1,8:3	-	0	variance	0075 0062 variance rerun #3: 0.854 (3-sample mean 0.863 ± 0.8pp; wider variance than initially estimated)
