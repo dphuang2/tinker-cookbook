@@ -82,3 +82,4 @@ e40bd07	0.8660	0:439,1:38,2:12,3:4,4:2,5:1,6:2,7:1,8:1	-	0	discard	0072 system-p
 17956b1	0.8760	0:257,1:25,2:15,3:129,4:55,5:6,6:5,7:1,8:4,9:2,14:1	-	0	keep	0080 cadence-up-2-3: 0.876 cadence peak at 3 calls (51% 0-call); successful cadence shape shift
 91353db	0.8680	0:264,1:22,2:13,3:132,4:51,5:6,6:7,7:1,8:2,20:1,24:1	-	0	keep	0081 0080 variance rerun: 0.868 (2-sample mean 0.872; both > 0062 max sample; real ~+1pp signal)
 7d87c0a	0.8840	0:256,1:28,2:15,3:132,4:42,5:11,6:9,7:1,8:1,9:1,10:2,11:1,12:1	-	0	keep	0082 0080 variance #3: 0.884 (3-sample mean 0.876; BEATS no-tool baseline 0.880; ~49% tool use)
+932fb01	0.8700	0:258,1:18,2:7,3:125,4:63,5:17,6:7,7:4,8:1	-	0	discard	0083 cadence-up-3-4: 0.870 (peak unchanged at 3 calls; numerical anchor saturated at 2-3); reverted
