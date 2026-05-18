@@ -106,3 +106,4 @@ c702bb5	0.8740	0:290,1:6,2:7,3:144,4:40,5:8,6:2,8:1,9:1,15:1	-	0	variance	0103 0
 f4b9fd4	0.8700	0:227,1:6,2:41,3:167,4:47,5:6,6:4,8:1,12:1	-	0	discard	0104 shorter-user-suffix: 0.870 (cadence shifted up; hedge was moderating; reverted)
 08ab4e7	0.8900	0:281,1:2,2:1,3:187,4:20,5:4,6:4,8:1	-	0	keep	0105 single-cadence-three: 0.890 (+1pp vs no-tool baseline; bimodal cadence; needs corroboration)
 a913617	0.8780	0:263,1:5,2:4,3:189,4:24,5:5,6:7,12:3	-	0	variance	0106 0105 variance rerun: 0.878 (2-sample mean 0.884; possible +0.7pp gain; bimodal cadence holds)
+4b2dd96	0.8660	0:263,1:4,3:207,4:15,5:5,6:4,24:2	-	0	variance	0107 0105 variance #3: 0.866 (3-sample mean 0.878 == 0100 mean; sharper bimodal cadence)
