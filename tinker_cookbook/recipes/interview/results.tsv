@@ -89,3 +89,4 @@ b7864d8	0.8600	0:82,1:8,2:33,3:265,4:60,5:9,6:20,7:4,8:2,9:6,10:3,12:1,14:1,15:3
 0b2d7d9	0.8940	0:189,1:17,2:13,3:204,4:46,5:9,6:12,7:2,8:2,9:3,10:1,16:1,21:1	-	0	keep	0087 cleaner-wording: 0.894 single-sample (+1.4pp vs no-tool baseline; +2σ vs 0080 mean; needs corroboration)
 24f2042	0.8620	0:192,1:17,2:11,3:214,4:43,5:13,6:5,7:1,8:2,10:1,24:1	-	0	variance	0088 0087 variance rerun: 0.862 (2-sample mean 0.878 ~= 0080's 0.8745; 0.894 was variance pull)
 de0e859	0.8600	0:198,1:14,2:17,3:189,4:55,5:13,6:10,7:3,9:1	-	0	variance	0089 0087 variance #3: 0.860 (3-sample mean 0.872; tied w/ 0080 mean 0.8745, wider variance)
+28c2e09	0.8560	0:269,1:34,2:18,3:123,4:38,5:6,6:5,7:5,9:1,10:1	-	0	discard	0090 action-oriented-param: 0.856 (-1.85pp; u-sub example was load-bearing template); reverted
