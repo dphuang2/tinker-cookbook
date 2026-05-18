@@ -1,0 +1,48 @@
+{
+  "model": "Qwen/Qwen3-30B-A3B",
+  "sampler_path": null,
+  "num_problems": 500,
+  "num_correct": 428,
+  "accuracy": 0.856,
+  "tool_call_cadence": [
+    [
+      0,
+      360
+    ],
+    [
+      1,
+      84
+    ],
+    [
+      2,
+      28
+    ],
+    [
+      3,
+      14
+    ],
+    [
+      4,
+      3
+    ],
+    [
+      5,
+      2
+    ],
+    [
+      6,
+      2
+    ],
+    [
+      7,
+      2
+    ],
+    [
+      8,
+      5
+    ]
+  ],
+  "temperature": 0.6,
+  "max_tokens_per_turn": 24576,
+  "max_turns": 8
+}
