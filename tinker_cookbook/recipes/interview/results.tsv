@@ -109,3 +109,4 @@ a913617	0.8780	0:263,1:5,2:4,3:189,4:24,5:5,6:7,12:3	-	0	variance	0106 0105 vari
 4b2dd96	0.8660	0:263,1:4,3:207,4:15,5:5,6:4,24:2	-	0	variance	0107 0105 variance #3: 0.866 (3-sample mean 0.878 == 0100 mean; sharper bimodal cadence)
 63e1ee1	0.8880	0:238,1:5,2:2,3:231,4:14,5:3,6:5,7:1,8:1	-	0	keep	0108 0105-no-system: 0.888 single-sample (sharper bimodal cadence; no sysprompt; needs corroboration)
 e96ce7d	0.8600	0:253,1:7,2:7,3:195,4:18,5:2,6:11,8:1,9:4,12:1,18:1	-	0	variance	0109 0108 variance rerun: 0.860 (2-sample mean 0.874; recipe saturated at ~0.876)
+68f2e0a	0.8580	0:254,1:7,2:3,3:217,4:14,6:4,24:1	-	0	discard	0110 0108 variance #3: 0.858 (3-sample mean 0.869; no-sys variant mildly worse); reverted to 0105 recipe
