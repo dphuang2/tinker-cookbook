@@ -66,11 +66,6 @@ PROGRESS_TOOL_SPEC: ToolSpec = {
                     "cross term didn't cancel - switching to partial fractions.'"
                 ),
             },
-            "confidence": {
-                "type": "string",
-                "enum": ["low", "medium", "high"],
-                "description": "Your confidence in the current direction.",
-            },
         },
         "required": ["message"],
     },
@@ -87,7 +82,7 @@ USER_INSTRUCTION_SUFFIX = (
 SYSTEM_PROMPT = (
     "You are solving competition math problems. You have access to a "
     "checkpoint tool for tracking progress."
-)  # 0125 variance rerun #8 of 0105
+)  # 0127 variance rerun of 0126 (w/ confidence param)
 
 # 0018: mask loss on <think> block tokens to preserve base reasoning capability.
 # Qwen3 token IDs for the thinking-block boundaries.
