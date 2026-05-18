@@ -99,3 +99,4 @@ ed1a810	0.8740	0:289,1:10,2:13,3:142,4:34,5:5,6:3,8:2,12:1,24:1	-	0	variance	009
 2d149b1	0.8800	0:431,1:36,2:11,3:10,4:5,5:2,6:2,7:2,8:1	-	0	discard	0097 directives-in-system: 0.880 BUT cadence near-degenerate (86% 0-call, 14% tool use); reverted
 31c6517	0.8760	0:292,1:8,2:8,3:155,4:26,5:4,6:4,7:1,8:2	-	0	variance	0098 0095 variance #3: 0.876 (3-sample mean 0.877 ± 0.3pp; FINAL recipe; near no-tool baseline 0.880)
 b0cf5c5	0.8820	0:296,1:9,2:6,3:137,4:34,5:10,6:5,9:2,10:1	-	0	keep	0099 0095 variance #4: 0.882 (4-sample mean 0.878 ± 0.3pp; AT/above no-tool baseline 0.880)
+031303a	0.8820	0:292,1:16,2:11,3:122,4:38,5:10,6:7,7:1,8:1,9:1,16:1	-	0	keep	0100 shorter-system-prompt: 0.882 (parity w/ 0095; cleaner wording wins)
