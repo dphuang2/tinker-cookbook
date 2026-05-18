@@ -75,7 +75,7 @@ USER_INSTRUCTION_SUFFIX = (
     " Think step by step, then write your final answer in \\boxed{} format. "
     "Don't think for too long unnecessarily, especially when you have a "
     "reasonable degree of confidence. Use the checkpoint tool when it "
-    "helps you organize hard multi-step problems -- three calls "
+    "helps you organize hard multi-step problems -- three checkpoints "
     "is typical for a multi-step problem."
 )
 
