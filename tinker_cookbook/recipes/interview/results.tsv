@@ -131,3 +131,4 @@ c1de5f5	0.8280	0:46,1:1,2:1,3:308,4:43,5:2,6:38,7:5,8:3,9:19,10:1,11:1,12:6,15:5
 61ab8a6	0.8780	0:273,1:2,2:1,3:208,4:9,5:1,6:3,8:1,9:1,12:1	-	0	variance	0129 0105 variance #9: 0.878 (9-sample mean 0.8748 ± 1.0pp; rock-solid)
 7a230a4	0.8580	0:251,1:2,3:213,4:12,5:3,6:14,7:1,8:1,9:1,24:2	-	0	variance	0130 0105 variance #10: 0.858 (10-sample mean 0.8732 ± 1.1pp; FINAL recipe)
 1ca9f85	0.8760	0:247,1:1,3:220,4:16,5:3,6:8,7:2,9:1,10:1,15:1	-	0	variance	0131 organizing-reasoning: 0.876 (parity); reverted
+b830aee	0.8900	0:270,1:2,2:2,3:188,4:15,5:3,6:12,7:1,8:1,9:3,12:1,16:1,24:1	-	0	keep	0132 tool-ack-turn-count: 0.890 single-sample (+1.7pp; turn-count meta in ack; needs corroboration)
