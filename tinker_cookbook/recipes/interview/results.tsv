@@ -73,3 +73,4 @@ b54eb86	0.8600	0:382,1:75,2:19,3:12,4:2,5:3,6:1,7:1,8:5	-	0	discard	0069 add-ver
 02f1830	0.8540	0:396,1:56,2:20,3:9,4:6,5:3,6:3,7:1,8:6	-	0	discard	0071 directive-reorder: 0.854 (boxed-last hurt; -1.3pp vs 0062 mean, genuine regression); reverted
 e40bd07	0.8660	0:439,1:38,2:12,3:4,4:2,5:1,6:2,7:1,8:1	-	0	discard	0072 system-prompt-rubric: 0.866 (parity acc; cadence weaker 87.8% 0-call); reverted
 350bb65	0.8580	0:373,1:87,2:26,3:5,4:3,5:2,8:4	-	0	discard	0073 rename-scratchpad: 0.858 (-0.9pp; 'checkpoint' is optimal name); reverted
+3c974b5	0.8620	0:401,1:72,2:21,3:4,8:2	-	0	discard	0074 echo-tool-ack: 0.862 (within noise; echo no-op); reverted
