@@ -1,0 +1,20 @@
+INFO:__main__:Using BASE model (no SFT checkpoint)
+INFO:__main__:Loading DeepMath-103K dataset...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+INFO:tinker.lib.public_interfaces.service_client:ServiceClient initialized for session 37532b14-c467-5fa0-83d2-b54a49b3b8cb
+INFO:__main__:Running agent loop on 500 problems concurrently...
+INFO:__main__:[50/500] correct so far: 47 (acc=0.940)
+INFO:__main__:[100/500] correct so far: 90 (acc=0.900)
+INFO:__main__:[150/500] correct so far: 132 (acc=0.880)
+INFO:__main__:[200/500] correct so far: 177 (acc=0.885)
+INFO:__main__:[250/500] correct so far: 218 (acc=0.872)
+INFO:__main__:[300/500] correct so far: 259 (acc=0.863)
+INFO:pylatexenc.latexwalker:Ignoring parse error (tolerant parsing mode): Unexpected mismatching closing brace: '}' @(1,5)
+INFO:__main__:[350/500] correct so far: 301 (acc=0.860)
+INFO:__main__:[400/500] correct so far: 346 (acc=0.865)
+INFO:__main__:[450/500] correct so far: 391 (acc=0.869)
+INFO:__main__:[500/500] correct so far: 434 (acc=0.868)
+INFO:__main__:Accuracy: 434/500 = 0.868
+INFO:__main__:Tool-call cadence: [(0, 294), (1, 10), (2, 22), (3, 121), (4, 34), (5, 7), (6, 5), (7, 1), (8, 1), (9, 4), (10, 1)]
+INFO:__main__:Saved eval to /tmp/tinker-examples/interview/deepmath_agent_eval.json
