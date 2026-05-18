@@ -45,6 +45,16 @@ ax.text(-0.4, NO_TOOL + 0.006, f"no-tool baseline {NO_TOOL}",
 for xi, yi in zip(x, y):
     ax.text(xi, yi + 0.012, f"{yi:.3f}", ha="center", va="bottom", fontsize=9)
 
+# annotate tiny-SFT(20): high score, but only because the model collapsed
+# to skipping the tool ~99% of the time — passed eval, failed the task.
+ax.annotate(
+    "but ~99% skip rate —\nmodel stopped using\nthe tool entirely",
+    xy=(2, 0.870), xytext=(2.05, 0.66),
+    fontsize=9, color="#666", ha="left", va="center",
+    arrowprops=dict(arrowstyle="-", color="#bbb", lw=0.8,
+                    connectionstyle="arc3,rad=-0.2"),
+)
+
 ax.set_xticks(x, labels, fontsize=8)
 ax.set_ylim(0.42, 0.95)
 ax.set_xlim(-0.5, len(runs) - 0.5)
