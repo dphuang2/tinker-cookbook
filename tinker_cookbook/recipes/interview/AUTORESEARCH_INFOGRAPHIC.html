@@ -3,1018 +3,812 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>159 experiments: teaching Qwen3 to checkpoint mid-thinking</title>
+<title>autoresearch · 159 experiments · DeepMath</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --paper:        oklch(97.5% 0.012 82);
-    --paper-edge:   oklch(94% 0.014 82);
+    --paper:        oklch(97% 0.012 82);
+    --paper-2:      oklch(94.5% 0.014 82);
     --ink:          oklch(20% 0.018 256);
-    --ink-soft:     oklch(36% 0.018 256);
+    --ink-soft:     oklch(40% 0.018 256);
     --ink-faint:    oklch(58% 0.012 256);
-    --rule:         oklch(82% 0.014 80);
-    --rule-soft:    oklch(90% 0.012 80);
-    --kept:         oklch(54% 0.165 35);     /* terracotta — kept / positive */
-    --kept-soft:    oklch(54% 0.165 35 / .10);
-    --discard:      oklch(52% 0.045 250);    /* muted slate — regression */
-    --baseline:     oklch(46% 0.022 200);    /* teal-ish reference line */
-    --accent-2:     oklch(40% 0.10 145);     /* forest, used sparingly */
-    --highlight-bg: oklch(95% 0.05 85);
+    --ink-ghost:    oklch(72% 0.010 256);
+    --rule:         oklch(78% 0.014 80);
+    --rule-soft:    oklch(88% 0.012 80);
+    --kept:         oklch(54% 0.165 35);
+    --kept-soft:    oklch(54% 0.165 35 / .14);
+    --discard:      oklch(54% 0.075 256);
+    --discard-soft: oklch(54% 0.075 256 / .14);
+    --baseline:     oklch(44% 0.045 200);
 
     --serif:  "Fraunces", "Iowan Old Style", Georgia, serif;
-    --sans:   "DM Sans", ui-sans-serif, system-ui, sans-serif;
+    --sans:   "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
     --mono:   "IBM Plex Mono", ui-monospace, "Cascadia Code", monospace;
 
-    --step-2: clamp(0.78rem, 0.74rem + 0.18vw, 0.86rem);
-    --step-1: clamp(0.88rem, 0.83rem + 0.22vw, 0.98rem);
-    --step-0: clamp(1rem, 0.95rem + 0.25vw, 1.12rem);
-    --step-1u: clamp(1.18rem, 1.08rem + 0.5vw, 1.44rem);
-    --step-2u: clamp(1.5rem, 1.32rem + 0.9vw, 2rem);
-    --step-3u: clamp(2.1rem, 1.7rem + 2vw, 3.4rem);
-    --step-4u: clamp(3rem, 2.2rem + 3.6vw, 5.6rem);
+    --t-xs:  10.5px;
+    --t-sm:  11.5px;
+    --t-md:  13px;
+    --t-lg:  15px;
   }
 
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  html, body { margin: 0; }
   body {
-    margin: 0;
     background: var(--paper);
     color: var(--ink);
     font-family: var(--sans);
-    font-size: var(--step-0);
-    line-height: 1.55;
+    font-size: var(--t-md);
+    line-height: 1.45;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    background-image:
-      radial-gradient(circle at 18% 8%, oklch(95% 0.04 60 / 0.7) 0%, transparent 38%),
-      radial-gradient(circle at 92% 78%, oklch(95% 0.03 200 / 0.55) 0%, transparent 42%);
+    font-feature-settings: "ss01", "cv11", "tnum";
   }
-
-  /* selection */
   ::selection { background: var(--kept); color: var(--paper); }
 
-  /* utility */
-  .mono { font-family: var(--mono); font-feature-settings: "ss01","cv11"; }
+  /* primitives */
+  .mono  { font-family: var(--mono); font-variant-numeric: tabular-nums; }
   .serif { font-family: var(--serif); }
-  .small-caps {
+  .lbl {
     font-family: var(--mono);
-    letter-spacing: 0.18em;
+    font-size: var(--t-xs);
     text-transform: uppercase;
-    font-size: var(--step-2);
+    letter-spacing: 0.14em;
     color: var(--ink-faint);
     font-weight: 500;
   }
-  .rule { border: 0; border-top: 1px solid var(--rule); margin: 0; }
-  .rule-thick { border: 0; border-top: 2px solid var(--ink); margin: 0; }
+  .lbl-ink { color: var(--ink); }
+  .kept    { color: var(--kept); }
+  .discard { color: var(--discard); }
+  .ghost   { color: var(--ink-ghost); }
+  .soft    { color: var(--ink-soft); }
+  .num     { font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 500; }
 
-  /* layout */
+  .rule       { border: 0; border-top: 1px solid var(--rule);  margin: 0; }
+  .rule-soft  { border: 0; border-top: 1px solid var(--rule-soft); margin: 0; }
+  .rule-thick { border: 0; border-top: 2px solid var(--ink);   margin: 0; }
+
+  /* page */
   .page {
-    max-width: 1180px;
+    max-width: 1240px;
     margin: 0 auto;
-    padding: clamp(32px, 6vw, 96px) clamp(24px, 5vw, 80px) 120px;
+    padding: 24px clamp(16px, 3.4vw, 40px) 56px;
   }
 
-  /* ============== HERO ============== */
-  .hero {
+  /* ===== MASTHEAD ===== */
+  .masthead {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 36px;
-    padding-top: 16px;
-  }
-  .meta-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 16px;
-    flex-wrap: wrap;
-    border-bottom: 1px solid var(--rule);
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 12px;
     padding-bottom: 12px;
-    margin-bottom: 8px;
+    border-bottom: 2px solid var(--ink);
   }
-  .meta-row .stamp {
-    font-family: var(--mono);
-    font-size: var(--step-2);
-    color: var(--ink-faint);
-    letter-spacing: 0.04em;
-  }
-  .title {
+  .masthead h1 {
     font-family: var(--serif);
     font-weight: 400;
-    font-size: var(--step-4u);
-    line-height: 0.98;
+    font-size: clamp(1.6rem, 1.0rem + 2vw, 2.6rem);
     letter-spacing: -0.025em;
-    color: var(--ink);
+    line-height: 0.95;
     margin: 0;
-    font-feature-settings: "liga", "dlig";
   }
-  .title em {
+  .masthead h1 em {
     font-style: italic;
     color: var(--kept);
-    font-weight: 300;
+    font-weight: 400;
   }
-  .deck {
-    font-family: var(--serif);
-    font-weight: 300;
-    font-style: italic;
-    font-size: var(--step-1u);
-    line-height: 1.35;
-    color: var(--ink-soft);
-    max-width: 62ch;
-    margin: 0;
+  .masthead .meta {
+    text-align: right;
+    color: var(--ink-faint);
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    line-height: 1.5;
   }
+  .masthead .meta b { color: var(--ink); font-weight: 600; }
 
-  .punchline {
-    margin-top: 36px;
+  /* dek (single line under masthead) */
+  .dek {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: clamp(20px, 4vw, 56px);
-    align-items: end;
-    padding: 32px 0 0;
-    border-top: 1px solid var(--rule);
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0;
+    border-bottom: 1px solid var(--ink);
   }
-  .punchline > div:first-child { grid-column: 1 / -1; }
-  @media (min-width: 760px) {
-    .punchline > div:first-child { grid-column: auto; }
+  .dek > div {
+    padding: 10px 14px 10px 0;
+    border-right: 1px solid var(--rule);
   }
-  .big-num {
-    font-family: var(--serif);
-    font-size: clamp(4rem, 12vw, 9rem);
-    font-weight: 300;
-    line-height: 0.85;
-    letter-spacing: -0.04em;
-    color: var(--ink);
+  .dek > div:last-child { border-right: 0; padding-right: 0; }
+  @media (max-width: 880px) {
+    .dek { grid-template-columns: repeat(3, 1fr); }
+    .dek > div:nth-child(3n) { border-right: 0; }
+  }
+  @media (max-width: 540px) {
+    .dek { grid-template-columns: repeat(2, 1fr); }
+    .dek > div:nth-child(odd) { border-right: 1px solid var(--rule); }
+    .dek > div:nth-child(even) { border-right: 0; }
+  }
+  .dek .v { font-family: var(--serif); font-size: var(--t-lg); line-height: 1.1; padding-top: 4px; }
+  .dek .v .mono { font-size: 0.92em; }
+
+  /* ===== MAIN GRID ===== */
+  .grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 0;
+    border-bottom: 1px solid var(--ink);
+  }
+  @media (max-width: 980px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+  .cell {
+    padding: 18px 22px;
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .grid > .cell:nth-child(2n) { border-right: 0; }
+  @media (max-width: 980px) {
+    .grid > .cell { border-right: 0; }
+  }
+  .cell h3 {
+    margin: 0 0 14px;
+    font-family: var(--mono);
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-faint);
     display: flex;
     align-items: baseline;
-    gap: 14px;
+    gap: 12px;
+    font-weight: 500;
   }
-  .big-num .delta {
-    font-size: 0.28em;
-    color: var(--kept);
+  .cell h3 b { color: var(--ink); font-weight: 600; }
+  .cell h3 .tag { color: var(--kept); margin-left: auto; }
+
+  /* ===== HEADLINE NUMBER ===== */
+  .headline {
+    grid-column: 1 / -1;
+    padding: 18px 22px 24px;
+    border-right: 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: end;
+    column-gap: 32px;
+    border-bottom: 1px solid var(--ink);
+  }
+  .headline .big {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(3.5rem, 4rem + 4vw, 7rem);
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+  }
+  .headline .big .pm {
     font-family: var(--mono);
+    font-size: 0.22em;
+    color: var(--kept);
     font-weight: 400;
     letter-spacing: 0;
   }
-  .punchline-meta {
-    border-left: 1px solid var(--rule);
-    padding-left: clamp(16px, 3vw, 32px);
-    align-self: stretch;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding-bottom: 8px;
-  }
-  .punchline-meta dl { margin: 0; }
-  .punchline-meta dt {
-    font-family: var(--mono);
-    font-size: var(--step-2);
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: var(--ink-faint);
-    margin-top: 12px;
-  }
-  .punchline-meta dt:first-of-type { margin-top: 0; }
-  .punchline-meta dd {
-    margin: 2px 0 0;
-    font-family: var(--mono);
-    font-size: var(--step-0);
-    color: var(--ink);
-  }
-
-  /* ============== SECTION ============== */
-  section { margin-top: clamp(64px, 9vw, 112px); }
-  .section-head {
+  .headline .ctx {
     display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 24px;
-    align-items: baseline;
-    margin-bottom: 32px;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px 24px;
+    padding-bottom: 6px;
   }
-  .section-num {
+  .headline .ctx > div { border-left: 1px solid var(--rule); padding-left: 12px; }
+  .headline .ctx .v {
     font-family: var(--mono);
-    font-size: var(--step-2);
-    color: var(--kept);
-    letter-spacing: 0.18em;
-    padding-top: 4px;
-    white-space: nowrap;
-  }
-  .section-title {
-    font-family: var(--serif);
-    font-weight: 400;
-    font-size: var(--step-3u);
-    line-height: 1.02;
-    letter-spacing: -0.02em;
-    margin: 0;
-    border-top: 2px solid var(--ink);
-    padding-top: 16px;
-  }
-  .section-sub {
-    grid-column: 2;
-    font-family: var(--serif);
-    font-style: italic;
-    font-weight: 300;
-    font-size: var(--step-1);
-    color: var(--ink-soft);
-    margin-top: 8px;
-    max-width: 60ch;
-  }
-
-  /* ============== SETUP GRID ============== */
-  .setup {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 0;
-    border-top: 1px solid var(--ink);
-    border-bottom: 1px solid var(--ink);
-  }
-  .setup-cell {
-    padding: 24px 22px;
-    border-right: 1px solid var(--rule);
-  }
-  .setup-cell:last-child { border-right: 0; }
-  .setup-cell .label {
-    font-family: var(--mono);
-    font-size: var(--step-2);
-    color: var(--ink-faint);
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
-    margin-bottom: 8px;
-  }
-  .setup-cell .value {
-    font-family: var(--serif);
-    font-size: var(--step-1u);
-    line-height: 1.2;
-  }
-  .setup-cell .value .mono { font-size: 0.78em; }
-
-  /* ============== JOURNEY CHART ============== */
-  .chart-wrap {
-    background: var(--paper);
-    border: 1px solid var(--ink);
-    padding: clamp(20px, 3.5vw, 48px) clamp(20px, 4vw, 56px) clamp(28px, 3vw, 40px);
-    position: relative;
-  }
-  .chart-caption {
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
-    font-family: var(--mono);
-    font-size: var(--step-2);
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: var(--ink-faint);
-    margin-bottom: 28px;
-    flex-wrap: wrap;
-  }
-  .chart-caption strong {
+    font-size: var(--t-md);
     color: var(--ink);
     font-weight: 500;
-    letter-spacing: 0.15em;
+    margin-top: 2px;
   }
+  .headline .ctx .v.kept { color: var(--kept); }
+  .headline .ctx .v.discard { color: var(--discard); }
+
+  /* ===== JOURNEY CHART ===== */
   svg.journey { width: 100%; height: auto; display: block; }
   svg.journey .grid-line { stroke: var(--rule-soft); stroke-width: 1; }
   svg.journey .grid-major { stroke: var(--rule); stroke-width: 1; }
-  svg.journey .axis-text {
+  svg.journey .axis {
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 9.5px;
     fill: var(--ink-faint);
     letter-spacing: 0.04em;
   }
-  svg.journey .baseline {
-    stroke: var(--baseline);
-    stroke-width: 1.5;
-    stroke-dasharray: 2 4;
-    fill: none;
-  }
-  svg.journey .baseline-label {
-    font-family: var(--mono);
-    font-size: 11px;
-    fill: var(--baseline);
-    letter-spacing: 0.05em;
-  }
-  svg.journey .progress {
-    stroke: var(--ink);
-    stroke-width: 2;
-    fill: none;
-    stroke-linejoin: round;
-  }
-  svg.journey .progress-area { fill: var(--kept-soft); }
-  svg.journey .point {
-    fill: var(--paper);
-    stroke: var(--ink);
-    stroke-width: 2;
-  }
-  svg.journey .point-major {
-    fill: var(--kept);
-    stroke: var(--ink);
-    stroke-width: 1.5;
-    r: 7;
-  }
-  svg.journey .stem { stroke: var(--ink-faint); stroke-width: 1; stroke-dasharray: 1 2; }
-  svg.journey .label-title {
-    font-family: var(--serif);
-    font-size: 14px;
-    font-weight: 500;
-    fill: var(--ink);
-  }
-  svg.journey .label-sub {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    fill: var(--ink-faint);
-    letter-spacing: 0.04em;
-  }
-  svg.journey .delta {
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 600;
-    fill: var(--kept);
-    letter-spacing: 0.02em;
-  }
-  svg.journey .delta-neg {
-    fill: var(--discard);
-  }
-  svg.journey .point-value {
-    font-family: var(--mono);
-    font-size: 11px;
-    fill: var(--ink);
-    font-weight: 500;
-  }
+  svg.journey .baseline { stroke: var(--baseline); stroke-width: 1.4; stroke-dasharray: 2 3; fill: none; }
+  svg.journey .baseline-lbl { font-family: var(--mono); font-size: 9.5px; fill: var(--baseline); letter-spacing: 0.04em; }
+  svg.journey .area { fill: var(--kept-soft); }
+  svg.journey .line { stroke: var(--ink); stroke-width: 1.8; fill: none; }
+  svg.journey .pt { fill: var(--paper); stroke: var(--ink); stroke-width: 1.5; }
+  svg.journey .pt-major { fill: var(--kept); stroke: var(--ink); stroke-width: 1.4; r: 5.5; }
+  svg.journey .val { font-family: var(--mono); font-size: 10px; fill: var(--ink); font-weight: 500; }
+  svg.journey .delta { font-family: var(--mono); font-size: 9.5px; fill: var(--kept); font-weight: 600; }
+  svg.journey .step-title { font-family: var(--serif); font-size: 11px; font-weight: 500; fill: var(--ink); }
+  svg.journey .step-sub   { font-family: var(--mono);  font-size: 9px;  fill: var(--ink-faint); letter-spacing: 0.04em; }
 
-  /* ============== INSIGHTS ============== */
-  .insights {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0;
-    border-top: 1px solid var(--ink);
-  }
-  @media (min-width: 760px) {
-    .insights { grid-template-columns: 1fr 1fr; }
-  }
-  .insight {
-    padding: 28px clamp(20px, 3vw, 36px);
-    border-bottom: 1px solid var(--rule);
-    border-right: 1px solid var(--rule);
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 18px 22px;
-    align-items: start;
-  }
-  .insight:nth-child(2n) { border-right: 0; }
-  @media (max-width: 759px) {
-    .insight { border-right: 0; }
-  }
-  .insight:nth-last-child(-n+2):not(:nth-child(odd):last-child) {
-    border-bottom: 1px solid var(--ink);
-  }
-  .insight:last-child { border-bottom: 1px solid var(--ink); }
-  .insight-num {
-    font-family: var(--serif);
-    font-size: clamp(2.4rem, 4vw, 3.4rem);
-    font-weight: 300;
-    line-height: 0.8;
-    color: var(--kept);
-    letter-spacing: -0.04em;
-    font-style: italic;
-  }
-  .insight h3 {
-    font-family: var(--serif);
-    font-size: var(--step-1u);
-    line-height: 1.22;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    margin: 0 0 8px;
-  }
-  .insight p {
-    margin: 0;
-    color: var(--ink-soft);
-    font-size: var(--step-1);
-    line-height: 1.55;
-  }
-  .insight .evidence {
-    margin-top: 14px;
-    font-family: var(--mono);
-    font-size: var(--step-2);
-    color: var(--ink-faint);
-    border-left: 2px solid var(--kept);
-    padding: 6px 0 6px 12px;
-    background: linear-gradient(90deg, var(--kept-soft) 0%, transparent 60%);
-  }
-  .insight .evidence b { color: var(--ink); font-weight: 500; }
-
-  /* ============== CADENCE HISTOGRAM ============== */
-  .cadence-block {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 40px;
-    align-items: start;
-  }
-  @media (min-width: 880px) {
-    .cadence-block { grid-template-columns: 1.4fr 1fr; }
-  }
+  /* ===== HISTOGRAM ===== */
   .histo {
-    border: 1px solid var(--ink);
-    padding: clamp(20px, 3vw, 36px);
-  }
-  .histo-rows { display: grid; gap: 6px; margin-top: 12px; }
-  .histo-row {
     display: grid;
-    grid-template-columns: 56px 1fr 64px;
-    align-items: center;
-    gap: 14px;
+    grid-template-columns: 28px 1fr 48px;
+    column-gap: 10px;
+    row-gap: 4px;
     font-family: var(--mono);
-    font-size: var(--step-2);
+    font-size: var(--t-sm);
+    align-items: center;
   }
-  .histo-row .bin {
-    color: var(--ink-soft);
-    text-align: right;
-  }
-  .histo-row .bar {
+  .histo .b-bin { text-align: right; color: var(--ink-soft); }
+  .histo .b-bar {
+    height: 16px;
     background: linear-gradient(90deg, var(--ink) 0%, var(--ink-soft) 100%);
-    height: 22px;
-    transform-origin: left center;
   }
-  .histo-row.peak .bar {
+  .histo .b-bar.peak {
     background: linear-gradient(90deg, var(--kept) 0%, oklch(60% 0.16 35) 100%);
   }
-  .histo-row .pct {
-    font-variant-numeric: tabular-nums;
-    color: var(--ink);
-  }
-  .histo-foot {
-    margin-top: 18px;
-    border-top: 1px solid var(--rule);
-    padding-top: 14px;
+  .histo .b-pct { text-align: right; color: var(--ink); }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 10px;
     font-family: var(--mono);
-    font-size: var(--step-2);
+    font-size: var(--t-xs);
     color: var(--ink-faint);
     text-transform: uppercase;
-    letter-spacing: 0.14em;
-    display: flex;
-    justify-content: space-between;
+    letter-spacing: 0.12em;
   }
-  .cadence-prose h3 {
-    font-family: var(--serif);
-    font-weight: 500;
-    font-size: var(--step-2u);
-    line-height: 1.1;
-    margin: 0 0 14px;
-    letter-spacing: -0.02em;
+  .legend .sw {
+    display: inline-block;
+    width: 14px;
+    height: 10px;
+    margin-right: 6px;
+    vertical-align: middle;
   }
-  .cadence-prose p {
-    color: var(--ink-soft);
-    margin: 0 0 14px;
-    font-size: var(--step-1);
-  }
-  .pull {
-    border-left: 3px solid var(--kept);
-    padding: 4px 0 4px 16px;
-    margin: 24px 0 0;
-    font-family: var(--serif);
-    font-style: italic;
-    font-size: var(--step-1u);
-    line-height: 1.35;
-    color: var(--ink);
-  }
+  .legend .sw.k { background: var(--kept); }
+  .legend .sw.n { background: var(--ink); }
 
-  /* ============== RECIPE ============== */
+  /* ===== TABLE ===== */
+  table.results {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: var(--t-sm);
+  }
+  table.results th, table.results td {
+    text-align: left;
+    padding: 5px 10px 5px 0;
+    border-bottom: 1px dotted var(--rule-soft);
+    vertical-align: baseline;
+    font-variant-numeric: tabular-nums;
+  }
+  table.results th {
+    color: var(--ink-faint);
+    font-weight: 500;
+    font-size: var(--t-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 7px;
+  }
+  table.results td.r, table.results th.r { text-align: right; }
+  table.results .acc.up   { color: var(--kept); font-weight: 600; }
+  table.results .acc.flat { color: var(--ink); }
+  table.results .acc.down { color: var(--discard); }
+  table.results .pill {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 0;
+    font-size: var(--t-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    line-height: 1.5;
+    border: 1px solid currentColor;
+  }
+  table.results .pill.keep    { color: var(--kept); }
+  table.results .pill.discard { color: var(--discard); }
+  table.results .pill.crash   { color: var(--discard); background: var(--discard-soft); }
+  table.results .pill.var     { color: var(--ink-faint); }
+  table.results tr:last-child td { border-bottom: 0; }
+
+  /* horizontal scroll wrapper for narrow screens */
+  .scroll-x { overflow-x: auto; }
+
+  /* ===== STATS BAR ===== */
+  .statbar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0;
+    border-bottom: 1px solid var(--ink);
+  }
+  .statbar > div {
+    padding: 14px 16px 16px;
+    border-right: 1px solid var(--rule);
+  }
+  .statbar > div:last-child { border-right: 0; }
+  .statbar .v {
+    font-family: var(--serif);
+    font-size: clamp(1.6rem, 1.4rem + 0.8vw, 2.2rem);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+  }
+  .statbar .v.kept { color: var(--kept); }
+  .statbar .v .mono { font-size: 0.85em; }
+
+  /* ===== RECIPE ===== */
   .recipe {
     border: 1px solid var(--ink);
+    margin-top: 14px;
     overflow: hidden;
   }
   .recipe-head {
-    display: flex;
-    justify-content: space-between;
-    padding: 16px 22px;
     background: var(--ink);
     color: var(--paper);
+    padding: 8px 14px;
     font-family: var(--mono);
-    font-size: var(--step-2);
+    font-size: var(--t-xs);
     text-transform: uppercase;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
     flex-wrap: wrap;
-    gap: 8px;
   }
-  .recipe-head .crumbs span { opacity: 0.6; margin-right: 8px; }
+  .recipe-head .crumbs span { opacity: 0.55; margin-right: 6px; }
   .recipe pre {
     margin: 0;
-    padding: clamp(20px, 3vw, 36px);
+    padding: 14px 16px;
     font-family: var(--mono);
-    font-size: clamp(0.78rem, 0.7rem + 0.4vw, 0.95rem);
-    line-height: 1.6;
-    background: var(--paper);
+    font-size: 11.5px;
+    line-height: 1.55;
     color: var(--ink);
     overflow-x: auto;
   }
-  .recipe code .kw { color: var(--kept); font-weight: 500; }
-  .recipe code .str { color: var(--accent-2); }
-  .recipe code .cmt { color: var(--ink-faint); font-style: italic; }
-  .recipe-foot {
-    border-top: 1px solid var(--rule);
-    padding: 18px 22px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    font-family: var(--mono);
-    font-size: var(--step-2);
-    gap: 8px 24px;
-  }
-  .recipe-foot div span:first-child { color: var(--ink-faint); margin-right: 10px; }
+  .recipe .kw  { color: var(--kept); font-weight: 500; }
+  .recipe .str { color: oklch(40% 0.10 145); }
+  .recipe .cmt { color: var(--ink-faint); font-style: italic; }
 
-  /* ============== TAXONOMY ============== */
-  .taxonomy {
+  /* ===== TAX (kept vs discard lists) ===== */
+  .tax {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 4px;
-    margin-top: 8px;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 24px;
   }
-  @media (min-width: 760px) {
-    .taxonomy { grid-template-columns: 1fr 1fr; gap: 4px 24px; }
-  }
-  .tax-col h4 {
+  @media (max-width: 640px) { .tax { grid-template-columns: 1fr; } }
+  .tax h4 {
     font-family: var(--mono);
-    font-size: var(--step-2);
+    font-size: var(--t-xs);
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    color: var(--ink-faint);
-    margin: 0 0 14px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--rule);
+    margin: 0 0 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid currentColor;
+    font-weight: 600;
   }
-  .tax-col.kept h4 { color: var(--kept); border-bottom-color: var(--kept); }
-  .tax-col.dropped h4 { color: var(--discard); border-bottom-color: var(--discard); }
-  .tax-col ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    font-family: var(--mono);
-    font-size: var(--step-2);
-    line-height: 1.85;
-  }
-  .tax-col li {
+  .tax .k h4 { color: var(--kept); }
+  .tax .d h4 { color: var(--discard); }
+  .tax ul { list-style: none; margin: 0; padding: 0; font-family: var(--mono); font-size: var(--t-sm); }
+  .tax li {
     display: grid;
     grid-template-columns: 1fr auto;
-    gap: 14px;
-    padding: 4px 0;
+    gap: 10px;
+    padding: 3px 0;
     border-bottom: 1px dotted var(--rule-soft);
   }
-  .tax-col li:last-child { border-bottom: 0; }
-  .tax-col li .num {
-    color: var(--ink-faint);
-    font-variant-numeric: tabular-nums;
-  }
+  .tax li:last-child { border-bottom: 0; }
+  .tax li .id { color: var(--ink-faint); }
 
-  /* ============== FINAL STATS ============== */
-  .final-stats {
-    border-top: 2px solid var(--ink);
-    padding-top: 28px;
-    margin-top: clamp(64px, 8vw, 96px);
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
-  @media (min-width: 760px) {
-    .final-stats { grid-template-columns: 1.2fr 2fr; gap: 64px; }
-  }
-  .final-stats h2 {
-    font-family: var(--serif);
-    font-weight: 400;
-    font-size: var(--step-2u);
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-    margin: 0;
-  }
-  .final-stats .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 28px 32px;
-  }
-  .stat .num {
-    font-family: var(--serif);
-    font-size: var(--step-3u);
-    font-weight: 300;
-    line-height: 0.95;
-    letter-spacing: -0.03em;
-  }
-  .stat .num.kept { color: var(--kept); }
-  .stat .label {
-    font-family: var(--mono);
-    font-size: var(--step-2);
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: var(--ink-faint);
-    margin-top: 6px;
-  }
+  /* ===== VARIANCE STRIP ===== */
+  svg.variance { width: 100%; height: auto; display: block; }
+  svg.variance .dot { fill: var(--ink); }
+  svg.variance .dot.high { fill: var(--kept); }
+  svg.variance .dot.low  { fill: var(--discard); }
+  svg.variance .mean { stroke: var(--kept); stroke-width: 1.5; stroke-dasharray: 4 3; }
+  svg.variance .band { fill: var(--kept-soft); }
+  svg.variance .lbl  { font-family: var(--mono); font-size: 9.5px; fill: var(--ink-faint); letter-spacing: 0.04em; }
+  svg.variance .ann  { font-family: var(--mono); font-size: 10px; fill: var(--kept); font-weight: 600; }
 
-  /* colophon */
+  /* ===== FOOTER ===== */
   .colophon {
-    margin-top: 72px;
-    padding-top: 22px;
+    margin-top: 20px;
+    padding-top: 10px;
     border-top: 1px solid var(--rule);
     font-family: var(--mono);
-    font-size: var(--step-2);
+    font-size: var(--t-xs);
     color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
     display: flex;
     justify-content: space-between;
-    flex-wrap: wrap;
     gap: 12px;
-  }
-  .colophon a { color: var(--ink); text-decoration: none; border-bottom: 1px dotted var(--ink-faint); }
-
-  /* subtle decorative ornament */
-  .ornament {
-    text-align: center;
-    color: var(--ink-faint);
-    margin: 64px 0 0;
-    font-family: var(--serif);
-    font-size: 1.5rem;
-    letter-spacing: 1em;
-    padding-left: 1em;
+    flex-wrap: wrap;
   }
 
-  /* fade-in on load */
+  /* fade-in */
   @media (prefers-reduced-motion: no-preference) {
-    body { animation: fade .9s cubic-bezier(.2,.7,.2,1) both; }
-    @keyframes fade { from { opacity: 0; transform: translateY(6px);} to {opacity:1; transform: none;} }
+    body { animation: f .55s cubic-bezier(.2,.7,.2,1) both; }
+    @keyframes f { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
   }
 </style>
 </head>
 <body>
 <main class="page">
 
-  <!-- ============== HERO ============== -->
-  <header class="hero">
-    <div class="meta-row">
-      <span class="stamp">research log &nbsp;·&nbsp; autoresearch/progress-update-may17</span>
-      <span class="stamp">2026-05-18</span>
-    </div>
-
-    <h1 class="title">159 experiments<br>to teach Qwen3 <em>to checkpoint</em><br>mid-thinking.</h1>
-
-    <p class="deck">
-      A five-minute heartbeat loop walked one branch through 159 commits — three SFT
-      regressions, one bug, two false breakthroughs, and 26 corroborating variance
-      samples — to land on a recipe that uses <em>zero</em> training records and
-      sits inside the no-tool baseline's confidence interval.
-    </p>
-
-    <div class="punchline">
-      <div>
-        <span class="small-caps">Final · 26-sample mean</span>
-        <div class="big-num">
-          0.8750
-          <span class="delta">± 0.010</span>
-        </div>
-      </div>
-      <div class="punchline-meta">
-        <dl>
-          <dt>vs no-tool baseline (0.880)</dt><dd>Δ −0.005 &nbsp;<span style="color:var(--ink-faint)">within 1σ — statistically equivalent</span></dd>
-          <dt>vs v3 SFT baseline (0.708)</dt><dd>Δ +0.167 &nbsp;<span style="color:var(--ink-faint)">+16.7 percentage points</span></dd>
-          <dt>training records used</dt><dd>0 &nbsp;<span style="color:var(--ink-faint)">prompt-only</span></dd>
-          <dt>healthy bimodal cadence</dt><dd>~50% skip · ~40% exactly 3 calls</dd>
-        </dl>
-      </div>
+  <!-- ===== MASTHEAD ===== -->
+  <header class="masthead">
+    <h1>autoresearch · <em>progress-update</em> · DeepMath</h1>
+    <div class="meta">
+      <b>159 experiments</b> · <b>26 variance samples</b><br>
+      branch · autoresearch/progress-update-may17 · 2026-05-18
     </div>
   </header>
 
-  <!-- ============== SETUP ============== -->
-  <section>
-    <header class="section-head">
-      <span class="section-num">§ 01</span>
-      <h2 class="section-title">The setup</h2>
-      <p class="section-sub">
-        What we tried to do, what we held fixed, and how the autoresearch loop knew when to commit.
-      </p>
-    </header>
+  <!-- ===== DEK (setup strip) ===== -->
+  <div class="dek">
+    <div>
+      <div class="lbl">model</div>
+      <div class="v"><span class="mono">Qwen3-30B-A3B</span></div>
+    </div>
+    <div>
+      <div class="lbl">eval</div>
+      <div class="v"><span class="mono">DeepMath</span> 500 · seed-42 [0,500)</div>
+    </div>
+    <div>
+      <div class="lbl">grading</div>
+      <div class="v"><span class="mono">extract_boxed + grade_answer</span></div>
+    </div>
+    <div>
+      <div class="lbl">fixed</div>
+      <div class="v"><span class="mono">temp 0.6 · maxtok 24576 · turns 8</span></div>
+    </div>
+    <div>
+      <div class="lbl">loop</div>
+      <div class="v">5-min cron · every exp commits</div>
+    </div>
+    <div>
+      <div class="lbl">goal</div>
+      <div class="v">teach model to <em>interleave</em> tool calls</div>
+    </div>
+  </div>
 
-    <div class="setup">
-      <div class="setup-cell">
-        <div class="label">Goal</div>
-        <div class="value">Get <span class="mono">Qwen3-30B-A3B</span> to interleave <em>progress&nbsp;update</em> tool calls while solving math.</div>
+  <!-- ===== HEADLINE NUMBER ===== -->
+  <div class="grid">
+    <div class="headline">
+      <div class="big">
+        0.8750
+        <span class="pm">± 0.010</span>
       </div>
-      <div class="setup-cell">
-        <div class="label">Eval</div>
-        <div class="value">500 held-out <span class="mono">DeepMath</span> problems<br><span class="mono">seed-42 shuffled · idx 0–499</span></div>
-      </div>
-      <div class="setup-cell">
-        <div class="label">Grading</div>
-        <div class="value"><span class="mono">extract_boxed</span> +<br><span class="mono">grade_answer</span></div>
-      </div>
-      <div class="setup-cell">
-        <div class="label">Fixed</div>
-        <div class="value">eval slice · temp 0.6 ·<br><span class="mono">max_tokens 24576</span> · turns 8</div>
-      </div>
-      <div class="setup-cell">
-        <div class="label">Loop</div>
-        <div class="value">5-minute cron heartbeat. <em>Every experiment commits</em> — keep, discard, crash. Never reset.</div>
+      <div class="ctx">
+        <div>
+          <div class="lbl">final · 26-sample mean</div>
+          <div class="v kept">95% CI [0.871, 0.880]</div>
+        </div>
+        <div>
+          <div class="lbl">vs no-tool baseline 0.880</div>
+          <div class="v">Δ −0.005 · within 1σ</div>
+        </div>
+        <div>
+          <div class="lbl">vs v3 SFT 0.708</div>
+          <div class="v kept">Δ +0.167</div>
+        </div>
+        <div>
+          <div class="lbl">training records</div>
+          <div class="v kept">0</div>
+        </div>
+        <div>
+          <div class="lbl">tool-use rate</div>
+          <div class="v">47.6% · bimodal</div>
+        </div>
       </div>
     </div>
-  </section>
 
-  <!-- ============== JOURNEY ============== -->
-  <section>
-    <header class="section-head">
-      <span class="section-num">§ 02</span>
-      <h2 class="section-title">The journey, decomposed.</h2>
-      <p class="section-sub">
-        Five inflection points moved accuracy 16.7 pp in absolute terms. Most of the
-        gain came from a single line of eval config — not from training.
-      </p>
-    </header>
-
-    <div class="chart-wrap">
-      <div class="chart-caption">
-        <span><strong>cumulative accuracy</strong> on DeepMath 500</span>
-        <span>↑ accuracy &nbsp;·&nbsp; → experiment</span>
-      </div>
-
-      <!--
-        chart range: y 0.69 → 0.90  ::  x: 6 milestones
-        coords mapped: 100..900 horizontal, 30..360 vertical (paddings inside viewBox)
-      -->
-      <svg class="journey" viewBox="0 0 980 440" preserveAspectRatio="xMidYMid meet" aria-label="accuracy by milestone">
-        <!-- grid -->
+    <!-- ===== JOURNEY CHART ===== -->
+    <section class="cell" style="grid-column: 1 / -1; border-right: 0;">
+      <h3><b>§ 02</b> cumulative accuracy by lever <span class="tag">+16.7 pp total</span></h3>
+      <svg class="journey" viewBox="0 0 1180 380" preserveAspectRatio="xMidYMid meet">
+        <!-- horizontal grid -->
         <g>
-          <!-- horizontal grid lines at 0.70, 0.75, 0.80, 0.85, 0.90 -->
-          <line class="grid-major" x1="100" y1="370" x2="900" y2="370"/>
-          <line class="grid-line"  x1="100" y1="305" x2="900" y2="305"/>
-          <line class="grid-line"  x1="100" y1="240" x2="900" y2="240"/>
-          <line class="grid-line"  x1="100" y1="175" x2="900" y2="175"/>
-          <line class="grid-major" x1="100" y1="110" x2="900" y2="110"/>
-
-          <text class="axis-text" x="92"  y="374" text-anchor="end">0.70</text>
-          <text class="axis-text" x="92"  y="309" text-anchor="end">0.75</text>
-          <text class="axis-text" x="92"  y="244" text-anchor="end">0.80</text>
-          <text class="axis-text" x="92"  y="179" text-anchor="end">0.85</text>
-          <text class="axis-text" x="92"  y="114" text-anchor="end">0.90</text>
+          <line class="grid-major" x1="60" y1="330" x2="1140" y2="330"/>
+          <line class="grid-line"  x1="60" y1="265" x2="1140" y2="265"/>
+          <line class="grid-line"  x1="60" y1="200" x2="1140" y2="200"/>
+          <line class="grid-line"  x1="60" y1="135" x2="1140" y2="135"/>
+          <line class="grid-major" x1="60" y1="70"  x2="1140" y2="70"/>
+          <text class="axis" x="52" y="333" text-anchor="end">0.70</text>
+          <text class="axis" x="52" y="268" text-anchor="end">0.75</text>
+          <text class="axis" x="52" y="203" text-anchor="end">0.80</text>
+          <text class="axis" x="52" y="138" text-anchor="end">0.85</text>
+          <text class="axis" x="52" y="73"  text-anchor="end">0.90</text>
         </g>
+        <!-- baseline 0.880 -->
+        <line class="baseline" x1="60" y1="100" x2="1140" y2="100"/>
+        <text class="baseline-lbl" x="1140" y="93" text-anchor="end">no-tool baseline · 0.880</text>
 
-        <!-- no-tool baseline 0.880 -->
-        <line class="baseline" x1="100" y1="136" x2="900" y2="136"/>
-        <text class="baseline-label" x="900" y="128" text-anchor="end">no-tool ceiling · 0.880</text>
+        <!-- area + line through 6 milestones -->
+        <!-- coords: v3=0.708→y=325, 0020=0.774→y=240, 0062=0.863→y=124, 0076=0.868→y=118, 0080=0.874→y=110, 0105=0.8750→y=110 -->
+        <path class="area" d="M 140,325 L 320,240 L 520,124 L 720,118 L 920,110 L 1110,110 L 1110,360 L 140,360 Z"/>
+        <path class="line" d="M 140,325 L 320,240 L 520,124 L 720,118 L 920,110 L 1110,110"/>
 
-        <!-- area under curve -->
-        <path class="progress-area"
-              d="M 140,374 L 285,288 L 430,172 L 575,166 L 720,158 L 865,158 L 865,400 L 140,400 Z"/>
-
-        <!-- the path -->
-        <path class="progress"
-              d="M 140,374 L 285,288 L 430,172 L 575,166 L 720,158 L 865,158"/>
-
-        <!-- vertical stems from final to baseline so the gap is visible -->
-        <line class="stem" x1="865" y1="158" x2="865" y2="136"/>
-
-        <!-- points + labels -->
-        <!-- v3 baseline 0.708 at (140,374) -->
+        <!-- points -->
         <g>
-          <circle class="point" cx="140" cy="374" r="6"/>
-          <text class="point-value"  x="140" y="395" text-anchor="middle">0.708</text>
-          <text class="label-title"  x="140" y="425" text-anchor="middle">v3 SFT</text>
-          <text class="label-sub"    x="140" y="438" text-anchor="middle">2302 records</text>
+          <circle class="pt" cx="140" cy="325" r="5"/>
+          <text class="val"        x="140" y="343" text-anchor="middle">0.708</text>
+          <text class="step-title" x="140" y="362" text-anchor="middle">v3 SFT</text>
+          <text class="step-sub"   x="140" y="374" text-anchor="middle">2302 records</text>
         </g>
-
-        <!-- 0020 prompt-only 0.774 at (285,288) -->
         <g>
-          <circle class="point" cx="285" cy="288" r="6"/>
-          <text class="point-value"  x="285" y="278" text-anchor="middle">0.774</text>
-          <text class="delta"        x="285" y="263" text-anchor="middle">+6.6 pp</text>
-          <text class="label-title"  x="285" y="316" text-anchor="middle">prompt-only</text>
-          <text class="label-sub"    x="285" y="329" text-anchor="middle">drop the SFT</text>
+          <circle class="pt" cx="320" cy="240" r="5"/>
+          <text class="val"        x="320" y="228" text-anchor="middle">0.774</text>
+          <text class="delta"      x="320" y="215" text-anchor="middle">+6.6 pp</text>
+          <text class="step-title" x="320" y="362" text-anchor="middle">prompt-only</text>
+          <text class="step-sub"   x="320" y="374" text-anchor="middle">0020 · drop SFT</text>
         </g>
-
-        <!-- 0062 max_tokens 0.863 at (430,172) -->
         <g>
-          <circle class="point-major" cx="430" cy="172"/>
-          <text class="point-value"  x="430" y="195" text-anchor="middle" fill="var(--kept)" font-weight="600">0.863</text>
-          <text class="delta"        x="430" y="148" text-anchor="middle">+9 pp · the big one</text>
-          <text class="label-title"  x="430" y="215" text-anchor="middle">max_tokens 24576</text>
-          <text class="label-sub"    x="430" y="228" text-anchor="middle">eval cap was binding</text>
+          <circle class="pt-major" cx="520" cy="124"/>
+          <text class="val"        x="520" y="148" text-anchor="middle" fill="var(--kept)" font-weight="600">0.863</text>
+          <text class="delta"      x="520" y="98"  text-anchor="middle">+9 pp · biggest lever</text>
+          <text class="step-title" x="520" y="362" text-anchor="middle">max_tokens 24576</text>
+          <text class="step-sub"   x="520" y="374" text-anchor="middle">0062 · eval cap was binding</text>
         </g>
-
-        <!-- 0076 CoT prefix 0.868 at (575,166) -->
         <g>
-          <circle class="point" cx="575" cy="166" r="6"/>
-          <text class="point-value"  x="575" y="156" text-anchor="middle">0.868</text>
-          <text class="delta"        x="575" y="142" text-anchor="middle">+0.5 pp</text>
-          <text class="label-title"  x="575" y="192" text-anchor="middle">CoT prefix</text>
-          <text class="label-sub"    x="575" y="205" text-anchor="middle">“think step by step”</text>
+          <circle class="pt" cx="720" cy="118" r="5"/>
+          <text class="val"        x="720" y="108" text-anchor="middle">0.868</text>
+          <text class="delta"      x="720" y="93"  text-anchor="middle">+0.5 pp</text>
+          <text class="step-title" x="720" y="362" text-anchor="middle">CoT prefix</text>
+          <text class="step-sub"   x="720" y="374" text-anchor="middle">0076 · “think step by step”</text>
         </g>
-
-        <!-- 0080 cadence anchor 0.874 at (720,158) -->
         <g>
-          <circle class="point" cx="720" cy="158" r="6"/>
-          <text class="point-value"  x="720" y="148" text-anchor="middle">0.874</text>
-          <text class="delta"        x="720" y="134" text-anchor="middle">+1 pp</text>
-          <text class="label-title"  x="720" y="184" text-anchor="middle">cadence anchor</text>
-          <text class="label-sub"    x="720" y="197" text-anchor="middle">“two or three calls”</text>
+          <circle class="pt" cx="920" cy="110" r="5"/>
+          <text class="val"        x="920" y="100" text-anchor="middle">0.874</text>
+          <text class="delta"      x="920" y="85"  text-anchor="middle">+1 pp</text>
+          <text class="step-title" x="920" y="362" text-anchor="middle">cadence anchor</text>
+          <text class="step-sub"   x="920" y="374" text-anchor="middle">0080 · “2–3 calls”</text>
         </g>
-
-        <!-- 0105 final 0.8750 at (865,158) -->
         <g>
-          <circle class="point-major" cx="865" cy="158"/>
-          <text class="point-value"  x="865" y="148" text-anchor="middle" fill="var(--kept)" font-weight="600">0.8750</text>
-          <text class="delta"        x="865" y="134" text-anchor="middle">26-sample mean</text>
-          <text class="label-title"  x="865" y="184" text-anchor="middle">three checkpoints</text>
-          <text class="label-sub"    x="865" y="197" text-anchor="middle">recipe converged</text>
+          <circle class="pt-major" cx="1110" cy="110"/>
+          <text class="val"        x="1110" y="100" text-anchor="middle" fill="var(--kept)" font-weight="600">0.8750</text>
+          <text class="delta"      x="1110" y="85"  text-anchor="middle">26-sample mean</text>
+          <text class="step-title" x="1110" y="362" text-anchor="middle">three checkpoints</text>
+          <text class="step-sub"   x="1110" y="374" text-anchor="middle">0105 · final recipe</text>
         </g>
       </svg>
-    </div>
+    </section>
 
-    <p style="margin-top:24px; font-family:var(--serif); font-style:italic; color:var(--ink-soft); font-size:var(--step-1); max-width:64ch;">
-      Three steps were noise-floor improvements. One step — lifting the eval's
-      <span class="mono">max_tokens</span> cap from <span class="mono">8192</span> to
-      <span class="mono">24576</span> — moved the needle by an order of magnitude more
-      than every prompt-engineering insight combined.
-    </p>
-  </section>
-
-  <!-- ============== INSIGHTS ============== -->
-  <section>
-    <header class="section-head">
-      <span class="section-num">§ 03</span>
-      <h2 class="section-title">Four lessons,<br>each paid for in commits.</h2>
-      <p class="section-sub">
-        Negative results were the majority of the journey. Each card is the cheapest
-        sentence we could find to convey what 5–15 wasted experiments taught us.
-      </p>
-    </header>
-
-    <div class="insights">
-      <article class="insight">
-        <div class="insight-num">i</div>
-        <div>
-          <h3>SFT actively damages base reasoning.</h3>
-          <p>
-            Every supervised run regressed accuracy. The smallest viable test — twenty
-            records, two gradient steps — was enough to collapse cadence to 99% skip.
-            Prompt-only beats every fine-tuned variant we tried.
-          </p>
-          <div class="evidence">
-            0028 · 100 records · <b>0.482</b> &nbsp;|&nbsp; 0147 · 20 records · <b>0.870</b> @ <b>99% skip</b>
-          </div>
-        </div>
-      </article>
-
-      <article class="insight">
-        <div class="insight-num">ii</div>
-        <div>
-          <h3>The eval cap was the hidden bottleneck.</h3>
-          <p>
-            For the first 61 experiments we tuned the prompt against an eval whose
-            <span class="mono">max_tokens_per_turn</span> truncated the model's
-            thinking. Lifting it from <span class="mono">8192</span> to
-            <span class="mono">24576</span> bought more accuracy than every prompt
-            tweak combined.
-          </p>
-          <div class="evidence">
-            0061 · cap 16384 · <b>0.846</b> &nbsp;→&nbsp; 0062 · cap 24576 · <b>0.870</b> &nbsp;(+9pp over 8192)
-          </div>
-        </div>
-      </article>
-
-      <article class="insight">
-        <div class="insight-num">iii</div>
-        <div>
-          <h3>Verbose hedging is load-bearing.</h3>
-          <p>
-            “Use three checkpoints” reads as an order. The model takes it literally,
-            tool-spams every problem, and pays the prompt-overhead cost everywhere.
-            <em>“is typical for a multi-step problem”</em> softens the floor and saves
-            the cadence shape.
-          </p>
-          <div class="evidence">
-            0128 · terse imperative · <b>0.828</b> &nbsp;(−4.5 pp · 91% tool-use)
-          </div>
-        </div>
-      </article>
-
-      <article class="insight">
-        <div class="insight-num">iv</div>
-        <div>
-          <h3>Two identical samples can happen by chance.</h3>
-          <p>
-            0132 and 0133 both returned <span class="mono">0.890</span> on the dot.
-            A real signal — until 0134 came in at 0.854. At temperature 0.6, the
-            single-sample standard deviation is around 1 percentage point. Trust
-            three samples, not two.
-          </p>
-          <div class="evidence">
-            0132 · 0133 · 0134 → <b>0.890 / 0.890 / 0.854</b> &nbsp;⇒ mean <b>0.878</b>
-          </div>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <!-- ============== CADENCE ============== -->
-  <section>
-    <header class="section-head">
-      <span class="section-num">§ 04</span>
-      <h2 class="section-title">Cadence, observed.</h2>
-      <p class="section-sub">
-        The model self-organises into two modes: skip the tool entirely on simple
-        problems, or invoke it exactly three times on multi-step ones.
-      </p>
-    </header>
-
-    <div class="cadence-block">
+    <!-- ===== CADENCE HISTOGRAM ===== -->
+    <section class="cell">
+      <h3><b>§ 03</b> tool-call cadence · 0152 sample <span class="tag">bimodal</span></h3>
       <div class="histo">
-        <div class="chart-caption" style="margin-bottom:6px;">
-          <span><strong>tool-call cadence</strong> · 0152 sample · n=500</span>
-          <span>bins · 0 … 8</span>
+        <span class="b-bin">0</span><span class="b-bar peak" style="width:52.4%"></span><span class="b-pct">52.4%</span>
+        <span class="b-bin">1</span><span class="b-bar"      style="width:0.6%"></span> <span class="b-pct">0.6%</span>
+        <span class="b-bin">2</span><span class="b-bar"      style="width:0.4%"></span> <span class="b-pct">0.4%</span>
+        <span class="b-bin">3</span><span class="b-bar peak" style="width:41.2%"></span><span class="b-pct">41.2%</span>
+        <span class="b-bin">4</span><span class="b-bar"      style="width:3.2%"></span> <span class="b-pct">3.2%</span>
+        <span class="b-bin">5</span><span class="b-bar"      style="width:0.4%"></span> <span class="b-pct">0.4%</span>
+        <span class="b-bin">6</span><span class="b-bar"      style="width:1.4%"></span> <span class="b-pct">1.4%</span>
+        <span class="b-bin">7</span><span class="b-bar"      style="width:0.2%"></span> <span class="b-pct">0.2%</span>
+        <span class="b-bin">8+</span><span class="b-bar"     style="width:0.2%"></span> <span class="b-pct">0.2%</span>
+      </div>
+      <div class="legend">
+        <span><span class="sw k"></span>peak</span>
+        <span><span class="sw n"></span>tail</span>
+        <span style="margin-left:auto;">model uses tool on <b style="color:var(--ink); font-weight:600;">47.6%</b> of problems</span>
+      </div>
+    </section>
+
+    <!-- ===== VARIANCE STRIP ===== -->
+    <section class="cell" style="border-right: 0;">
+      <h3><b>§ 04</b> all 26 samples · final recipe <span class="tag">σ = 0.010</span></h3>
+      <svg class="variance" viewBox="0 0 600 200" preserveAspectRatio="xMidYMid meet">
+        <!-- y axis: 0.84 → 0.90, mapped to y 180..30 -->
+        <line class="grid-major" stroke="var(--rule)" x1="40" y1="180" x2="580" y2="180"/>
+        <line class="grid-line"  stroke="var(--rule-soft)" x1="40" y1="143" x2="580" y2="143"/>
+        <line class="grid-line"  stroke="var(--rule-soft)" x1="40" y1="105" x2="580" y2="105"/>
+        <line class="grid-line"  stroke="var(--rule-soft)" x1="40" y1="68"  x2="580" y2="68"/>
+        <line class="grid-major" stroke="var(--rule)" x1="40" y1="30"  x2="580" y2="30"/>
+
+        <text class="lbl" x="34" y="183" text-anchor="end">0.84</text>
+        <text class="lbl" x="34" y="146" text-anchor="end">0.86</text>
+        <text class="lbl" x="34" y="108" text-anchor="end">0.88</text>
+        <text class="lbl" x="34" y="71"  text-anchor="end">0.90</text>
+
+        <!-- CI band [0.871, 0.880] => y from 0.88→105 to 0.871→122 -->
+        <rect class="band" x="40" y="105" width="540" height="17"/>
+
+        <!-- mean line at 0.8750 => y = 180 - (0.8750-0.84)/0.06*150 = 180-87.5=92.5 -->
+        <line class="mean" x1="40" y1="92.5" x2="580" y2="92.5"/>
+        <text class="ann"  x="580" y="86" text-anchor="end">mean 0.8750</text>
+
+        <!-- baseline at 0.880 -->
+        <line class="baseline" stroke="var(--baseline)" stroke-width="1.4" stroke-dasharray="2 3" x1="40" y1="80" x2="580" y2="80"/>
+        <text class="baseline-lbl" x="44" y="74">no-tool baseline 0.880</text>
+
+        <!-- 26 sample dots: 0.876,0.868,0.884,0.870,...,0.872
+             use x spacing across 540 px -->
+        <!-- y formula = 180 - (acc-0.84)/0.06*150 -->
+        <!--
+          samples list (ordered, n=26):
+          0.876 0.868 0.884 0.870 0.876 0.880 0.878 0.866 0.880 0.858
+          0.864 0.872 0.888 0.878 0.858 0.884 0.868 0.874 0.894 0.878
+          0.870 0.872 0.882 0.874 0.872 0.872
+        -->
+        <g>
+          <circle class="dot"      cx="60"  cy="90.0" r="3.5"/>
+          <circle class="dot"      cx="80"  cy="110.0" r="3.5"/>
+          <circle class="dot high" cx="100" cy="70.0" r="3.5"/>
+          <circle class="dot"      cx="120" cy="105.0" r="3.5"/>
+          <circle class="dot"      cx="140" cy="90.0" r="3.5"/>
+          <circle class="dot"      cx="160" cy="80.0" r="3.5"/>
+          <circle class="dot"      cx="180" cy="85.0" r="3.5"/>
+          <circle class="dot"      cx="200" cy="115.0" r="3.5"/>
+          <circle class="dot"      cx="220" cy="80.0" r="3.5"/>
+          <circle class="dot low"  cx="240" cy="135.0" r="3.5"/>
+          <circle class="dot"      cx="260" cy="120.0" r="3.5"/>
+          <circle class="dot"      cx="280" cy="100.0" r="3.5"/>
+          <circle class="dot high" cx="300" cy="60.0" r="3.5"/>
+          <circle class="dot"      cx="320" cy="85.0" r="3.5"/>
+          <circle class="dot low"  cx="340" cy="135.0" r="3.5"/>
+          <circle class="dot high" cx="360" cy="70.0" r="3.5"/>
+          <circle class="dot"      cx="380" cy="110.0" r="3.5"/>
+          <circle class="dot"      cx="400" cy="95.0" r="3.5"/>
+          <circle class="dot high" cx="420" cy="45.0" r="3.5"/>
+          <circle class="dot"      cx="440" cy="85.0" r="3.5"/>
+          <circle class="dot"      cx="460" cy="105.0" r="3.5"/>
+          <circle class="dot"      cx="480" cy="100.0" r="3.5"/>
+          <circle class="dot"      cx="500" cy="75.0" r="3.5"/>
+          <circle class="dot"      cx="520" cy="95.0" r="3.5"/>
+          <circle class="dot"      cx="540" cy="100.0" r="3.5"/>
+          <circle class="dot"      cx="560" cy="100.0" r="3.5"/>
+        </g>
+
+        <text class="lbl" x="40"  y="197">n=1</text>
+        <text class="lbl" x="300" y="197" text-anchor="middle">sample index →</text>
+        <text class="lbl" x="580" y="197" text-anchor="end">n=26</text>
+      </svg>
+    </section>
+
+    <!-- ===== TAXONOMY: KEPT vs DISCARDED ===== -->
+    <section class="cell" style="grid-column: 1 / -1; border-right: 0;">
+      <h3><b>§ 05</b> levers tested · 159 experiments compressed</h3>
+      <div class="tax">
+        <div class="k">
+          <h4>KEPT · 5 levers built the recipe</h4>
+          <ul>
+            <li><span>prompt-only (no SFT)</span><span class="id">0020 · +6.6 pp</span></li>
+            <li><span>eval cap → 24576 tokens/turn</span><span class="id">0062 · +9.0 pp</span></li>
+            <li><span>“Think step by step” prefix</span><span class="id">0076 · +0.5 pp</span></li>
+            <li><span>numerical cadence anchor “three”</span><span class="id">0080–0105 · +1.0 pp</span></li>
+            <li><span>verbose hedging “is typical for…”</span><span class="id">0128 · holds shape</span></li>
+          </ul>
         </div>
-        <div class="histo-rows">
-          <div class="histo-row peak">
-            <span class="bin">0 calls</span>
-            <span class="bar" style="width:52.4%"></span>
-            <span class="pct">52.4%</span>
-          </div>
-          <div class="histo-row">
-            <span class="bin">1</span>
-            <span class="bar" style="width:0.6%"></span>
-            <span class="pct">0.6%</span>
-          </div>
-          <div class="histo-row">
-            <span class="bin">2</span>
-            <span class="bar" style="width:0.4%"></span>
-            <span class="pct">0.4%</span>
-          </div>
-          <div class="histo-row peak">
-            <span class="bin">3</span>
-            <span class="bar" style="width:41.2%"></span>
-            <span class="pct">41.2%</span>
-          </div>
-          <div class="histo-row">
-            <span class="bin">4</span>
-            <span class="bar" style="width:3.2%"></span>
-            <span class="pct">3.2%</span>
-          </div>
-          <div class="histo-row">
-            <span class="bin">5</span>
-            <span class="bar" style="width:0.4%"></span>
-            <span class="pct">0.4%</span>
-          </div>
-          <div class="histo-row">
-            <span class="bin">6</span>
-            <span class="bar" style="width:1.4%"></span>
-            <span class="pct">1.4%</span>
-          </div>
-          <div class="histo-row">
-            <span class="bin">7</span>
-            <span class="bar" style="width:0.2%"></span>
-            <span class="pct">0.2%</span>
-          </div>
-          <div class="histo-row">
-            <span class="bin">8+</span>
-            <span class="bar" style="width:0.2%"></span>
-            <span class="pct">0.2%</span>
-          </div>
-        </div>
-        <div class="histo-foot">
-          <span>bimodal · skip-or-three</span>
-          <span>tool used on ≈ 47% of problems</span>
+        <div class="d">
+          <h4>DISCARDED · representative regressions</h4>
+          <ul>
+            <li><span>any SFT, any size · 20→2302 records</span><span class="id">0028 / 0147 · −4 to −20pp</span></li>
+            <li><span>imperative tool directives</span><span class="id">0085 / 0128 · −4.5pp</span></li>
+            <li><span>tool rename · note_to_self / step / thought</span><span class="id">0029 / 0135 / 0139</span></li>
+            <li><span>directives prepended before question</span><span class="id">0117 · cadence ↓</span></li>
+            <li><span>directives in system prompt</span><span class="id">0097 · cadence ↓</span></li>
+            <li><span>turn-count meta in tool ack</span><span class="id">0132–0134 · noise</span></li>
+            <li><span>verify directive · CoT-style additions</span><span class="id">0069 / 0084 · null</span></li>
+            <li><span>verbose rubric in tool spec</span><span class="id">0067 · null</span></li>
+          </ul>
         </div>
       </div>
+    </section>
 
-      <div class="cadence-prose">
-        <h3>“Three” is the keystone.</h3>
-        <p>
-          Several anchors produced this same shape — but “three” concentrated the
-          right-hand peak most sharply. <em>“Aim for exactly three”</em> overfired
-          (0.828). <em>“A few”</em> smeared the peak across 1 – 4 calls without
-          changing the mean. <em>“Three checkpoints is typical”</em> landed at the
-          sweet spot.
-        </p>
-        <p>
-          The bimodality is the goal: the model has learnt <strong>when</strong> to
-          use the tool, not whether to use it. Cheap problems are answered directly;
-          multi-step problems receive three structured progress notes.
-        </p>
-
-        <blockquote class="pull">
-          The recipe doesn't make the model better at math.<br>
-          It convinces the model that calling the tool isn't a penalty.
-        </blockquote>
+    <!-- ===== LARGE RESULTS TABLE ===== -->
+    <section class="cell" style="grid-column: 1 / -1; border-right: 0;">
+      <h3><b>§ 06</b> milestones table · the 14 commits that moved the needle</h3>
+      <div class="scroll-x">
+        <table class="results">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>slug</th>
+              <th>change</th>
+              <th class="r">acc</th>
+              <th class="r">Δ</th>
+              <th class="r">cadence</th>
+              <th class="r">records</th>
+              <th>verdict</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>v3</td><td>message-only SFT</td><td>baseline</td>
+              <td class="r acc flat">0.708</td><td class="r ghost">—</td><td class="r">tool: n/a</td>
+              <td class="r">2302</td><td><span class="pill var">prior</span></td>
+            </tr>
+            <tr>
+              <td>0020</td><td>prompt-only-baseline</td><td>drop SFT entirely</td>
+              <td class="r acc up">0.774</td><td class="r kept">+6.6</td><td class="r">healthy</td>
+              <td class="r">0</td><td><span class="pill keep">keep</span></td>
+            </tr>
+            <tr>
+              <td>0028</td><td>tiny-sft-100</td><td>100-record SFT on top</td>
+              <td class="r acc down">0.482</td><td class="r discard">−29.2</td><td class="r">collapsed</td>
+              <td class="r">100</td><td><span class="pill discard">discard</span></td>
+            </tr>
+            <tr>
+              <td>0062</td><td>3x-max-tokens</td><td>eval cap 8192 → 24576</td>
+              <td class="r acc up">0.863</td><td class="r kept">+9.0</td><td class="r">healthy</td>
+              <td class="r">0</td><td><span class="pill keep">keep</span></td>
+            </tr>
+            <tr>
+              <td>0064</td><td>cot-prefix-degenerate</td><td>+ CoT, kept old suppressor</td>
+              <td class="r acc up">0.876</td><td class="r discard">cadence&nbsp;95%&nbsp;0</td><td class="r">degenerate</td>
+              <td class="r">0</td><td><span class="pill discard">discard</span></td>
+            </tr>
+            <tr>
+              <td>0076</td><td>cot-with-soft-cadence</td><td>CoT + permissive directive</td>
+              <td class="r acc up">0.876</td><td class="r kept">+0.5</td><td class="r">60% / 40%</td>
+              <td class="r">0</td><td><span class="pill keep">keep</span></td>
+            </tr>
+            <tr>
+              <td>0080</td><td>cadence-up-2-3</td><td>“two or three calls is typical”</td>
+              <td class="r acc up">0.876</td><td class="r kept">+1.0</td><td class="r">52% / peak@3</td>
+              <td class="r">0</td><td><span class="pill keep">keep</span></td>
+            </tr>
+            <tr>
+              <td>0085</td><td>imperative-cadence</td><td>“Call the checkpoint tool”</td>
+              <td class="r acc down">0.860</td><td class="r discard">−1.6</td><td class="r">over-saturated</td>
+              <td class="r">0</td><td><span class="pill discard">discard</span></td>
+            </tr>
+            <tr>
+              <td>0097</td><td>directives-in-system</td><td>move directive to SYSTEM</td>
+              <td class="r acc flat">0.880</td><td class="r discard">cadence&nbsp;86%&nbsp;0</td><td class="r">near-degen</td>
+              <td class="r">0</td><td><span class="pill discard">discard</span></td>
+            </tr>
+            <tr>
+              <td>0105</td><td>single-cadence-three</td><td>“three checkpoints is typical”</td>
+              <td class="r acc up">0.890</td><td class="r kept">bimodal&nbsp;peak</td><td class="r">50% / 41%</td>
+              <td class="r">0</td><td><span class="pill keep">keep</span></td>
+            </tr>
+            <tr>
+              <td>0128</td><td>terse-minimal-directive</td><td>strip hedging words</td>
+              <td class="r acc down">0.828</td><td class="r discard">−4.5</td><td class="r">9% / 61%@3</td>
+              <td class="r">0</td><td><span class="pill discard">discard</span></td>
+            </tr>
+            <tr>
+              <td>0132</td><td>tool-ack-turn-count</td><td>echo “ok (N of 8)” back</td>
+              <td class="r acc up">0.890</td><td class="r kept">+1.7?</td><td class="r">healthy</td>
+              <td class="r">0</td><td><span class="pill keep">keep…</span></td>
+            </tr>
+            <tr>
+              <td>0134</td><td>↳ 3rd variance sample</td><td>same recipe</td>
+              <td class="r acc down">0.854</td><td class="r discard">noise · mean 0.878</td><td class="r">healthy</td>
+              <td class="r">0</td><td><span class="pill discard">revert</span></td>
+            </tr>
+            <tr>
+              <td>0147</td><td>tiny-sft-20</td><td>20-record SFT on top of 0105</td>
+              <td class="r acc flat">0.870</td><td class="r discard">cadence&nbsp;99.4%&nbsp;0</td><td class="r">collapsed</td>
+              <td class="r">20</td><td><span class="pill discard">discard</span></td>
+            </tr>
+            <tr>
+              <td>0152</td><td>variance #20</td><td>20-sample mean reached</td>
+              <td class="r acc up">0.882</td><td class="r kept">mean 0.8755</td><td class="r">peak@3 · 41.2%</td>
+              <td class="r">0</td><td><span class="pill var">variance</span></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============== RECIPE ============== -->
-  <section>
-    <header class="section-head">
-      <span class="section-num">§ 05</span>
-      <h2 class="section-title">The recipe.</h2>
-      <p class="section-sub">
-        Zero training records. Three short blocks of prose. Same eval params as the
-        no-tool baseline. <span class="mono">tinker_cookbook/recipes/interview/sft_train.py</span>.
-      </p>
-    </header>
-
-    <div class="recipe">
-      <div class="recipe-head">
-        <span class="crumbs"><span>file:</span>sft_train.py</span>
-        <span>commit · current head &nbsp;·&nbsp; 0 records</span>
-      </div>
-      <pre><code><span class="cmt"># All three knobs together. Removing any one of them measurably hurts.</span>
+    <!-- ===== RECIPE ===== -->
+    <section class="cell" style="grid-column: 1 / -1; border-right: 0; border-bottom: 0;">
+      <h3><b>§ 07</b> the locked recipe · <span class="mono lbl-ink">tinker_cookbook/recipes/interview/sft_train.py</span></h3>
+      <div class="recipe">
+        <div class="recipe-head">
+          <span class="crumbs"><span>file</span>sft_train.py</span>
+          <span><span style="opacity:.55">records</span> 0 &nbsp;·&nbsp; <span style="opacity:.55">CI</span> [0.871, 0.880]</span>
+        </div>
+        <pre><code><span class="cmt"># All three blocks are load-bearing — removing any one regresses accuracy or cadence.</span>
 
 <span class="kw">SYSTEM_PROMPT</span> = <span class="str">"You are solving competition math problems. "
                  "You have access to a checkpoint tool for tracking progress."</span>
@@ -1029,91 +823,56 @@
 
 <span class="kw">PROGRESS_TOOL_SPEC</span> = {
     <span class="str">"name"</span>: <span class="str">"checkpoint"</span>,
-    <span class="str">"description"</span>: <span class="str">"Pause your thinking to record a checkpoint..."</span>,
-    <span class="str">"parameters"</span>: {<span class="cmt"># single 'message' string, with one u-sub example</span>},
+    <span class="str">"description"</span>: <span class="str">"Pause your thinking to record a checkpoint..."</span>,   <span class="cmt"># verbose · ~60 words</span>
+    <span class="str">"parameters"</span>: { <span class="str">"message"</span>: <span class="cmt"># single string · u-sub example included</span> },
 }
 
 <span class="cmt"># Eval (FIXED across all 159 experiments):</span>
-<span class="cmt">#   model=Qwen/Qwen3-30B-A3B  temp=0.6  max_tokens_per_turn=24576  max_turns=8</span>
-<span class="cmt">#   tool ack = "ok"  ·  agent loop with extract_boxed grading</span></code></pre>
-      <div class="recipe-foot">
-        <div><span>base model</span><span style="color:var(--ink);">Qwen3-30B-A3B</span></div>
-        <div><span>tool spec</span><span style="color:var(--ink);">single string param</span></div>
-        <div><span>training records</span><span style="color:var(--kept); font-weight:500;">0</span></div>
-        <div><span>tool-use rate</span><span style="color:var(--ink);">~47%</span></div>
+<span class="cmt">#   Qwen/Qwen3-30B-A3B · temp 0.6 · max_tokens 24576 · max_turns 8 · ack="ok"</span></code></pre>
       </div>
-    </div>
+    </section>
 
-    <!-- taxonomy of what worked / what didn't -->
-    <div class="taxonomy" style="margin-top:48px;">
-      <div class="tax-col kept">
-        <h4>kept · five levers that survived</h4>
-        <ul>
-          <li><span>prompt-only (no SFT)</span><span class="num">0020</span></li>
-          <li><span>max_tokens 24576 in eval</span><span class="num">0062</span></li>
-          <li><span>“Think step by step” prefix</span><span class="num">0076</span></li>
-          <li><span>numerical cadence anchor (“three”)</span><span class="num">0080–0105</span></li>
-          <li><span>verbose hedging (“is typical for…”)</span><span class="num">0128</span></li>
-        </ul>
-      </div>
-      <div class="tax-col dropped">
-        <h4>discarded · levers that crashed cadence or accuracy</h4>
-        <ul>
-          <li><span>any SFT, any size (20 → 2302 records)</span><span class="num">0028 / 0147</span></li>
-          <li><span>imperative tool directives (“Call ...”)</span><span class="num">0085 / 0128</span></li>
-          <li><span>tool renames (note_to_self, step, thought)</span><span class="num">0029 / 0135 / 0139</span></li>
-          <li><span>directives prepended before question</span><span class="num">0117</span></li>
-          <li><span>directives moved to system prompt</span><span class="num">0097</span></li>
-          <li><span>turn-count meta in tool ack</span><span class="num">0132–0134</span></li>
-        </ul>
-      </div>
-    </div>
-  </section>
+  </div>
 
-  <!-- ============== FINAL STATS ============== -->
-  <section class="final-stats">
+  <!-- ===== FINAL STAT BAR ===== -->
+  <div class="statbar">
     <div>
-      <h2>One paragraph.<br>One recipe.<br>26 samples deep.</h2>
-      <p style="margin-top:18px; font-family:var(--serif); font-style:italic; color:var(--ink-soft);">
-        Confidence built one variance sample at a time. The first reading at
-        <span class="mono">0.876</span> was within noise; the 26th reading still
-        sits inside the same 1 σ band as the no-tool ceiling.
-      </p>
+      <div class="lbl">experiments</div>
+      <div class="v">159</div>
     </div>
-
-    <div class="stats-grid">
-      <div class="stat">
-        <div class="num kept">159</div>
-        <div class="label">experiments committed</div>
-      </div>
-      <div class="stat">
-        <div class="num">26</div>
-        <div class="label">variance samples · final</div>
-      </div>
-      <div class="stat">
-        <div class="num">0.8750</div>
-        <div class="label">mean · ± 0.010</div>
-      </div>
-      <div class="stat">
-        <div class="num">[0.871, 0.880]</div>
-        <div class="label">95% CI · upper&nbsp;=&nbsp;baseline</div>
-      </div>
-      <div class="stat">
-        <div class="num">0</div>
-        <div class="label">training records</div>
-      </div>
-      <div class="stat">
-        <div class="num">500</div>
-        <div class="label">DeepMath eval · seed 42</div>
-      </div>
+    <div>
+      <div class="lbl">samples · final</div>
+      <div class="v">26</div>
     </div>
-  </section>
-
-  <div class="ornament">· · ·</div>
+    <div>
+      <div class="lbl">mean accuracy</div>
+      <div class="v kept">0.8750</div>
+    </div>
+    <div>
+      <div class="lbl">std dev</div>
+      <div class="v"><span class="mono">± 0.010</span></div>
+    </div>
+    <div>
+      <div class="lbl">vs no-tool</div>
+      <div class="v"><span class="mono">−0.005</span></div>
+    </div>
+    <div>
+      <div class="lbl">records</div>
+      <div class="v kept">0</div>
+    </div>
+    <div>
+      <div class="lbl">tool-use rate</div>
+      <div class="v"><span class="mono">47.6%</span></div>
+    </div>
+    <div>
+      <div class="lbl">cadence peak</div>
+      <div class="v"><span class="mono">3 calls</span></div>
+    </div>
+  </div>
 
   <footer class="colophon">
-    <span>branch · <a href="#">autoresearch/progress-update-may17</a> · 159 commits</span>
-    <span>set · Fraunces / DM Sans / IBM Plex Mono</span>
+    <span>autoresearch · progress-update-may17 · 159 commits</span>
+    <span>Fraunces · IBM Plex Sans · IBM Plex Mono</span>
   </footer>
 </main>
 </body>
