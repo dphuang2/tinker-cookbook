@@ -60,3 +60,4 @@ fe4269f	0.7840	0:469,1:13,2:11,3:2,4:1,5:1,7:1,8:2	-	0	discard	0056 one-shot sys
 1138460	0.5960	0:431,1:46,2:13,3:6,4:2,5:1,8:1	-	0	discard	0058 half-max-tokens: catastrophic truncation; reverted
 6aa0a32	0.8460	0:405,1:58,2:18,3:11,4:3,5:1,7:1,8:3	-	0	keep	0059 max_tokens 12288: NEW BEST 0.846 (+4.7pp); eval cap was binding
 869fb56	0.8320	0:403,1:60,2:25,3:6,4:1,5:2,6:1,8:2	-	0	keep	0060 0059 rerun: 0.832; 2-sample mean 0.839 (max_tokens=12288 gain confirmed)
+6cc6a58	0.8600	0:404,1:61,2:24,3:4,4:3,5:2,6:1,8:1	-	0	keep	0061 2x-max-tokens: 0.860 (still climbing with max_tokens=16384)
