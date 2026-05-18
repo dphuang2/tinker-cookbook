@@ -80,7 +80,7 @@ USER_INSTRUCTION_SUFFIX = (
     "just think and answer directly without calling the tool."
 )
 
-SYSTEM_PROMPT = ""  # 0056 found example shifts cadence too much; 0070 variance rerun
+SYSTEM_PROMPT = ""  # 0072 system-rubric weakened cadence with no accuracy gain
 
 # 0018: mask loss on <think> block tokens to preserve base reasoning capability.
 # Qwen3 token IDs for the thinking-block boundaries.
