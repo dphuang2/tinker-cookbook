@@ -76,3 +76,4 @@ e40bd07	0.8660	0:439,1:38,2:12,3:4,4:2,5:1,6:2,7:1,8:1	-	0	discard	0072 system-p
 3c974b5	0.8620	0:401,1:72,2:21,3:4,8:2	-	0	discard	0074 echo-tool-ack: 0.862 (within noise; echo no-op); reverted
 134df8d	0.8540	0:405,1:50,2:23,3:12,4:2,5:2,6:2,7:1,8:3	-	0	variance	0075 0062 variance rerun #3: 0.854 (3-sample mean 0.863 ± 0.8pp; wider variance than initially estimated)
 77da27f	0.8760	0:301,1:91,2:64,3:31,4:12,18:1	-	0	keep	0076 cot-with-soft-cadence: NEW BEST 0.876 +1.6σ accuracy AND healthy cadence (60% 0-call)
+8b627ca	0.8540	0:307,1:74,2:69,3:34,4:11,5:3,6:1,12:1	-	0	variance	0077 0076 variance rerun: 0.854 (2-sample mean 0.865 = parity w/ 0062 mean; cadence 40% tool use confirmed healthier)
