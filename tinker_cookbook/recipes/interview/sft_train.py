@@ -66,6 +66,11 @@ PROGRESS_TOOL_SPEC: ToolSpec = {
                     "cross term didn't cancel - switching to partial fractions.'"
                 ),
             },
+            "confidence": {
+                "type": "string",
+                "enum": ["low", "medium", "high"],
+                "description": "Your confidence in the current direction.",
+            },
         },
         "required": ["message"],
     },
