@@ -44,7 +44,7 @@ BATCH_SIZE = 16
 NUM_EPOCHS = 1
 LORA_RANK = 32
 MIN_TOTAL_THINKING_CHARS = 0  # 0014 found filter hurts (data not fungible)
-MAX_TOOL_RECORDS = 0  # 0028 found 100 records under-trained adapter; disabled
+MAX_TOOL_RECORDS = 0  # 0147 confirmed even 20 records kills cadence; disabled
 
 PROGRESS_TOOL_SPEC: ToolSpec = {
     "name": "checkpoint",
