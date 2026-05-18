@@ -105,7 +105,7 @@ async def run_agent(
                 history.append(
                     {
                         "role": "tool",
-                        "content": f"ok (checkpoint {turn_idx + 1} of 8)",
+                        "content": "ok",
                         "tool_call_id": tc.id or f"call_{turn_idx}",
                     }
                 )
