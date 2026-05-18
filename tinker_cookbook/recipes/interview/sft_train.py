@@ -79,7 +79,7 @@ USER_INSTRUCTION_SUFFIX = (
     "is typical for a multi-step problem."
 )
 
-SYSTEM_PROMPT = ""  # 0108: no system prompt under 0105 wording
+SYSTEM_PROMPT = ""  # 0109 variance rerun of 0108
 
 # 0018: mask loss on <think> block tokens to preserve base reasoning capability.
 # Qwen3 token IDs for the thinking-block boundaries.
