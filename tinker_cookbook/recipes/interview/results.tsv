@@ -103,3 +103,4 @@ b0cf5c5	0.8820	0:296,1:9,2:6,3:137,4:34,5:10,6:5,9:2,10:1	-	0	keep	0099 0095 var
 13c079c	0.8700	0:289,1:15,2:12,3:136,4:36,5:8,6:2,9:2	-	0	variance	0101 0100 variance rerun: 0.870 (2-sample mean 0.876; recipe ceiling confirmed)
 e0a2443	0.8820	0:302,1:11,2:9,3:137,4:32,5:8,6:1	-	0	variance	0102 0100 variance #3: 0.882 (3-sample mean 0.878; combined 7-sample mean 0.878 ± 0.5pp; RECIPE LOCKED)
 c702bb5	0.8740	0:290,1:6,2:7,3:144,4:40,5:8,6:2,8:1,9:1,15:1	-	0	variance	0103 0100 variance #4: 0.874 (8-sample combined mean 0.8775 ± 0.5pp; recipe locked)
+f4b9fd4	0.8700	0:227,1:6,2:41,3:167,4:47,5:6,6:4,8:1,12:1	-	0	discard	0104 shorter-user-suffix: 0.870 (cadence shifted up; hedge was moderating; reverted)
