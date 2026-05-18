@@ -73,14 +73,16 @@ PROGRESS_TOOL_SPEC: ToolSpec = {
 
 USER_INSTRUCTION_SUFFIX = (
     " Think step by step, then write your final answer in \\boxed{} format. "
-    "Use the checkpoint tool when it helps you organize hard multi-step "
-    "problems -- three checkpoints is typical for a multi-step problem."
+    "Don't think for too long unnecessarily, especially when you have a "
+    "reasonable degree of confidence. Use the checkpoint tool when it "
+    "helps you organize hard multi-step problems -- three checkpoints "
+    "is typical for a multi-step problem."
 )
 
 SYSTEM_PROMPT = (
     "You are solving competition math problems. You have access to a "
     "checkpoint tool for tracking progress."
-)  # 0144 variance rerun #3 of 0142
+)  # 0145 variance rerun #14 of 0105 (reverted to canonical)
 
 # 0018: mask loss on <think> block tokens to preserve base reasoning capability.
 # Qwen3 token IDs for the thinking-block boundaries.
