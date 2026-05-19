@@ -291,7 +291,7 @@ async def main(config: RLConfig) -> None:
         ]
         fwd_fut = await training_client.forward_backward_async(
             datums_for_train, loss_fn="importance_sampling",
-            loss_fn_config={"clip_epsilon": config.importance_sampling_clip},
+            loss_fn_config=None,
         )
         optim_fut = await training_client.optim_step_async(adam_params)
         await fwd_fut.result_async()
