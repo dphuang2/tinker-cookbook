@@ -172,6 +172,7 @@ async def roll_out_student(
     history.append({"role": "user", "content": question + USER_INSTRUCTION_SUFFIX})
 
     all_tokens: list[int] = []
+    all_logprobs: list[float] = []  # student sample-time logprob per token
     turn_token_ranges: list[tuple[int, int]] = []
     decoded_concat = ""
     n_turns_with_tool_calls = 0
@@ -186,9 +187,12 @@ async def roll_out_student(
             num_samples=1,
             sampling_params=sample_params,
         )
-        tokens = result.sequences[0].tokens
+        seq = result.sequences[0]
+        tokens = seq.tokens
+        logprobs = list(seq.logprobs)
         start = len(all_tokens)
         all_tokens.extend(tokens)
+        all_logprobs.extend(logprobs)
         turn_token_ranges.append((start, len(all_tokens)))
 
         decoded_turn = tokenizer.decode(tokens)
@@ -233,6 +237,7 @@ async def roll_out_student(
         "question": question,
         "history": history,
         "all_tokens": all_tokens,
+        "all_logprobs": all_logprobs,  # student sample-time logprobs
         "turn_token_ranges": turn_token_ranges,
         "decoded": decoded_concat,
         "n_tool_calls": len(tool_call_char_positions),
@@ -322,7 +327,89 @@ async def score_with_teacher(
         "student_token_mask": mask,
         "n_assistant_tokens": n_student,
         "sequence_len": len(sequence_tokens),
+        "sequence_tokens": sequence_tokens,
     }
+
+
+def assemble_opsd_datum(
+    *,
+    rollout: dict,
+    scored: dict,
+    kl_penalty_coef: float = 1.0,
+) -> "tinker.Datum":
+    """Construct a single tinker.Datum for one student rollout.
+
+    Per-token advantage = -kl_penalty_coef * (student_logprob - teacher_logprob)
+    on student-generated positions only; 0 elsewhere.
+
+    The Datum is constructed in the rightshifted/leftshifted convention
+    that Tinker's training loss functions expect:
+        model_input  = sequence_tokens[:-1]
+        target_tokens = sequence_tokens[1:]
+        logprobs / advantages / mask = aligned with target_tokens
+
+    Args:
+        rollout: output of roll_out_student (must contain all_tokens
+            and all_logprobs)
+        scored: output of score_with_teacher (must contain
+            teacher_logprobs, student_token_mask, sequence_len)
+        kl_penalty_coef: scale on the KL advantage term
+    """
+    import torch
+    from tinker import TensorData
+
+    # The teacher-scored sequence is what we built in score_with_teacher:
+    # teacher-privileged prefix + student tokens. We re-build the same
+    # token sequence here for self-consistency.
+    # NOTE: scored["sequence_len"] is the total scored length; the last
+    # n_assistant_tokens positions are the student-generated tokens.
+    seq_len = scored["sequence_len"]
+    n_student = scored["n_assistant_tokens"]
+    teacher_logprobs = scored["teacher_logprobs"]
+    mask_full = scored["student_token_mask"]  # length == seq_len
+    student_logprobs = rollout["all_logprobs"]
+    assert len(student_logprobs) == n_student, (
+        f"student logprobs ({len(student_logprobs)}) != n_student ({n_student})"
+    )
+
+    sequence_tokens = scored["sequence_tokens"]
+    assert len(sequence_tokens) == seq_len, (
+        f"sequence_tokens len ({len(sequence_tokens)}) != seq_len ({seq_len})"
+    )
+
+    # Rightshifted model_input = sequence_tokens[:-1]
+    # Leftshifted targets    = sequence_tokens[1:]
+    input_tokens = sequence_tokens[:-1]
+    target_tokens = sequence_tokens[1:]
+
+    # Per-position: student_logprob (only on student tokens, else 0),
+    # teacher_logprob (from scored, len == seq_len), mask (1 on student
+    # positions only). We align to target_tokens (length seq_len-1).
+    # Student logprobs cover the last n_student target positions.
+    student_lp_padded = [0.0] * (len(target_tokens) - n_student) + list(student_logprobs)
+    teacher_lp_aligned = list(teacher_logprobs)[1:]  # drop first to align with target_tokens
+    mask_aligned = list(mask_full)[1:]
+    assert len(student_lp_padded) == len(teacher_lp_aligned) == len(mask_aligned) == len(target_tokens)
+
+    # Replace any None in teacher_logprobs with 0.0; the mask will zero
+    # them out for non-student positions anyway.
+    teacher_lp_clean = [lp if lp is not None else 0.0 for lp in teacher_lp_aligned]
+
+    # reverse_kl = student_lp - teacher_lp; advantage = -kl_coef * mask * reverse_kl
+    advantages = [
+        -kl_penalty_coef * float(m) * (float(s) - float(t))
+        for s, t, m in zip(student_lp_padded, teacher_lp_clean, mask_aligned)
+    ]
+
+    return tinker.Datum(
+        model_input=tinker.ModelInput.from_ints(input_tokens),
+        loss_fn_inputs={
+            "target_tokens": TensorData.from_torch(torch.tensor(target_tokens, dtype=torch.long)),
+            "logprobs": TensorData.from_torch(torch.tensor(student_lp_padded, dtype=torch.float32)),
+            "advantages": TensorData.from_torch(torch.tensor(advantages, dtype=torch.float32)),
+            "mask": TensorData.from_torch(torch.tensor(mask_aligned, dtype=torch.float32)),
+        },
+    )
 
 
 async def main(config: OPSDConfig) -> None:

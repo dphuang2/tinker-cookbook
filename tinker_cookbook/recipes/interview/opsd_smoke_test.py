@@ -25,7 +25,9 @@ except ImportError:
     def load_dotenv(): pass
 
 from tinker_cookbook import model_info, renderers
-from tinker_cookbook.recipes.interview.opsd_train import roll_out_student, score_with_teacher
+from tinker_cookbook.recipes.interview.opsd_train import (
+    roll_out_student, score_with_teacher, assemble_opsd_datum,
+)
 from tinker_cookbook.tokenizer_utils import get_tokenizer
 
 MODEL_NAME = "Qwen/Qwen3-30B-A3B"
@@ -154,6 +156,22 @@ async def main():
                                          if student_lps else None),
             }, indent=2)
         )
+
+        # Smoke-test assemble_opsd_datum
+        print("Smoke-testing assemble_opsd_datum...")
+        datum = assemble_opsd_datum(
+            rollout=results[first_ok_idx], scored=scored, kl_penalty_coef=1.0,
+        )
+        adv = datum.loss_fn_inputs["advantages"].to_torch()
+        mask = datum.loss_fn_inputs["mask"].to_torch()
+        n_masked = int(mask.sum().item())
+        nonzero_adv = adv[mask.bool()]
+        print(f"  Datum built. model_input.length={datum.model_input.length} "
+              f"n_masked_positions={n_masked} "
+              f"adv_mean(masked)={nonzero_adv.mean().item():.4f} "
+              f"adv_std(masked)={nonzero_adv.std().item():.4f} "
+              f"adv_min={nonzero_adv.min().item():.4f} "
+              f"adv_max={nonzero_adv.max().item():.4f}")
 
 
 if __name__ == "__main__":
