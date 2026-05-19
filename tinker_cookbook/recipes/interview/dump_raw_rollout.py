@@ -23,11 +23,13 @@ from tinker_cookbook.tokenizer_utils import get_tokenizer
 
 MODEL_NAME = "Qwen/Qwen3-30B-A3B"
 TARGET_INDEX = int(os.environ.get("TARGET_INDEX", "1"))
+NO_TOOL = bool(os.environ.get("NO_TOOL"))
 MAX_TOKENS_PER_TURN = 24576
 MAX_TURNS = 8
 TEMPERATURE = 0.6
-OUT_PATH = Path(__file__).parent / f"raw_rollout_idx{TARGET_INDEX}.json"
-OUT_MD = Path(__file__).parent / f"raw_rollout_idx{TARGET_INDEX}.md"
+SUFFIX = "_notool" if NO_TOOL else ""
+OUT_PATH = Path(__file__).parent / f"raw_rollout_idx{TARGET_INDEX}{SUFFIX}.json"
+OUT_MD = Path(__file__).parent / f"raw_rollout_idx{TARGET_INDEX}{SUFFIX}.md"
 
 
 async def main():
@@ -47,7 +49,8 @@ async def main():
         stop=renderer.get_stop_sequences(),
     )
 
-    tools = [PROGRESS_TOOL_SPEC]
+    # Mirror eval_deepmath_agent.py exactly: NO_TOOL drops only the tool spec.
+    tools = [] if NO_TOOL else [PROGRESS_TOOL_SPEC]
     prefix = renderer.create_conversation_prefix_with_tools(
         tools=tools, system_prompt=SYSTEM_PROMPT
     )
