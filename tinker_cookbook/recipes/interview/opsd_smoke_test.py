@@ -177,6 +177,42 @@ async def main():
               f"adv_min={nonzero_adv.min().item():.4f} "
               f"adv_max={nonzero_adv.max().item():.4f}")
 
+        # Smoke-test forward_backward + optim_step (TODO 4)
+        if os.environ.get("SKIP_TRAIN") != "1":
+            print("Smoke-testing forward_backward + optim_step...")
+            training_client = await service.create_lora_training_client_async(
+                MODEL_NAME, rank=32,
+            )
+            adam_params = tinker.AdamParams(
+                learning_rate=1e-4, beta1=0.9, beta2=0.95, eps=1e-8,
+            )
+            # importance_sampling loss expects target_tokens, logprobs,
+            # advantages — but NOT mask (mask is used for advantage shaping
+            # before this call, then dropped). See tinker_cookbook/rl/train.py
+            # `_remove_mask`.
+            datum_for_train = tinker.Datum(
+                model_input=datum.model_input,
+                loss_fn_inputs={
+                    k: v for k, v in datum.loss_fn_inputs.items() if k != "mask"
+                },
+            )
+            fwd_bwd_future = await training_client.forward_backward_async(
+                [datum_for_train], loss_fn="importance_sampling", loss_fn_config=None,
+            )
+            optim_future = await training_client.optim_step_async(adam_params)
+            fwd_bwd_result = await fwd_bwd_future.result_async()
+            optim_result = await optim_future.result_async()
+            # log forward outputs
+            loss_outputs = fwd_bwd_result.loss_fn_outputs
+            print(f"  forward_backward returned {len(loss_outputs)} loss outputs")
+            for k, v in loss_outputs[0].items() if loss_outputs else []:
+                try:
+                    t = v.to_torch()
+                    print(f"    {k}: shape={list(t.shape)} mean={t.float().mean().item():.4f}")
+                except Exception:
+                    pass
+            print(f"  optim_step completed: {optim_result}")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

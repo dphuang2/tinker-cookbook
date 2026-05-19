@@ -1,0 +1,19 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Your Tinker SDK version is outdated. Please upgrade to the latest version.
+/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/.venv/lib/python3.12/site-packages/tinker/types/tensor_data.py:150: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:213.)
+  t = torch.from_numpy(self._numpy)
+Rolling out 4 student trajectories concurrently...
+  idx=500 turns=5 calls=4 splits=4 tokens=13952
+  idx=501 turns=5 calls=4 splits=4 tokens=10160
+  idx=502 turns=5 calls=4 splits=4 tokens=6786
+  idx=503 turns=4 calls=3 splits=3 tokens=2546
+wrote /work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/tinker_cookbook/recipes/interview/opsd_smoke_out/summary.json
+Smoke-testing score_with_teacher on idx=500 (answer='Yes')...
+  teacher_logprobs len=14508 n_assistant_tokens=13952 sequence_len=14508 mask_sum=13952
+  mean teacher logprob on student tokens: -0.330 (over 13952 non-None tokens)
+Smoke-testing assemble_opsd_datum...
+  Datum built. model_input.length=14507 n_masked_positions=13952 adv_mean(masked)=-0.1926 adv_std(masked)=1.3039 adv_min=-29.7495 adv_max=7.0087
+Smoke-testing forward_backward + optim_step...
+  forward_backward returned 1 loss outputs
+    logprobs: shape=[14507] mean=-0.4070
+  optim_step completed: OptimStepResponse(metrics={})

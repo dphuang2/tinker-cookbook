@@ -1,7 +1,7 @@
 {
   "index": 500,
   "answer": "Yes",
-  "n_assistant_tokens": 27692,
-  "sequence_len": 28250,
-  "mean_student_logprob": -0.2964302131162825
+  "n_assistant_tokens": 13952,
+  "sequence_len": 14508,
+  "mean_student_logprob": -0.3297368530598258
 }

@@ -5,7 +5,7 @@
     "calls": 4,
     "splits": 4,
     "in_think": 0,
-    "tokens": 27692
+    "tokens": 13952
   },
   {
     "idx": 501,
@@ -13,7 +13,7 @@
     "calls": 4,
     "splits": 4,
     "in_think": 0,
-    "tokens": 10724
+    "tokens": 10160
   },
   {
     "idx": 502,
@@ -21,7 +21,7 @@
     "calls": 4,
     "splits": 4,
     "in_think": 0,
-    "tokens": 5895
+    "tokens": 6786
   },
   {
     "idx": 503,
@@ -29,6 +29,6 @@
     "calls": 3,
     "splits": 3,
     "in_think": 0,
-    "tokens": 2894
+    "tokens": 2546
   }
 ]
