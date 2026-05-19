@@ -77,8 +77,10 @@ USER_INSTRUCTION_SUFFIX = (
     "reasonable degree of confidence. Use the checkpoint tool *between* "
     "reasoning steps -- pause your thinking, call the tool to record a "
     "one-sentence summary of where you are, then continue reasoning. "
-    "Three checkpoints spread across your thinking is typical for a "
-    "multi-step problem. Don't batch them all at the end."
+    "Aim for about three checkpoints total, spread across your thinking; "
+    "four is the practical maximum. Don't batch them all at the end, and "
+    "don't keep checkpointing after you've finished -- write the boxed "
+    "answer once you have it."
 )
 
 SYSTEM_PROMPT = (
