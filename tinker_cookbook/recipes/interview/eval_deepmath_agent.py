@@ -119,10 +119,16 @@ async def run_agent(
                     progress_updates.append(args.get("summary", args.get("message", "")))
                 except (json.JSONDecodeError, AttributeError):
                     progress_updates.append("<unparseable>")
+                # 0170: state-aware ack — after 4 calls, tell the model to
+                # stop checkpointing and finalize the answer.
+                if len(progress_updates) >= 4:
+                    ack = "you've checkpointed enough; finalize your answer now"
+                else:
+                    ack = "noted; continue your reasoning"
                 history.append(
                     {
                         "role": "tool",
-                        "content": "noted; continue your reasoning",
+                        "content": ack,
                         "tool_call_id": tc.id or f"call_{turn_idx}",
                     }
                 )
