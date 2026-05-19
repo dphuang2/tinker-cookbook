@@ -1,4 +1,100 @@
-# progress-update autoresearch — v2 (interleaving-aware)
+# progress-update autoresearch — v3 (OPSD → RFT, training-time)
+
+## v3 regime (2026-05-19 onward)
+
+v2 (runs 0161–0173) closed out the prompt-only and ack-content
+ceiling at primary_score ≈ 0.34 under the v2.1 metric. The v2.1
+metric added `efficiency_factor` and `mean_split_balance` to v2.0's
+formula, and the rebaseline at 0172 revealed `mean_split_balance ≈
+0.029` — i.e. the "interleaving" v2 produced was almost entirely
+batched at one end of the rollout, not actually splitting the CoT.
+
+**v3 abandons further prompt-only work.** The chat-template prior
+(Qwen3 puts every `<tool_call>` outside `<think>` blocks) cannot be
+broken by any prompt edit. The remaining hill is training-time
+manipulation of the policy distribution. v3 sequences three
+training-time approaches in order of cost:
+
+### Phase A — On-Policy Self-Distillation (OPSD)
+
+Self-Distilled Reasoner style (arXiv 2601.18734). Same base model
+serves as both teacher and student, but the teacher conditions on
+*privileged information* the student doesn't see:
+
+```
+TEACHER PROMPT = problem + USER_INSTRUCTION_SUFFIX
+              + "The verified answer is <gt>. Produce a single trace
+                 that derives this answer with checkpoints spread
+                 evenly through your reasoning."
+STUDENT PROMPT = problem + USER_INSTRUCTION_SUFFIX  (normal v2 prompt)
+```
+
+- Teacher rolls out at temp=0.6, producing genuinely-interleaved
+  traces (since it can structure the reasoning around the known
+  answer).
+- Student rolls out from its normal prompt at temp=0.6.
+- For each student rollout, compute teacher logprobs on those tokens
+  (the teacher with the privileged prompt scores the student's
+  sequence). Reverse-KL loss: push the student toward the teacher's
+  distribution over the same tokens.
+- Use Tinker cookbook's
+  `tinker_cookbook.recipes.distillation.on_policy_distillation`
+  as the scaffold. Adapt the teacher to use the privileged prompt;
+  keep the student's normal prompt.
+
+Phase A success criterion: held-out 500-eval `primary_score >
+0.45`, with `mean_split_balance > 0.15`. (Even modest split_balance
+gain at flat accuracy is a win.)
+
+### Phase B — Rejection-Sampling Fine-Tuning (RFT) / Expert Iteration
+
+If Phase A produces a sampler that genuinely interleaves on some
+fraction of rollouts, amplify with RFT:
+
+1. Sample 8 rollouts per problem from Phase A sampler on DeepMath
+   indices 500–2999 (~2500 problems × 8 = 20K rollouts).
+2. Score each with the v2.1 primary_score components per-rollout:
+   `is_correct × (0.5 + 0.5 × is_interleaved × split_balance) × eff`.
+3. Keep top-1 (or top-2) per problem above some quality threshold
+   (`score > 0.6`). ~2500–5000 positives.
+4. SFT on those positives. Continue from Phase A sampler weights.
+5. Re-eval; if `primary_score` improves and `mean_split_balance`
+   keeps rising, iterate (sample → filter → SFT).
+
+Phase B success criterion: `primary_score > 0.55` with
+`mean_split_balance > 0.30`.
+
+### Phase C — Asymmetric On-Policy Distillation (AOPD)
+
+If RFT erodes accuracy (the v1 failure mode), switch to AOPD
+(arXiv 2605.06387). AOPD uses RL on tokens where student aligns
+with teacher and KL only on misaligned tokens — explicitly designed
+to preserve prior capabilities during tool-use adaptation. The
+reference reports "math performance +0.61 average Pass@4" during
+tool-use continual learning vs OPD's regression.
+
+Implementation: same teacher/student setup as OPSD but the loss
+function branches by advantage sign per token.
+
+Phase C success criterion: `primary_score > 0.55` AND accuracy
+within 1pp of the no-tool baseline (0.880).
+
+## v3 loop discipline
+
+- Every experiment commits, including `crash` and `discard`.
+  Training runs cost ~1 hour; eval ~10 min. Total ~70 min/cycle.
+- Each run writes `runs/<NNNN>-<slug>/{notes.md, summary.json,
+  results.json, eval.log.tail, train.log.tail, checkpoints.jsonl}`.
+- `results.tsv` v3 schema is unchanged from v2 (9 columns).
+- Phase markers: include `phaseA`/`phaseB`/`phaseC` in the slug to
+  track which approach is being iterated.
+- v1/v2 SFT recipes (`sft_train.py`) stay as-is; create new
+  entrypoints for OPSD / RFT / AOPD as separate `*.py` files under
+  `recipes/interview/`.
+
+---
+
+# progress-update autoresearch — v2 (interleaving-aware) [historical]
 
 This is an experiment to have the LLM autonomously iterate on a recipe
 that teaches a model to **interleave `progress_update` tool calls
