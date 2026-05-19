@@ -104,9 +104,13 @@ def _score_rollout(
     else:
         sb = 0.0
     efficiency = min(1.0, no_tool_ref_tokens / max(n_tokens, 1))
+    # v2.2: pure multiplicative. To even have a positive score the
+    # rollout must be correct AND interleaved AND have non-zero
+    # split_balance. Skipping the tool now scores 0.
     score = (
         (1.0 if is_correct else 0.0)
-        * (0.5 + 0.5 * (1.0 if is_interleaved else 0.0) * sb)
+        * (1.0 if is_interleaved else 0.0)
+        * sb
         * efficiency
     )
     return {
