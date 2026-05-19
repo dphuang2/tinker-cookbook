@@ -1,0 +1,25 @@
+INFO:__main__:Loading DeepMath-103K dataset...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:tinker.lib.internal_client_holder:Your Tinker SDK version is outdated. Please upgrade to the latest version.
+INFO:tinker.lib.public_interfaces.service_client:ServiceClient initialized for session 58b381a7-1da2-59f1-bab4-eb1a926ddba0
+INFO:__main__:Running agent loop on 500 problems concurrently...
+INFO:__main__:[50/500] correct so far: 42 (acc=0.840)
+INFO:__main__:[100/500] correct so far: 84 (acc=0.840)
+INFO:__main__:[150/500] correct so far: 125 (acc=0.833)
+INFO:pylatexenc.latexwalker:Ignoring parse error (tolerant parsing mode): Unexpected mismatching closing brace: '}' @(1,22)
+INFO:pylatexenc.latexwalker:Ignoring parse error (tolerant parsing mode): Unexpected mismatching closing brace: '}' @(1,4)
+INFO:__main__:[200/500] correct so far: 160 (acc=0.800)
+INFO:__main__:[250/500] correct so far: 200 (acc=0.800)
+INFO:__main__:[300/500] correct so far: 238 (acc=0.793)
+INFO:pylatexenc.latexwalker:Ignoring parse error (tolerant parsing mode): Unexpected mismatching closing brace: '}' @(1,50)
+INFO:pylatexenc.latexwalker:Ignoring parse error (tolerant parsing mode): Unexpected mismatching closing brace: '}' @(1,24)
+INFO:__main__:[350/500] correct so far: 275 (acc=0.786)
+INFO:__main__:[400/500] correct so far: 314 (acc=0.785)
+INFO:__main__:[450/500] correct so far: 357 (acc=0.793)
+INFO:__main__:[500/500] correct so far: 397 (acc=0.794)
+INFO:__main__:Accuracy: 397/500 = 0.794
+INFO:__main__:Tool-call cadence: [(0, 477), (1, 11), (2, 11), (4, 1)]
+INFO:__main__:in_think_rate: 0.000  turn_split_rate: 0.022  interleaving_rate: 0.022
+INFO:__main__:mean_tokens: 3959 (ref 5500)  efficiency: 1.000  mean_split_balance: 0.503  primary_score: 0.0088
+INFO:__main__:Saved eval to /tmp/tinker-examples/interview/deepmath_agent_eval.json
