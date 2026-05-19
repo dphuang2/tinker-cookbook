@@ -73,14 +73,10 @@ PROGRESS_TOOL_SPEC: ToolSpec = {
 
 USER_INSTRUCTION_SUFFIX = (
     " Think step by step, then write your final answer in \\boxed{} format. "
-    "Don't think for too long unnecessarily, especially when you have a "
-    "reasonable degree of confidence. Use the checkpoint tool *between* "
-    "reasoning steps -- pause your thinking, call the tool to record a "
-    "one-sentence summary of where you are, then continue reasoning. "
-    "Aim for about three checkpoints total, spread across your thinking; "
-    "four is the practical maximum. Don't batch them all at the end, and "
-    "don't keep checkpointing after you've finished -- write the boxed "
-    "answer once you have it."
+    "Use the checkpoint tool *between* reasoning steps -- pause, summarize "
+    "where you are in one sentence, then keep thinking. About three "
+    "checkpoints spread through your work is typical. Write the boxed "
+    "answer as soon as you have it."
 )
 
 SYSTEM_PROMPT = (
