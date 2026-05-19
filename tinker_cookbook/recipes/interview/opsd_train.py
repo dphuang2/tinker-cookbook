@@ -473,15 +473,198 @@ def assemble_opsd_datum(
 async def main(config: OPSDConfig) -> None:
     """Run Phase A OPSD training.
 
-    NOT YET IMPLEMENTED — see module docstring for TODO list. The next
-    autoresearch tick should pick the first remaining TODO and land it
-    (now: teacher logprob scoring on the rollouts produced by
-    `roll_out_student`).
+    Outer loop: every step samples `groups_per_batch` problems from
+    DeepMath train indices, rolls them out under the student prompt,
+    scores them with the privileged-info teacher prompt, computes
+    reverse-KL advantages, and runs one forward_backward + optim_step.
+
+    Sampler weights are saved every `save_every` steps; the sampling
+    client is recreated after each save so subsequent rollouts use the
+    updated policy.
     """
-    raise NotImplementedError(
-        "opsd_train.main is scaffolding only. See module docstring for "
-        "the TODO sequence the autoresearch loop should iterate on."
+    import asyncio
+    import json
+    import random
+    from pathlib import Path
+
+    import tinker
+    from datasets import load_dataset
+
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+    except ImportError:
+        pass
+
+    from tinker_cookbook import model_info, renderers
+    from tinker_cookbook.tokenizer_utils import get_tokenizer
+
+    log_dir = Path(config.log_path)
+    log_dir.mkdir(parents=True, exist_ok=True)
+    (log_dir / "config.json").write_text(json.dumps(
+        {k: getattr(config, k) for k in dir(config) if not k.startswith("_")},
+        default=str, indent=2))
+
+    logger.info(f"OPSD config: {config}")
+
+    # Dataset
+    ds = load_dataset("zwhe99/DeepMath-103K", split="train").shuffle(seed=42)
+    train_problems = [
+        ds[i] for i in range(config.train_index_start, config.train_index_end)
+    ]
+    logger.info(f"Loaded {len(train_problems)} training problems")
+
+    # Renderer / tokenizer
+    tokenizer = get_tokenizer(config.model_name)
+    renderer_name = config.renderer_name or model_info.get_recommended_renderer_name(
+        config.model_name
     )
+    renderer = renderers.get_renderer(renderer_name, tokenizer=tokenizer)
+
+    # Clients
+    service = tinker.ServiceClient()
+    training_client = await service.create_lora_training_client_async(
+        config.model_name, rank=config.lora_rank,
+    )
+    sample_params = tinker.SamplingParams(
+        max_tokens=config.max_tokens_per_turn,
+        temperature=config.temperature,
+        stop=renderer.get_stop_sequences(),
+    )
+    adam_params = tinker.AdamParams(
+        learning_rate=config.learning_rate, beta1=0.9, beta2=0.95, eps=1e-8,
+    )
+
+    # Initial sampler: save current (random LoRA) weights and create client
+    save_fut = await training_client.save_weights_for_sampler_async(
+        f"step_0", ttl_seconds=86400,
+    )
+    sampler_path = (await save_fut.result_async()).path
+    sampling_client = await service.create_sampling_client_async(model_path=sampler_path)
+    logger.info(f"Initial sampler at {sampler_path}")
+
+    # Same sampling client used as teacher (same base + LoRA — the
+    # privileged prompt is what makes teacher distribution differ).
+    teacher_client = sampling_client
+
+    checkpoints = []
+    metrics_log = []
+    rng = random.Random(0xC0FFEE)
+    SCORE_TOKEN_BUDGET = 28000
+
+    for step in range(config.max_steps):
+        logger.info(f"=== step {step + 1}/{config.max_steps} ===")
+        # Sample a batch of problems uniformly
+        batch_problems = rng.sample(train_problems, config.groups_per_batch)
+
+        # Roll out student concurrently
+        rollout_tasks = [
+            roll_out_student(
+                sampling_client=sampling_client,
+                renderer=renderer,
+                tokenizer=tokenizer,
+                sample_params=sample_params,
+                question=p["question"],
+                max_turns=config.max_turns,
+            ) for p in batch_problems
+        ]
+        rollouts = await asyncio.gather(*rollout_tasks, return_exceptions=True)
+
+        # Filter overlong / failed rollouts
+        keep_pairs: list[tuple[dict, dict]] = []
+        skipped = {"error": 0, "overlong": 0}
+        for problem, r in zip(batch_problems, rollouts):
+            if isinstance(r, Exception):
+                skipped["error"] += 1
+                continue
+            n_tok = sum(e - s for s, e in r["turn_token_ranges"])
+            if n_tok > SCORE_TOKEN_BUDGET:
+                skipped["overlong"] += 1
+                continue
+            keep_pairs.append((problem, r))
+        logger.info(
+            f"step {step + 1}: rollouts kept={len(keep_pairs)} "
+            f"skipped_error={skipped['error']} skipped_overlong={skipped['overlong']}"
+        )
+        if not keep_pairs:
+            logger.warning(f"step {step + 1}: no usable rollouts, skipping")
+            continue
+
+        # Score each with teacher; assemble datums
+        score_tasks = [
+            score_with_teacher(
+                rollout=r,
+                answer=str(p.get("final_answer", p.get("ground_truth", "?"))),
+                teacher_sampling_client=teacher_client,
+                renderer=renderer,
+                teacher_mode=config.teacher_mode,
+            ) for p, r in keep_pairs
+        ]
+        scored_list = await asyncio.gather(*score_tasks, return_exceptions=True)
+
+        datums = []
+        for (p, r), scored in zip(keep_pairs, scored_list):
+            if isinstance(scored, Exception):
+                logger.warning(f"  teacher scoring failed: {scored}")
+                continue
+            try:
+                d = assemble_opsd_datum(
+                    rollout=r, scored=scored, kl_penalty_coef=config.kl_penalty_coef,
+                )
+                datums.append(d)
+            except Exception as e:
+                logger.warning(f"  datum assembly failed: {e}")
+                continue
+
+        if not datums:
+            logger.warning(f"step {step + 1}: no usable datums after scoring, skipping")
+            continue
+
+        # forward_backward (strip mask) + optim_step
+        datums_for_train = [
+            tinker.Datum(
+                model_input=d.model_input,
+                loss_fn_inputs={k: v for k, v in d.loss_fn_inputs.items() if k != "mask"},
+            )
+            for d in datums
+        ]
+        fwd_bwd_fut = await training_client.forward_backward_async(
+            datums_for_train, loss_fn="importance_sampling", loss_fn_config=None,
+        )
+        optim_fut = await training_client.optim_step_async(adam_params)
+        fwd_result = await fwd_bwd_fut.result_async()
+        await optim_fut.result_async()
+
+        # Quick metric: mean training logprob (proxy for loss)
+        out_lps = [out["logprobs"].to_torch() for out in fwd_result.loss_fn_outputs]
+        mean_logprob = sum(lp.float().mean().item() for lp in out_lps) / len(out_lps)
+        logger.info(
+            f"step {step + 1}: trained on {len(datums)} datums, "
+            f"mean_training_logprob={mean_logprob:.4f}"
+        )
+        metrics_log.append({"step": step + 1, "n_datums": len(datums),
+                            "mean_training_logprob": mean_logprob,
+                            **skipped})
+        (log_dir / "metrics.jsonl").write_text(
+            "\n".join(json.dumps(m) for m in metrics_log) + "\n"
+        )
+
+        # Save sampler periodically and rebind sampling_client
+        if (step + 1) % config.save_every == 0 or (step + 1) == config.max_steps:
+            save_fut = await training_client.save_weights_for_sampler_async(
+                f"step_{step + 1}", ttl_seconds=86400,
+            )
+            sampler_path = (await save_fut.result_async()).path
+            sampling_client = await service.create_sampling_client_async(
+                model_path=sampler_path,
+            )
+            teacher_client = sampling_client
+            checkpoints.append({"step": step + 1, "sampler_path": sampler_path})
+            with open(log_dir / "checkpoints.jsonl", "a") as f:
+                f.write(json.dumps(checkpoints[-1]) + "\n")
+            logger.info(f"Saved sampler at step {step + 1}: {sampler_path}")
+
+    logger.info(f"OPSD training complete. {len(checkpoints)} sampler checkpoints saved.")
 
 
 if __name__ == "__main__":
