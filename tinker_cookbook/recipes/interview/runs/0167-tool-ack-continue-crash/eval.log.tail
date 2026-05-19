@@ -1,0 +1,72 @@
+INFO:__main__:Using BASE model (no SFT checkpoint)
+INFO:__main__:Loading DeepMath-103K dataset...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:tinker.lib.internal_client_holder:Your Tinker SDK version is outdated. Please upgrade to the latest version.
+INFO:tinker.lib.public_interfaces.service_client:ServiceClient initialized for session 77d5fbc5-3968-5667-b4b4-60adc305ab48
+INFO:__main__:Running agent loop on 500 problems concurrently...
+ERROR:tinker.lib.retry_handler:Request failed with non-retryable error: BadRequestError: Error code: 400 - {'detail': "Prompt length plus max_tokens exceeds the model's context window: 9734 prompt tokens + 24576 max_tokens > 32768."}
+INFO:tinker.lib.telemetry:Exception logged for session ID: 77d5fbc5-3968-5667-b4b4-60adc305ab48
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/tinker_cookbook/recipes/interview/eval_deepmath_agent.py", line 278, in <module>
+    asyncio.run(main())
+  File "/tmp/dylan/uv-python/cpython-3.12.9-linux-aarch64-gnu/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/tmp/dylan/uv-python/cpython-3.12.9-linux-aarch64-gnu/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/dylan/uv-python/cpython-3.12.9-linux-aarch64-gnu/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/tinker_cookbook/recipes/interview/eval_deepmath_agent.py", line 202, in main
+    results_raw = await asyncio.gather(
+                  ^^^^^^^^^^^^^^^^^^^^^
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/tinker_cookbook/recipes/interview/eval_deepmath_agent.py", line 95, in run_agent
+    result = await sampling_client.sample_async(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/.venv/lib/python3.12/site-packages/tinker/lib/public_interfaces/sampling_client.py", line 349, in sample_async
+    return await AwaitableConcurrentFuture(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/.venv/lib/python3.12/site-packages/tinker/lib/public_interfaces/api_future.py", line 132, in result_async
+    return await asyncio.wrap_future(self._future)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/.venv/lib/python3.12/site-packages/tinker/lib/telemetry.py", line 384, in _awrapper
+    return await cast(Callable[..., Awaitable[R]], func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/.venv/lib/python3.12/site-packages/tinker/lib/public_interfaces/sampling_client.py", line 335, in _sample_async_with_retries
+    return await self.retry_handler.execute(_sample_async)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/.venv/lib/python3.12/site-packages/tinker/lib/retry_handler.py", line 155, in execute
+    result = await self._execute_with_retry(func, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/.venv/lib/python3.12/site-packages/tinker/lib/retry_handler.py", line 207, in _execute_with_retry
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/.venv/lib/python3.12/site-packages/tinker/lib/public_interfaces/sampling_client.py", line 325, in _sample_async
+    return await self._sample_async_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/.venv/lib/python3.12/site-packages/tinker/lib/public_interfaces/sampling_client.py", line 259, in _sample_async_impl
+    untyped_future = await self.holder.execute_with_retries(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/.venv/lib/python3.12/site-packages/tinker/lib/internal_client_holder.py", line 597, in execute_with_retries
+    raise e
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/.venv/lib/python3.12/site-packages/tinker/lib/internal_client_holder.py", line 555, in execute_with_retries
+    return await func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/.venv/lib/python3.12/site-packages/tinker/lib/public_interfaces/sampling_client.py", line 239, in _send_asample_request
+    raise e
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/.venv/lib/python3.12/site-packages/tinker/lib/public_interfaces/sampling_client.py", line 231, in _send_asample_request
+    return await client.sampling.asample(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/.venv/lib/python3.12/site-packages/tinker/resources/sampling.py", line 57, in asample
+    return await self._post(
+           ^^^^^^^^^^^^^^^^^
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/.venv/lib/python3.12/site-packages/tinker/_base_client.py", line 1232, in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/.venv/lib/python3.12/site-packages/tinker/_base_client.py", line 1033, in request
+    raise self._make_status_error_from_response(err.response) from None
+tinker.BadRequestError: Error code: 400 - {'detail': "Prompt length plus max_tokens exceeds the model's context window: 9734 prompt tokens + 24576 max_tokens > 32768."}

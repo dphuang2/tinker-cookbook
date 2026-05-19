@@ -203,7 +203,8 @@ async def main():
         *[
             run_agent(sampling_client, renderer, tokenizer, sample_params, p)
             for p in problems
-        ]
+        ],
+        return_exceptions=True,
     )
 
     results = []
@@ -211,8 +212,17 @@ async def main():
     n_in_think = 0
     n_turn_split = 0
     n_interleaved = 0
+    n_errored = 0
     cadence_hist: dict[int, int] = {}
     for i, (problem, r) in enumerate(zip(problems, results_raw)):
+        if isinstance(r, BaseException):
+            n_errored += 1
+            r = {
+                "predicted": None, "extract_ok": False, "final_visible": "",
+                "progress_updates": [], "num_turns": 0, "num_tool_calls": 0,
+                "total_tokens": 0, "last_termination": f"error:{type(r).__name__}",
+                "in_think_calls": 0, "n_turn_splits": 0, "is_interleaved": False,
+            }
         gt = problem["final_answer"]
         is_correct = bool(
             r["predicted"] is not None and grade_answer(r["predicted"], gt)
@@ -253,6 +263,7 @@ async def main():
         "sampler_path": sampler_path,
         "num_problems": NUM_PROBLEMS,
         "num_correct": num_correct,
+        "num_errored": n_errored,
         "accuracy": accuracy,
         "tool_call_cadence": sorted(cadence_hist.items()),
         "in_think_rate": in_think_rate,
