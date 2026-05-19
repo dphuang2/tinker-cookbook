@@ -1,0 +1,8 @@
+{"step": 10, "sampler_path": "tinker://7f7c3b6a-7a11-571b-8c20-3472e8bb179e:train:0/sampler_weights/step_10"}
+{"step": 20, "sampler_path": "tinker://7f7c3b6a-7a11-571b-8c20-3472e8bb179e:train:0/sampler_weights/step_20"}
+{"step": 30, "sampler_path": "tinker://7f7c3b6a-7a11-571b-8c20-3472e8bb179e:train:0/sampler_weights/step_30"}
+{"step": 40, "sampler_path": "tinker://7f7c3b6a-7a11-571b-8c20-3472e8bb179e:train:0/sampler_weights/step_40"}
+{"step": 50, "sampler_path": "tinker://7f7c3b6a-7a11-571b-8c20-3472e8bb179e:train:0/sampler_weights/step_50"}
+{"step": 60, "sampler_path": "tinker://7f7c3b6a-7a11-571b-8c20-3472e8bb179e:train:0/sampler_weights/step_60"}
+{"step": 70, "sampler_path": "tinker://7f7c3b6a-7a11-571b-8c20-3472e8bb179e:train:0/sampler_weights/step_70"}
+{"step": 78, "sampler_path": "tinker://7f7c3b6a-7a11-571b-8c20-3472e8bb179e:train:0/sampler_weights/step_78_final", "final": true}
