@@ -175,3 +175,4 @@ pending	-	-	-	-	-	-	keep	0174 phaseA-rollout-fn: roll_out_student smoke-tested o
 pending	-	-	-	-	-	-	keep	0175 phaseA-teacher-score: score_with_teacher works after switching to Qwen3Renderer(strip_thinking_from_history=False); teacher mean logprob -0.288 on student tokens. Next: forward_backward step (TODO 3)
 pending	-	-	-	-	-	-	keep	0177 phaseA-datum-assembly: assemble_opsd_datum works; adv mean -0.175 std 1.18 range [-29 +8] on idx 500; teacher modes A/B/C parameterized. Next: forward_backward (TODO 4)
 pending	-	-	-	-	-	-	keep	0178 phaseA-fwdbwd: END-TO-END OPSD training step working (rollout->teacher score->datum->forward_backward->optim_step). Loss output mean -0.407. Next: opsd_train.main outer loop (TODO 5)
+pending	-	-	-	-	-	-	keep	0180 phaseA-outerloop-smoke: 2-step OPSD verified end-to-end mean_lp moved -0.619 to -0.556. checkpoints step_1/step_2 saved. Next: full Phase A training run (max_steps=20)

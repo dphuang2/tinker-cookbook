@@ -1,0 +1,2 @@
+{"step": 1, "n_datums": 3, "mean_training_logprob": -0.6191939314206442, "error": 0, "overlong": 1}
+{"step": 2, "n_datums": 4, "mean_training_logprob": -0.5558728948235512, "error": 0, "overlong": 0}
