@@ -1,0 +1,5 @@
+{"step": 10, "sampler_path": "tinker://61ccd3f4-8463-5613-88e3-50da4bb20d65:train:0/sampler_weights/step_10"}
+{"step": 20, "sampler_path": "tinker://61ccd3f4-8463-5613-88e3-50da4bb20d65:train:0/sampler_weights/step_20"}
+{"step": 30, "sampler_path": "tinker://61ccd3f4-8463-5613-88e3-50da4bb20d65:train:0/sampler_weights/step_30"}
+{"step": 40, "sampler_path": "tinker://61ccd3f4-8463-5613-88e3-50da4bb20d65:train:0/sampler_weights/step_40"}
+{"step": 44, "sampler_path": "tinker://61ccd3f4-8463-5613-88e3-50da4bb20d65:train:0/sampler_weights/step_44_final", "final": true}

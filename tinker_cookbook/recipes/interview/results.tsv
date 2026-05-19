@@ -188,3 +188,4 @@ aad26afe/step_5_final	0.8100	0.968	0.2433	0:10,1:6,2:5,3:149,4:307,5:15,6:3,7:3,
 6d587936/step_36_final	0.8340	0.910	0.1994	0:9,1:36,2:123,3:273,4:58,5:1	141	36	keep	0191 phaseB-rft-fixed-datum NEW V3 BEST split_balance 0.494 mean_tokens 10349 turn_split 0.910 - ToolCall datum reconstruction fix
 93010f63/step_40_final	0.8320	0.128	0.0481	0:240,1:195,2:53,3:12	158	40	discard	0192 phaseB-rft-iter-on-0191: RFT-from-scratch on 0191 positives caused tool-use regression turn_split 0.91 -> 0.13 - 0191 was sweet spot for iteration count
 8b129873/step_68_final	0.8540	0.938	0.2025	0:1,1:30,2:108,3:288,4:72,5:1	266	68	keep	0193 phaseB-rft-large-batch NEW V3 BEST 266 positives accuracy +2pp over 0191 (0.854) mode 3 calls
+61ccd3f4/step_44_final	0.8420	0.910	0.1908	0:7,1:38,2:142,3:260,4:51,5:1,6:1	171	44	discard	0194 phaseB-rft-strict-threshold dataset size beats purity 171 high-q positives worse than 266 mixed-q at 0193
