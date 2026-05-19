@@ -1,0 +1,21 @@
+INFO:__main__:Using BASE model (no SFT checkpoint)
+INFO:__main__:Loading DeepMath-103K dataset...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:tinker.lib.internal_client_holder:Your Tinker SDK version is outdated. Please upgrade to the latest version.
+INFO:tinker.lib.public_interfaces.service_client:ServiceClient initialized for session be58d932-498a-5390-a0d3-cf02845650a3
+INFO:__main__:Running agent loop on 500 problems concurrently...
+INFO:__main__:[50/500] correct so far: 46 (acc=0.920)
+INFO:__main__:[100/500] correct so far: 91 (acc=0.910)
+INFO:__main__:[150/500] correct so far: 133 (acc=0.887)
+INFO:__main__:[200/500] correct so far: 177 (acc=0.885)
+INFO:__main__:[250/500] correct so far: 220 (acc=0.880)
+INFO:__main__:[300/500] correct so far: 261 (acc=0.870)
+INFO:__main__:[350/500] correct so far: 304 (acc=0.869)
+INFO:__main__:[400/500] correct so far: 349 (acc=0.873)
+INFO:__main__:[450/500] correct so far: 394 (acc=0.876)
+INFO:__main__:[500/500] correct so far: 437 (acc=0.874)
+INFO:__main__:Accuracy: 437/500 = 0.874
+INFO:__main__:Tool-call cadence: [(0, 259), (1, 5), (3, 212), (4, 11), (5, 2), (6, 5), (7, 1), (9, 2), (12, 1), (15, 1), (18, 1)]
+INFO:__main__:in_think_rate: 0.000  turn_split_rate: 0.022  interleaving_rate: 0.022  primary_score: 0.4466
+INFO:__main__:Saved eval to /tmp/tinker-examples/interview/deepmath_agent_eval.json

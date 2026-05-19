@@ -1,0 +1,60 @@
+{
+  "model": "Qwen/Qwen3-30B-A3B",
+  "sampler_path": null,
+  "num_problems": 500,
+  "num_correct": 437,
+  "accuracy": 0.874,
+  "tool_call_cadence": [
+    [
+      0,
+      259
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      3,
+      212
+    ],
+    [
+      4,
+      11
+    ],
+    [
+      5,
+      2
+    ],
+    [
+      6,
+      5
+    ],
+    [
+      7,
+      1
+    ],
+    [
+      9,
+      2
+    ],
+    [
+      12,
+      1
+    ],
+    [
+      15,
+      1
+    ],
+    [
+      18,
+      1
+    ]
+  ],
+  "in_think_rate": 0.0,
+  "turn_split_rate": 0.022,
+  "interleaving_rate": 0.022,
+  "primary_score": 0.446614,
+  "temperature": 0.6,
+  "max_tokens_per_turn": 24576,
+  "max_turns": 8
+}
