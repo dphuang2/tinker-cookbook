@@ -1,51 +1,131 @@
-# progress-update autoresearch
+# progress-update autoresearch — v2 (interleaving-aware)
 
 This is an experiment to have the LLM autonomously iterate on a recipe
-that trains a model to interleave `progress_update`-style tool calls in
-the middle of its thinking on DeepMath problems. The entire recipe —
-training method, data generation, tool design, agent loop — is in scope.
+that teaches a model to **interleave `progress_update` tool calls
+*inside* its thinking** on DeepMath problems. The entire recipe —
+training method, data generation, tool design, agent loop, reward
+shape — is in scope.
+
+## Lessons from v1 (read this before doing anything)
+
+The first 159-experiment loop converged on a prompt-only recipe
+(`0105`) that hits 0.8750 ± 0.010 mean accuracy across 26 reruns —
+statistically indistinguishable from the no-tool baseline (0.880).
+
+**But it never actually solved the behavioral goal.** A post-hoc
+audit of the raw rollouts (`raw_rollouts/`, `interleaved_rollouts.md`)
+found:
+
+- **234 / 238 tool-using rollouts (98%)** emit *all* their tool
+  calls **after** `</think>` closes, as a back-to-back batch of
+  summaries, followed by the final answer. The thinking pass is
+  monolithic; the "checkpoints" are decorative post-hoc summaries.
+- **Only 10 / 500 rollouts (2%)** had tool calls split across ≥2
+  separate assistant turns (the cross-turn proxy for interleaving).
+- **Re-sampling those same 10 indices at temp 0.6** reproduced the
+  interleaved shape in only **1 / 40** attempts. So even on the
+  "easy" indices, true interleaving is a ~2.5% accident, not a
+  learned behavior.
+
+### Why the v1 loop didn't catch this
+
+The eval only measured **`num_tool_calls` per problem** (the
+`tool_call_cadence` histogram) and **`extract_boxed` accuracy** on
+the final visible text. Neither signal distinguishes:
+
+- "think once, dump 3 summaries at the end, then answer" (the
+  trained behavior — easy to learn from Qwen3's prior because the
+  chat template puts `<tool_call>` *outside* `<think>` blocks)
+- "think → pause → call → think → call → think → answer" (the
+  intended behavior — fights the chat-template prior)
+
+Both shapes score identically on cadence count and accuracy.
+Goodhart did the rest: every "winning" recipe optimized the proxy.
+
+### What v2 must do differently
+
+1. **Measure placement, not just count.** Add an
+   `interleaving_rate` metric to the eval summary that counts the
+   fraction of rollouts where tool calls actually pause the
+   thinking — see "Interleaving metric" below.
+2. **Treat interleaving as a first-class objective**, not a tertiary
+   nicety. A recipe that scores 0.85 with 40% interleaving beats a
+   recipe that scores 0.875 with 2% interleaving.
+3. **Use RL.** Successful interleaved trajectories already exist at
+   ~2.5% frequency from the prompt-only base. That's enough signal
+   to amplify with on-policy RL using a placement-aware reward.
+   SFT on rare positives risks the same prior-overfit failure as v1.
 
 ## Goal
 
-**Primary**: maximize agent-eval accuracy on the held-out 500
-DeepMath problems. The current best (`v3`) is **0.708**; the no-SFT
-baseline is **0.880**. Goal is to close that gap.
+**Primary**: maximize a **joint metric** that rewards both correctness
+**and** true interleaving:
 
-**Secondary**: minimize the amount of training data needed to reach a
-given accuracy. A recipe that hits 0.85 with 500 records is preferred
-over one that hits 0.85 with 2400 records. Always record the
-training-record count for the experiment in `notes.md` and the
-`results.tsv` description.
+```
+score = accuracy × (0.5 + 0.5 × interleaving_rate)
+```
 
-**Tertiary**: keep tool-call cadence non-degenerate (some problems
-emit 1+ calls, some emit 0 — the model should *vary* by problem, not
-always 0 or always 3).
+at fixed eval settings. The v1 best (0.105 recipe) scores
+≈ `0.875 × (0.5 + 0.5 × 0.02) = 0.446`. The no-tool baseline scores
+0 by construction (no tool calls). A recipe that hits accuracy
+0.80 with interleaving_rate 0.60 scores **0.640** — a clear win.
+
+**Secondary**: minimize training cost. A recipe matching the primary
+metric with 0 training records or fewer RL steps wins ties.
+
+**Tertiary**: cadence variety per problem — the model should decide
+*per problem* whether and how often to checkpoint, not always 0,
+always 3, or always N.
+
+### Interleaving metric (REQUIRED — instrument before the first run)
+
+For each rollout, compute:
+
+- `n_calls_in_think`: count of `<tool_call>` tokens appearing
+  **before** the first `</think>` close in the decoded stream of
+  any assistant turn (this is the strictest definition — true
+  mid-thinking interleaving).
+- `n_turn_splits`: number of distinct assistant turns that contain
+  ≥1 tool call (cross-turn proxy — counts "think → call → think →
+  call" pattern even if Qwen3's chat template forces the call
+  outside `<think>`).
+
+A rollout is **interleaved** if either:
+- `n_calls_in_think ≥ 1`, OR
+- `n_turn_splits ≥ 2`
+
+`interleaving_rate` = fraction of all 500 rollouts that are
+interleaved. Log it alongside `accuracy` and `tool_call_cadence`
+in the eval summary and `results.tsv`.
 
 ## What is fixed
 
 Almost nothing. The hard constraints are:
 
-1. **Behavioral goal**: the trained model must interleave a
-   tool-call-style "pause and report progress" mechanism in the
-   middle of its thinking. The tool's name, schema, and what the
-   tool response contains are up to you — but the *behavior* must be
-   recognizable: the model pauses its thinking, emits a tool call,
-   the agent loop responds, and the model continues toward the final
-   answer.
+1. **Behavioral goal (now measurable)**: the model must
+   *interleave* tool calls with thinking — not batch them after.
+   This is now operationalized by the `interleaving_rate` metric
+   defined above. A recipe that scores high accuracy but
+   `interleaving_rate < 0.1` fails the primary metric by
+   construction.
 2. **Eval slice**: indices 0-499 of `zwhe99/DeepMath-103K` shuffled
    with seed=42. Never train on those indices; always grade on
    exactly those.
 3. **Grading**: `extract_boxed` + `grade_answer` (from
    `tinker_cookbook.recipes.math_rl.math_grading`) on the final
-   visible answer. Pass/fail. Don't invent a softer metric.
-4. **Eval temperature / max_tokens**: keep them at the current values
-   in `eval_deepmath_agent.py` (`temperature=0.6`,
-   `max_tokens_per_turn=8192`, `max_turns=8`) so accuracy numbers
-   stay comparable across experiments. If you have a strong reason
-   to change one, do it once, document it loudly, and recognize the
-   experiment is no longer comparable to earlier rows.
+   visible answer. Pass/fail on correctness. Combined with
+   `interleaving_rate` into the primary score (see Goal section).
+4. **Eval temperature / max_tokens**: keep them at the v1
+   end-of-loop values (`temperature=0.6`,
+   `max_tokens_per_turn=24576`, `max_turns=8`). Don't change these
+   in v2 — comparability with v1's 0.875 and the 0.880 baseline
+   matters.
 5. **Base model**: Qwen3-30B-A3B (so all rows compare to the same
-   `0.880` baseline).
+   `0.880` no-tool baseline and the v1 `0.875` prompt-only
+   ceiling).
+6. **Eval must compute `interleaving_rate`** and include it in
+   `summary` and `results.tsv`. Without this metric, an experiment
+   is not comparable to v2 rows.
 
 Everything else — training method (SFT / RL / DPO / prompt-only),
 teacher rewriting on/off, which teacher, tool name and schema, system
@@ -76,35 +156,31 @@ small accuracy gain from a one-line LR change beats the same gain
 from 50 lines of brittle data-munging. Deleting code while holding
 accuracy flat is a win.
 
-## Setup (run once, before the loop)
+## Setup for v2 (run once, before the loop)
 
-1. **Run tag**: today's date (e.g. `may18`).
-2. **Branch**: `git checkout -b autoresearch/progress-update-<tag>`
-   from current main. All experiments commit on this single branch.
-3. **Read** PROGRAM.md (this file), then skim `sft_train.py`,
-   `eval_deepmath_agent.py`, `teacher_rewrite.py`,
-   `sample_deepmath_train.py`. (The first iteration of the loop will
-   read them in depth.)
-4. **Verify artifacts exist**:
-   - `/tmp/tinker-examples/interview/sft_dataset.json` — 2401 records,
-     current SFT dataset. Regenerable via `teacher_rewrite.py`.
-   - `/tmp/tinker-examples/interview/deepmath_train_traces.json` —
-     2500 raw Qwen3 traces (DeepMath indices 500-2999). Regenerable
-     via `sample_deepmath_train.py`.
-   - `/tmp/tinker-examples/interview/deepmath_eval.json` — baseline
-     n=500 single-turn eval at accuracy 0.880.
-5. **Initialize** `tinker_cookbook/recipes/interview/results.tsv`
-   with header `commit	accuracy	cadence	test_nll	training_records	status	description`,
-   and one row for the v3 baseline:
-
-   ```
-   <current-HEAD-short-hash>	0.7080	0:342,1:137,2:18,3:2,4:1	0.109	2301	keep	v3 baseline: reasoning-in-tool-call, LR≈5e-4, lora_rank=32
-   ```
-
-   (2301 = 2401 records − 100 held out as the SFT test set.)
-6. **Initialize** `tinker_cookbook/recipes/interview/runs/` (empty
-   tracked dir; commit a `.gitkeep` if needed).
-7. **Commit** the two new files as `autoresearch setup`.
+1. **Run tag**: today's date (e.g. `may19`).
+2. **Branch**: keep working on the existing
+   `autoresearch/progress-update-may17` branch (v1 history is
+   preserved; v2 layers on top). All experiments commit linearly.
+3. **Read** this PROGRAM.md end-to-end, plus
+   `interleaved_rollouts.md` (the 10 v1 examples that interleaved),
+   plus a few of the `raw_rollouts/idx*_s*.json` files to see the
+   token-level shape of batched vs interleaved trajectories.
+4. **Instrument `interleaving_rate` in
+   `eval_deepmath_agent.py`** before the first experiment. The
+   eval loop already has access to the decoded token stream per
+   turn — compute `n_calls_in_think` from the raw text (search
+   for `<tool_call>` before `</think>`) and `n_turn_splits` by
+   counting turns where `len(tool_calls) > 0`. Persist both per
+   problem and aggregate `interleaving_rate` in the `summary`.
+5. **Re-run the v1 ceiling recipe (`0105`) under the new metric**
+   to establish the v2 baseline. Expected: accuracy ≈ 0.875,
+   interleaving_rate ≈ 0.02–0.05, primary score ≈ 0.45.
+6. **Re-run the no-tool baseline** for sanity. Expected:
+   accuracy ≈ 0.880, interleaving_rate = 0 (no tool exposed),
+   primary score = 0 (filtered to 0 because no tool use).
+7. **Commit** the eval instrumentation and the two baselines as
+   `v2 setup: instrument interleaving_rate + re-baselines`.
 
 Once setup is done, enter the loop below and don't stop.
 
@@ -196,31 +272,43 @@ commits regardless.
   `discard` if the change was causal; otherwise leave the file
   alone (e.g. a config typo that's already been fixed).
 
-## Output format reference
+## Output format reference (v2)
 
-After eval, `summary` looks like:
+After eval, `summary` must include the new fields:
 
 ```json
 {
   "model": "Qwen/Qwen3-30B-A3B",
   "sampler_path": "tinker://.../sampler_weights/final",
   "num_problems": 500,
-  "num_correct": 354,
-  "accuracy": 0.708,
-  "tool_call_cadence": [[0, 342], [1, 137], [2, 18], [3, 2], [4, 1]],
+  "num_correct": 437,
+  "accuracy": 0.874,
+  "tool_call_cadence": [[0, 262], [1, 3], [3, 206], [4, 16]],
+  "interleaving_rate": 0.028,
+  "in_think_rate": 0.000,
+  "turn_split_rate": 0.028,
+  "primary_score": 0.4438,
   "temperature": 0.6,
-  "max_tokens_per_turn": 8192,
+  "max_tokens_per_turn": 24576,
   "max_turns": 8
 }
 ```
 
-`tool_call_cadence` format for `results.tsv`: serialize as
-`0:342,1:137,2:18,3:2,4:1` (one comma-joined key:value list, no
-spaces).
+Where:
+- `in_think_rate` — fraction of rollouts with ≥1 tool call
+  inside `<think>...</think>`
+- `turn_split_rate` — fraction with tool calls across ≥2 turns
+- `interleaving_rate` — fraction satisfying either (union)
+- `primary_score = accuracy × (0.5 + 0.5 × interleaving_rate)`
 
-`training_records` for `results.tsv`: count of training datums you
-trained on this run (post any filtering). Use `-` for non-SFT
-methods or `0` for prompt-only baselines.
+`results.tsv` v2 header (extend, don't break v1 — add columns):
+
+```
+commit	accuracy	interleaving_rate	primary_score	cadence	training_records	rl_steps	status	description
+```
+
+`training_records` is `0` for prompt-only / RL-from-base. `rl_steps`
+is the number of RL gradient steps for RL experiments, `-` for SFT.
 
 Example `results.tsv`:
 
@@ -256,68 +344,77 @@ e5f6g7h	0.8050	0:300,1:160,2:32,3:8	0.155	500	keep	subsample 500 records + LR 1.
   re-read prior `notes.md` for patterns, combine prior near-misses,
   or take a more radical swing.
 
-## Ideas to try (seed list — non-exhaustive; exhaust your own ideas too)
+## Ideas to try (v2 — interleaving-first)
 
-### Training knobs (cheapest — try these first)
+### Start here: RL with placement-aware reward (the main bet)
 
-- **Lower LR** — current ≈ `get_lr(Qwen3-30B-A3B, lora=True)` ≈ 5e-4.
-  Try 1.5e-4, 5e-5. The 14pp regression strongly suggests
-  over-aggressive LR damaging base reasoning.
-- **Early stopping** — re-eval an intermediate sampler from
-  `checkpoints.jsonl` (e.g. step 80 or 100) instead of `final`. Mid
-  training may preserve more baseline capability.
-- **Smaller `lora_rank`** — try 8 or 16 from 32.
-- **Fewer epochs / fewer records** — directly addresses the
-  data-efficiency secondary goal: subsample to 500-1000 records and
-  see if accuracy holds.
+The natural fit. Successful interleaved trajectories already exist
+at ~2.5% frequency from the prompt-only base, so on-policy RL has
+real positive signal to amplify. Avoids SFT's chat-template
+prior-overfit failure mode that killed v1.
 
-### Data composition
+Recommended seed configuration:
 
-- **Mix in pure-math SFT data** — half the batch with tool calls,
-  half plain `<think>` + final answer, so the model retains the
-  "just answer" mode. Source:
-  `/tmp/tinker-examples/interview/deepmath_train_traces.json`.
-- **Filter out short traces** from the teacher dataset — records
-  whose original thinking was < 4000 chars probably shouldn't be
-  forced to have tool calls.
-- **Drop the duplicated `reasoning` arg** — revert to `message`-only
-  summary. v1 hit 0.736 with that; worth retesting once other
-  knobs are tuned.
+- **Base policy**: Qwen3-30B-A3B with the v1 `0105` prompt
+  (`SYSTEM_PROMPT` + `USER_INSTRUCTION_SUFFIX`). This already gives
+  ~2% interleaved positives — that's the starting distribution
+  RL will sharpen.
+- **Reward shape**: per-trajectory scalar
+  ```
+  r = is_correct * (0.5 + 0.5 * is_interleaved)
+  ```
+  where `is_interleaved` is the binary version of the metric. So
+  correct-and-interleaved = 1.0, correct-but-batched = 0.5, wrong
+  = 0. Don't reward interleaving on wrong answers — that just
+  trains tool-spam.
+- **Reward variants to try**:
+  - Continuous: scale by `min(n_calls_in_think, 3) / 3`.
+  - Anti-spam: penalty `-0.05 * max(0, n_total_calls - 5)` to
+    discourage runaway cadence.
+  - Format-only first: train briefly with `r = is_interleaved`
+    alone to verify placement is learnable, then mix in
+    correctness.
+- **Algorithm**: `tinker_cookbook.recipes.math_rl` machinery.
+  Group size 4–8, KL penalty to base policy (LoRA RL), LR
+  modest (1e-6 to 5e-6 — small steps to preserve reasoning).
+- **Group semantics**: each group is one DeepMath problem
+  sampled `group_size` times. Centering advantages within the
+  group already exploits the rare-interleaved-positive signal.
+- **Reference policy**: use the base model (no SFT) as KL
+  reference to keep reasoning intact.
 
-### Teacher rewrite
+### Prompt-only knobs (still worth a swing)
 
-- **Lower the teacher cadence target** — current is ~1 update /
-  1000 thinking tokens, cap 3. Try ~1/2000, cap 2.
-- **Different teacher** — swap Kimi-K2.6 for another Tinker model,
-  or skip the teacher and use rule-based splitting (e.g. split on
-  paragraph boundaries every K tokens).
-- **Self-distillation** — prompt Qwen3 directly with the tool
-  exposed, collect natural tool-using traces, filter to correct
-  answers, use as SFT data. No external teacher required.
+- **Stronger placement directive**: explicit "emit your first
+  `progress_update` after roughly 1000 tokens of thinking, before
+  finishing your derivation."
+- **Demonstration in system prompt**: a tiny worked example
+  showing think → call → think → call → answer in-context. May
+  unlock the shape without RL.
 
-### Format / tool design
+### Renderer / format hacks (if RL stalls)
 
-- **System prompt tweak** — "between major reasoning steps" vs
-  "only when you change approach" vs "only for uncertain problems".
-- **Tool renaming** — `progress_update` → `checkpoint` /
-  `note_to_self`, with a description that makes it clear this is
-  for the model's bookkeeping, not a user-facing report.
-- **No tool, use special tokens** — `<update>...</update>` inside
-  the `<think>` block. No agent loop needed at eval. Different
-  preservation mechanics.
+- **Custom renderer that allows `<tool_call>` inside `<think>`** —
+  the Qwen3 chat template treats tool calls as
+  post-thinking by default. A small renderer override that
+  permits in-think tool calls and re-tokenizes accordingly might
+  be the only way to get true within-think placement.
+- **Special-token alternative**: `<checkpoint>...</checkpoint>`
+  inside `<think>`. No agent loop needed; placement is purely a
+  text-pattern. Different definition of "interleaved" but matches
+  the spirit of the goal.
 
-### Method changes (most radical)
+### Out-of-scope for v2 (already tried, regressed in v1)
 
-- **Prompt-only baseline** — skip training, expose the tool in the
-  prompt, measure zero-shot accuracy. Useful upper bound.
-- **DPO** — preference pairs of (good-cadence trace, bad-cadence
-  trace) for the same problem.
-- **RL with format + correctness reward** — bootstrap with the
-  existing `tinker_cookbook.recipes.math_rl` machinery. Format bonus
-  for emitting `progress_update` at the right cadence; correctness
-  reward dominates.
+- SFT on rewritten teacher traces — every attempt collapsed
+  cadence and/or hurt reasoning. Don't retry without a fresh
+  hypothesis about why this time is different.
+- Increasing `MAX_TOOL_RECORDS` past 0 — confirmed harmful in v1
+  runs 0011–0150.
 
 As an example use case: a user might leave you running while they
-sleep. At ~30 min per cycle that's ~16 experiments overnight. The
-user wakes up to a populated `results.tsv` and (hopefully) a `keep`
-row with accuracy back above 0.85.
+sleep. RL cycles are longer than SFT (60–120 min each), so expect
+~6–10 experiments overnight. The user wakes up to a populated
+`results.tsv` and (hopefully) a `keep` row with `primary_score`
+above 0.5 — meaning real interleaving, not just decorative
+checkpoints.
