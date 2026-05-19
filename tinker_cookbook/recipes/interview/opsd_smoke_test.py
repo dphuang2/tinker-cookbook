@@ -111,15 +111,19 @@ async def main():
     (OUT_DIR / "summary.json").write_text(json.dumps(summary, indent=2))
     print(f"wrote {OUT_DIR}/summary.json")
 
-    # also smoke-test score_with_teacher on the FIRST successful rollout
-    # using the SAME sampling client as the "teacher" (since v3 Phase A
-    # uses the same base model for both teacher and student; the
-    # privileged prompt is what makes the teacher distribution differ).
+    # also smoke-test score_with_teacher on the first SHORT rollout
+    # (must fit in the teacher's 32k context after prefix expansion).
+    # Skip rollouts > 28k tokens — they'll just overflow.
+    SCORE_TOKEN_BUDGET = 28000
     first_ok_idx = None
     for i, r in enumerate(results):
-        if not isinstance(r, Exception):
+        if isinstance(r, Exception):
+            continue
+        n_tok = sum(e - s for s, e in r["turn_token_ranges"])
+        if n_tok <= SCORE_TOKEN_BUDGET:
             first_ok_idx = i
             break
+        print(f"  skip idx={TRAIN_INDEX_START+i}: rollout {n_tok} tokens too long for teacher scoring")
     if first_ok_idx is not None:
         idx = TRAIN_INDEX_START + first_ok_idx
         problem = ds[idx]

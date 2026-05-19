@@ -173,3 +173,4 @@ pending	0.8620	0.280	0.3444	0:46,1:2,2:3,3:188,4:146,5:21,6:80,7:9,8:1,9:3,15:1	
 pending	-	-	-	-	-	-	keep	0173 phaseA-scaffold: opsd_train.py scaffold with privileged-info teacher prompt helper; cookbook on_policy_distillation cannot do split prompts without recipe-level override (TODO list in module docstring)
 pending	-	-	-	-	-	-	keep	0174 phaseA-rollout-fn: roll_out_student smoke-tested on 3 problems (idx 501 produced 5-turn/4-call cross-turn cadence). Next: teacher logprob scoring (TODO 2)
 pending	-	-	-	-	-	-	keep	0175 phaseA-teacher-score: score_with_teacher works after switching to Qwen3Renderer(strip_thinking_from_history=False); teacher mean logprob -0.288 on student tokens. Next: forward_backward step (TODO 3)
+pending	-	-	-	-	-	-	keep	0177 phaseA-datum-assembly: assemble_opsd_datum works; adv mean -0.175 std 1.18 range [-29 +8] on idx 500; teacher modes A/B/C parameterized. Next: forward_backward (TODO 4)

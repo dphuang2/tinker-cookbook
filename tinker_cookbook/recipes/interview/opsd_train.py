@@ -60,10 +60,18 @@ from tinker_cookbook.recipes.interview.sft_train import (
 logger = logging.getLogger(__name__)
 
 
-# Privileged prompt addendum the teacher sees that the student does not.
-# Keeps the student's USER_INSTRUCTION_SUFFIX wording, then adds the
-# ground-truth answer and an explicit even-split directive.
-TEACHER_PRIVILEGED_SUFFIX = (
+# Three teacher modes for Phase A ablation:
+#   "answer_plus_placement" (A, default): teacher sees ground-truth +
+#     explicit even-split directive. Strongest KL signal but teacher's
+#     reasoning may be unrealistic (already knows the answer).
+#   "placement_only" (B): teacher sees the same problem as the student
+#     plus only the placement directive — no answer. Realistic reasoning
+#     but teacher distribution may not differ enough from student to
+#     produce useful KL signal.
+#   "answer_as_if_discovering" (C): teacher sees the answer and is told
+#     to "produce reasoning as if discovering the answer". Hybrid.
+
+TEACHER_SUFFIX_A = (
     " The verified answer is: {answer}. Produce a single coherent "
     "reasoning trace that derives this answer, with three checkpoint "
     "calls placed roughly one-third and two-thirds of the way through "
@@ -73,16 +81,62 @@ TEACHER_PRIVILEGED_SUFFIX = (
     "equal in length."
 )
 
+TEACHER_SUFFIX_B = (
+    " Structure your reasoning into three roughly equal chunks "
+    "separated by checkpoint calls: emit the first checkpoint after "
+    "you've established the problem setup and approach, the second "
+    "after the main derivation, and the third just before writing the "
+    "boxed answer. Each checkpoint should mark a genuine transition; "
+    "the chunks of thinking between them should be roughly equal in "
+    "length."
+)
 
-def make_teacher_user_message(question: str, answer: str) -> dict:
-    """Construct the privileged-info user message for the teacher."""
+TEACHER_SUFFIX_C = (
+    " The verified answer is: {answer}. Produce the reasoning trace "
+    "that derives this answer *as if you were discovering it for the "
+    "first time* — show natural exploration including any false starts "
+    "you would realistically attempt. Place three checkpoint calls at "
+    "roughly equal intervals: after problem setup, after the main "
+    "derivation, and just before the boxed answer."
+)
+
+TEACHER_SUFFIXES = {
+    "answer_plus_placement": TEACHER_SUFFIX_A,
+    "placement_only": TEACHER_SUFFIX_B,
+    "answer_as_if_discovering": TEACHER_SUFFIX_C,
+}
+
+# Default for backward compatibility with smoke tests / 0173-0175 notes
+TEACHER_PRIVILEGED_SUFFIX = TEACHER_SUFFIX_A
+
+
+def make_teacher_user_message(
+    question: str,
+    answer: str,
+    mode: str = "answer_plus_placement",
+) -> dict:
+    """Construct the privileged-info user message for the teacher.
+
+    Args:
+        question: the math problem.
+        answer: ground-truth answer (ignored in placement_only mode).
+        mode: one of TEACHER_SUFFIXES.keys().
+    """
+    if mode not in TEACHER_SUFFIXES:
+        raise ValueError(
+            f"Unknown teacher_mode {mode!r}; expected one of "
+            f"{sorted(TEACHER_SUFFIXES)}"
+        )
+    suffix_template = TEACHER_SUFFIXES[mode]
+    # placement_only doesn't have {answer} placeholder
+    suffix = (
+        suffix_template.format(answer=answer)
+        if "{answer}" in suffix_template
+        else suffix_template
+    )
     return {
         "role": "user",
-        "content": (
-            question
-            + USER_INSTRUCTION_SUFFIX
-            + TEACHER_PRIVILEGED_SUFFIX.format(answer=answer)
-        ),
+        "content": question + USER_INSTRUCTION_SUFFIX + suffix,
     }
 
 
@@ -122,6 +176,9 @@ class OPSDConfig:
     kl_discount_factor: float = 0.0
     num_substeps: int = 1
     max_steps: int = 100
+
+    # Teacher mode (A, B, or C — see TEACHER_SUFFIXES)
+    teacher_mode: str = "answer_plus_placement"
 
     # IO
     log_path: str = "/tmp/tinker-examples/interview/opsd_run"
@@ -253,6 +310,7 @@ async def score_with_teacher(
     answer: str,
     teacher_sampling_client: tinker.SamplingClient,
     renderer: Any,
+    teacher_mode: str = "answer_plus_placement",
 ) -> dict:
     """Compute the teacher's per-token logprobs over the student's
     generated tokens, with the teacher conditioned on the privileged
@@ -287,7 +345,7 @@ async def score_with_teacher(
                 question = original[: -len(USER_INSTRUCTION_SUFFIX)]
             else:
                 question = original
-            new = make_teacher_user_message(question, answer)
+            new = make_teacher_user_message(question, answer, mode=teacher_mode)
             history[i] = new
             swapped = True
             break
