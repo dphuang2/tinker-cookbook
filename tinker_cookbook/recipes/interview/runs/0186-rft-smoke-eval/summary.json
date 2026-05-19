@@ -1,0 +1,57 @@
+{
+  "model": "Qwen/Qwen3-30B-A3B",
+  "sampler_path": "tinker://aad26afe-a995-5781-b268-258ca00ce127:train:0/sampler_weights/step_5_final",
+  "num_problems": 500,
+  "num_correct": 405,
+  "num_errored": 0,
+  "accuracy": 0.81,
+  "tool_call_cadence": [
+    [
+      0,
+      10
+    ],
+    [
+      1,
+      6
+    ],
+    [
+      2,
+      5
+    ],
+    [
+      3,
+      149
+    ],
+    [
+      4,
+      307
+    ],
+    [
+      5,
+      15
+    ],
+    [
+      6,
+      3
+    ],
+    [
+      7,
+      3
+    ],
+    [
+      8,
+      2
+    ]
+  ],
+  "in_think_rate": 0.002,
+  "turn_split_rate": 0.968,
+  "interleaving_rate": 0.968,
+  "mean_total_tokens": 12987.81,
+  "mean_split_balance": 0.43249197486945334,
+  "efficiency_factor": 0.4234740113999204,
+  "no_tool_ref_tokens": 5500,
+  "primary_score": 0.2433087522879541,
+  "temperature": 0.6,
+  "max_tokens_per_turn": 24576,
+  "max_turns": 8
+}
