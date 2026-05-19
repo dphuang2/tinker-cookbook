@@ -58,17 +58,30 @@ Goodhart did the rest: every "winning" recipe optimized the proxy.
 
 ## Goal
 
-**Primary**: maximize a **joint metric** that rewards both correctness
-**and** true interleaving:
+**Primary (v2.1)**: maximize a **joint metric** that rewards
+correctness AND true interleaving AND avoids two Goodhart escapes
+(running the CoT N times to look "interleaved"; clustering all
+checkpoints at one end of the rollout):
 
 ```
-score = accuracy × (0.5 + 0.5 × interleaving_rate)
+primary_score = accuracy
+              × (0.5 + 0.5 × interleaving_rate × mean_split_balance)
+              × efficiency_factor
+
+where:
+  efficiency_factor = clamp(NO_TOOL_REF_TOKENS / mean_total_tokens, 0, 1)
+                    # 1.0 if at-or-below baseline; 0.5 if 2× tokens; etc.
+  mean_split_balance = mean over rollouts with ≥2 tool calls of
+                       (min_segment / max_segment)
+                    # 1.0 = checkpoints divide the rollout into equal
+                    # parts; ~0 = all batched at the end (the v1 mode).
 ```
 
-at fixed eval settings. The v1 best (0.105 recipe) scores
-≈ `0.875 × (0.5 + 0.5 × 0.02) = 0.446`. The no-tool baseline scores
-0 by construction (no tool calls). A recipe that hits accuracy
-0.80 with interleaving_rate 0.60 scores **0.640** — a clear win.
+v1 best (0105) under v2.1 scores ≈ `0.87 × (0.5 + 0.5 × 0.02 × 0.0) ×
+1.0 ≈ 0.44`. A recipe at accuracy 0.80, interleaving 0.60, balance
+0.5, efficiency 1.0 scores `0.80 × (0.5 + 0.5 × 0.60 × 0.5) × 1.0 =
+0.520`. A "fake interleaved" recipe doing the CoT 3× (efficiency
+factor ≈ 0.33) is heavily penalized.
 
 **Secondary**: minimize training cost. A recipe matching the primary
 metric with 0 training records or fewer RL steps wins ties.
@@ -77,26 +90,38 @@ metric with 0 training records or fewer RL steps wins ties.
 *per problem* whether and how often to checkpoint, not always 0,
 always 3, or always N.
 
-### Interleaving metric (REQUIRED — instrument before the first run)
+### Required per-rollout instrumentation (v2.1)
 
-For each rollout, compute:
+For each rollout:
 
-- `n_calls_in_think`: count of `<tool_call>` tokens appearing
+- `in_think_calls`: count of `<tool_call>` markers appearing
   **before** the first `</think>` close in the decoded stream of
-  any assistant turn (this is the strictest definition — true
-  mid-thinking interleaving).
-- `n_turn_splits`: number of distinct assistant turns that contain
-  ≥1 tool call (cross-turn proxy — counts "think → call → think →
-  call" pattern even if Qwen3's chat template forces the call
-  outside `<think>`).
+  any assistant turn (strictest definition — true mid-thinking
+  interleaving; tends to be ~0 due to Qwen3's chat-template prior).
+- `n_turn_splits`: number of distinct assistant turns containing
+  ≥1 tool call (cross-turn proxy for interleaving).
+- `total_tokens`: tokens consumed across all turns (for efficiency).
+- `total_chars`: chars across all turns (for split_balance).
+- `tool_call_char_positions`: char position of every `<tool_call>`
+  marker in the concatenated decoded stream.
+- `split_balance`: for rollouts with ≥2 tool calls, the ratio
+  `min_segment / max_segment` over the K+1 segments formed by the
+  K markers (with implicit boundaries at 0 and total_chars). `None`
+  for rollouts with <2 calls (excluded from aggregate).
+- `is_interleaved`: `True` iff `in_think_calls ≥ 1` OR
+  `n_turn_splits ≥ 2`.
 
-A rollout is **interleaved** if either:
-- `n_calls_in_think ≥ 1`, OR
-- `n_turn_splits ≥ 2`
-
-`interleaving_rate` = fraction of all 500 rollouts that are
-interleaved. Log it alongside `accuracy` and `tool_call_cadence`
-in the eval summary and `results.tsv`.
+Aggregate (in `summary`):
+- `interleaving_rate` = fraction of all 500 rollouts that are
+  interleaved.
+- `mean_split_balance` = mean of `split_balance` over rollouts
+  where it's defined.
+- `mean_total_tokens` = mean tokens per rollout.
+- `efficiency_factor` = clamp(`NO_TOOL_REF_TOKENS` /
+  `mean_total_tokens`, 0, 1). `NO_TOOL_REF_TOKENS` is set to 5500
+  (current rough no-tool baseline; re-baseline if you change the
+  prompt-only ceiling).
+- `primary_score` = formula above.
 
 ## What is fixed
 

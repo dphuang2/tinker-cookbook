@@ -88,8 +88,12 @@ async def run_agent(
     # - turns_with_tool_calls counts assistant turns that emitted >=1 tool_call
     # - in_think_calls counts <tool_call> occurrences that appear before the
     #   first </think> close in any turn's decoded text (strict mid-thinking)
+    # - tool_call_char_positions tracks the character position of each
+    #   <tool_call> in the concatenated decoded stream (for split_balance)
     turns_with_tool_calls = 0
     in_think_calls = 0
+    tool_call_char_positions: list[int] = []
+    total_chars = 0
     for turn_idx in range(MAX_TURNS):
         prompt = renderer.build_generation_prompt(history)
         result = await sampling_client.sample_async(
@@ -100,12 +104,22 @@ async def run_agent(
         tokens = result.sequences[0].tokens
         total_tokens += len(tokens)
         decoded_turn = tokenizer.decode(tokens)
+        # record positions of <tool_call> markers (char positions in
+        # concatenated stream, for downstream split-balance computation)
+        search_start = 0
+        while True:
+            idx = decoded_turn.find("<tool_call>", search_start)
+            if idx < 0:
+                break
+            tool_call_char_positions.append(total_chars + idx)
+            search_start = idx + 1
         think_close = decoded_turn.find("</think>")
         if think_close >= 0:
             in_think_calls += decoded_turn.count("<tool_call>", 0, think_close)
         else:
             # no </think> in this turn — any tool_call here counts as in-think
             in_think_calls += decoded_turn.count("<tool_call>")
+        total_chars += len(decoded_turn)
         parsed, termination = renderer.parse_response(tokens)
         final_termination = termination.value
         history.append(parsed)
@@ -152,6 +166,23 @@ async def run_agent(
 
     n_turn_splits = turns_with_tool_calls  # alias for clarity in summary
     is_interleaved = (in_think_calls >= 1) or (n_turn_splits >= 2)
+
+    # split_balance: how evenly the tool_call markers divide the rollout.
+    # 1.0 = perfectly even, 0.0 = all clustered (e.g. batched at end).
+    # Defined as min_segment / max_segment over the K+1 segments formed
+    # by the K tool_call positions (treating start=0, end=total_chars
+    # as implicit boundaries).
+    if len(tool_call_char_positions) >= 2 and total_chars > 0:
+        boundaries = [0] + sorted(tool_call_char_positions) + [total_chars]
+        segments = [boundaries[i + 1] - boundaries[i] for i in range(len(boundaries) - 1)]
+        if max(segments) > 0:
+            split_balance = min(segments) / max(segments)
+        else:
+            split_balance = 1.0
+    else:
+        # 0 or 1 calls — no split to balance. None means "not applicable",
+        # excluded from aggregate.
+        split_balance = None
     return {
         "predicted": predicted,
         "extract_ok": extract_ok,
@@ -165,6 +196,8 @@ async def run_agent(
         "in_think_calls": in_think_calls,
         "n_turn_splits": n_turn_splits,
         "is_interleaved": is_interleaved,
+        "total_chars": total_chars,
+        "split_balance": split_balance,  # None if <2 tool calls
     }
 
 
@@ -219,6 +252,8 @@ async def main():
     n_turn_split = 0
     n_interleaved = 0
     n_errored = 0
+    sum_total_tokens = 0
+    split_balances: list[float] = []
     cadence_hist: dict[int, int] = {}
     for i, (problem, r) in enumerate(zip(problems, results_raw)):
         if isinstance(r, BaseException):
@@ -241,6 +276,9 @@ async def main():
             n_turn_split += 1
         if r.get("is_interleaved"):
             n_interleaved += 1
+        sum_total_tokens += r.get("total_tokens", 0)
+        if r.get("split_balance") is not None:
+            split_balances.append(r["split_balance"])
         cadence_hist[r["num_tool_calls"]] = (
             cadence_hist.get(r["num_tool_calls"], 0) + 1
         )
@@ -263,7 +301,27 @@ async def main():
     in_think_rate = n_in_think / NUM_PROBLEMS
     turn_split_rate = n_turn_split / NUM_PROBLEMS
     interleaving_rate = n_interleaved / NUM_PROBLEMS
-    primary_score = accuracy * (0.5 + 0.5 * interleaving_rate)
+    mean_total_tokens = sum_total_tokens / NUM_PROBLEMS if NUM_PROBLEMS else 0
+    mean_split_balance = (
+        sum(split_balances) / len(split_balances) if split_balances else 0.0
+    )
+    # NO_TOOL_REF_TOKENS: approximate mean tokens for the no-tool baseline
+    # at this model/eval. v1 no-tool baseline at 0.880 used ~5500 token
+    # rollouts. Update if you re-baseline.
+    NO_TOOL_REF_TOKENS = 5500
+    efficiency_factor = min(1.0, NO_TOOL_REF_TOKENS / max(mean_total_tokens, 1))
+    # New v2.1 primary_score:
+    #   accuracy * (0.5 + 0.5 * interleaving_rate * mean_split_balance)
+    #            * efficiency_factor
+    # - interleaving weighted by split_balance: an "interleaved" rollout
+    #   that batches all calls together (low balance) contributes less.
+    # - efficiency_factor penalizes wasteful repetition: rollouts using
+    #   2x baseline tokens score 0.5x; 3x scores 0.33x.
+    primary_score = (
+        accuracy
+        * (0.5 + 0.5 * interleaving_rate * mean_split_balance)
+        * efficiency_factor
+    )
     summary = {
         "model": MODEL_NAME,
         "sampler_path": sampler_path,
@@ -275,6 +333,10 @@ async def main():
         "in_think_rate": in_think_rate,
         "turn_split_rate": turn_split_rate,
         "interleaving_rate": interleaving_rate,
+        "mean_total_tokens": mean_total_tokens,
+        "mean_split_balance": mean_split_balance,
+        "efficiency_factor": efficiency_factor,
+        "no_tool_ref_tokens": NO_TOOL_REF_TOKENS,
         "primary_score": primary_score,
         "temperature": TEMPERATURE,
         "max_tokens_per_turn": MAX_TOKENS_PER_TURN,
@@ -283,7 +345,10 @@ async def main():
     logger.info(f"Accuracy: {num_correct}/{NUM_PROBLEMS} = {accuracy:.3f}")
     logger.info(f"Tool-call cadence: {sorted(cadence_hist.items())}")
     logger.info(f"in_think_rate: {in_think_rate:.3f}  turn_split_rate: {turn_split_rate:.3f}  "
-                f"interleaving_rate: {interleaving_rate:.3f}  primary_score: {primary_score:.4f}")
+                f"interleaving_rate: {interleaving_rate:.3f}")
+    logger.info(f"mean_tokens: {mean_total_tokens:.0f} (ref {NO_TOOL_REF_TOKENS})  "
+                f"efficiency: {efficiency_factor:.3f}  mean_split_balance: {mean_split_balance:.3f}  "
+                f"primary_score: {primary_score:.4f}")
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(OUTPUT_PATH, "w") as f:
