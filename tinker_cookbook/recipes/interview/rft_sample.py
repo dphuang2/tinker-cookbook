@@ -214,14 +214,39 @@ async def main(config: RFTSampleConfig) -> None:
             if r["score"] > config.score_threshold:
                 kept.append(r)
 
-    # Write outputs (drop history Messages with non-JSON-serializable parts)
+    # Write outputs — serialize history properly: ToolCall objects to
+    # dicts so rft_train can rebuild them as native ToolCall.
+    def _serialize_msg(msg):
+        out = {}
+        for k, v in msg.items():
+            if k == "tool_calls" and v is not None:
+                out[k] = [
+                    {
+                        "id": getattr(tc, "id", None) or f"call_{i}",
+                        "type": "function",
+                        "function": {
+                            "name": getattr(tc.function, "name", "checkpoint"),
+                            "arguments": getattr(tc.function, "arguments", "{}"),
+                        },
+                    } for i, tc in enumerate(v)
+                ]
+            elif k == "content" and isinstance(v, list):
+                out[k] = [
+                    dict(p) if hasattr(p, "items") else p
+                    for p in v
+                ]
+            else:
+                out[k] = v
+        return out
+
     out_path = Path(config.out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w") as f:
         for r in kept:
-            # Stringify history (Messages may contain ToolCall objects)
             r_dump = {k: v for k, v in r.items() if k != "history"}
-            r_dump["history_json"] = json.dumps(r["history"], default=str)
+            r_dump["history_json"] = json.dumps(
+                [_serialize_msg(m) for m in r["history"]],
+            )
             f.write(json.dumps(r_dump) + "\n")
     logger.info(f"Kept {len(kept)} positives (threshold={config.score_threshold}, "
                 f"top-{config.keep_top_per_problem}-per-problem). Wrote {out_path}")

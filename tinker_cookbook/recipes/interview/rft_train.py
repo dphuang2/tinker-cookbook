@@ -59,58 +59,34 @@ class RFTTrainConfig:
 def _build_datum_from_record(rec: dict, renderer) -> tinker.Datum:
     """Reconstruct an SFT datum from an RFT positive record.
 
-    The record carries `history_json` — a JSON-serialized list of Messages.
-    We need to deserialize back to the renderer's expected form. ToolCall
-    objects were stringified; for SFT we only care about the conversation
-    structure, so we treat tool-call assistant turns as text containing
-    "<tool_call>...</tool_call>" via the standard chat template flow.
-
-    The cleanest approach: rebuild messages preserving role/content,
-    drop the tool_call objects (they're baked into the assistant text
-    in the rollout's all_tokens; build_supervised_example will re-tokenize
-    from the messages and produce identical training signal as the
-    rollout would have under the same renderer).
+    `history_json` is a list of Messages with tool_calls serialized as
+    JSON-safe dicts (id/type/function.name/function.arguments). Rebuild
+    proper ToolCall objects so the renderer's `build_supervised_example`
+    emits the same chat-template format the model sees at sample-time.
     """
+    from tinker_cookbook.renderers import ToolCall
+
     raw_history = json.loads(rec["history_json"])
     messages = []
     for msg in raw_history:
         role = msg.get("role")
         if role is None:
             continue
-        content = msg.get("content", "")
-        # Normalize: for assistant messages with thinking + tool_calls
-        # represented as list, flatten back to a string. The renderer's
-        # build_supervised_example expects standard chat messages.
-        if isinstance(content, list):
-            parts = []
-            for p in content:
-                if p.get("type") == "text":
-                    parts.append(p["text"])
-                elif p.get("type") == "thinking":
-                    parts.append(f"<think>{p['thinking']}</think>")
-            content = "".join(parts)
-        new_msg = {"role": role, "content": content}
-        # If the assistant message had tool_calls, append a flattened
-        # <tool_call>...</tool_call> string for each so the supervised
-        # example reproduces the rollout text format.
+        new_msg = {"role": role, "content": msg.get("content", "")}
         if role == "assistant" and msg.get("tool_calls"):
-            # tool_calls were stringified in rft_sample.py. Try to parse.
-            tc_text = ""
-            for tc in msg["tool_calls"]:
-                # str representation looks like ToolCall(id='...', function=...)
-                # For SFT purposes we just need the JSON arguments.
-                try:
-                    # cookbook ToolCall stringified — best effort parse for
-                    # function name and arguments.
-                    import re
-                    name_m = re.search(r"name='([^']+)'", str(tc))
-                    args_m = re.search(r"arguments='([^']+)'", str(tc))
-                    name = name_m.group(1) if name_m else "checkpoint"
-                    args = args_m.group(1) if args_m else "{}"
-                    tc_text += f'<tool_call>{{"name":"{name}","arguments":{args}}}</tool_call>'
-                except Exception:
-                    tc_text += "<tool_call>{}</tool_call>"
-            new_msg["content"] = (new_msg["content"] or "") + tc_text
+            tcs = []
+            for tc_dict in msg["tool_calls"]:
+                fn = tc_dict.get("function", {})
+                tcs.append(ToolCall(
+                    id=tc_dict.get("id"),
+                    function=ToolCall.FunctionBody(
+                        name=fn.get("name", "checkpoint"),
+                        arguments=fn.get("arguments", "{}"),
+                    ),
+                ))
+            new_msg["tool_calls"] = tcs
+        if role == "tool" and msg.get("tool_call_id"):
+            new_msg["tool_call_id"] = msg["tool_call_id"]
         messages.append(new_msg)
 
     model_input, weights = renderer.build_supervised_example(messages)
