@@ -154,14 +154,14 @@ Goodhart did the rest: every "winning" recipe optimized the proxy.
 
 ## Goal
 
-**Primary (v2.1)**: maximize a **joint metric** that rewards
-correctness AND true interleaving AND avoids two Goodhart escapes
-(running the CoT N times to look "interleaved"; clustering all
-checkpoints at one end of the rollout):
+**Primary (v2.2)**: tightened pure-multiplicative metric. v2.1 had
+a `0.5 +` floor on the interleaving term that let 0188 Goodhart by
+abandoning the tool entirely (turn_split_rate → 0.022 but
+primary_score still rose). v2.2 demands positive signal on ALL four
+axes:
 
 ```
-primary_score = accuracy
-              × (0.5 + 0.5 × interleaving_rate × mean_split_balance)
+primary_score = accuracy × interleaving_rate × mean_split_balance
               × efficiency_factor
 
 where:

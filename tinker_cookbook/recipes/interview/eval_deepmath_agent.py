@@ -310,16 +310,18 @@ async def main():
     # rollouts. Update if you re-baseline.
     NO_TOOL_REF_TOKENS = 5500
     efficiency_factor = min(1.0, NO_TOOL_REF_TOKENS / max(mean_total_tokens, 1))
-    # New v2.1 primary_score:
-    #   accuracy * (0.5 + 0.5 * interleaving_rate * mean_split_balance)
-    #            * efficiency_factor
-    # - interleaving weighted by split_balance: an "interleaved" rollout
-    #   that batches all calls together (low balance) contributes less.
-    # - efficiency_factor penalizes wasteful repetition: rollouts using
-    #   2x baseline tokens score 0.5x; 3x scores 0.33x.
+    # v2.2 primary_score: pure multiplicative.
+    #   accuracy * interleaving_rate * mean_split_balance * efficiency_factor
+    # v2.1 had a `0.5 +` floor on the interleaving term, which let
+    # 0188's expert-iteration loop Goodhart the metric by abandoning
+    # the tool entirely (turn_split_rate -> 0.022, but primary_score
+    # rose because efficiency capped at 1.0 and 0.5 floor still paid).
+    # The tightened formula requires positive signal on ALL four
+    # components: correctness, interleaving, balance, efficiency.
     primary_score = (
         accuracy
-        * (0.5 + 0.5 * interleaving_rate * mean_split_balance)
+        * interleaving_rate
+        * mean_split_balance
         * efficiency_factor
     )
     summary = {
