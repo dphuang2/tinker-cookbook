@@ -1,0 +1,9 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Your Tinker SDK version is outdated. Please upgrade to the latest version.
+Rolling out 2 student trajectories concurrently...
+  idx=500 turns=5 calls=4 splits=4 tokens=31349
+  idx=501 turns=5 calls=4 splits=4 tokens=10290
+wrote /work/dylan/Git/dylan-workspace-6/tinker-cookbook-dylan/tinker_cookbook/recipes/interview/opsd_smoke_out/summary.json
+Smoke-testing score_with_teacher on idx=500 (answer='Yes')...
+  teacher_logprobs len=31911 n_assistant_tokens=31349 sequence_len=31911 mask_sum=31349
+  mean teacher logprob on student tokens: -0.288 (over 31349 non-None tokens)

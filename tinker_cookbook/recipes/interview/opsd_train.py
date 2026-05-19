@@ -242,6 +242,89 @@ async def roll_out_student(
     }
 
 
+async def score_with_teacher(
+    *,
+    rollout: dict,
+    answer: str,
+    teacher_sampling_client: tinker.SamplingClient,
+    renderer: Any,
+) -> dict:
+    """Compute the teacher's per-token logprobs over the student's
+    generated tokens, with the teacher conditioned on the privileged
+    prompt (which contains the ground-truth answer).
+
+    The teacher and student share renderer/tokenizer (same base model).
+    We take the student's full conversation history, swap the first
+    user message for the privileged version, render it, and ask the
+    teacher to score the concatenation.
+
+    Returns:
+        {
+            "teacher_logprobs": list[float],  # length == len(student tokens)
+            "student_token_mask": list[int],  # 1 where token was student-generated, 0 for ack/system
+            "n_assistant_tokens": int,
+        }
+
+    The reverse-KL training step would then compute:
+        kl_per_token = student_logprob - teacher_logprob
+        advantage = -kl_per_token * student_token_mask
+    """
+    history = list(rollout["history"])
+
+    # find the first user message and swap to privileged version
+    swapped = False
+    for i, msg in enumerate(history):
+        if msg.get("role") == "user":
+            original = msg["content"]
+            # strip out the trailing USER_INSTRUCTION_SUFFIX before re-adding;
+            # the question itself is what came before that suffix
+            if original.endswith(USER_INSTRUCTION_SUFFIX):
+                question = original[: -len(USER_INSTRUCTION_SUFFIX)]
+            else:
+                question = original
+            new = make_teacher_user_message(question, answer)
+            history[i] = new
+            swapped = True
+            break
+    if not swapped:
+        raise ValueError("rollout history has no user message to swap")
+
+    # Render with a preserve-thinking renderer so the teacher sees the
+    # student's historical <think>...</think> blocks (default Qwen3
+    # renderer strips them, matching HF behavior).
+    from tinker_cookbook.renderers.qwen3 import Qwen3Renderer
+    preserve_renderer = Qwen3Renderer(
+        renderer.tokenizer, strip_thinking_from_history=False
+    )
+    # Build the model input that would generate one more assistant turn.
+    # That input contains all prior history including assistant thinking.
+    model_input = preserve_renderer.build_generation_prompt(history)
+    sequence_tokens = list(model_input.to_ints())
+
+    # Call the teacher to score
+    teacher_logprobs = await teacher_sampling_client.compute_logprobs_async(
+        tinker.ModelInput.from_ints(sequence_tokens)
+    )
+
+    # student_token_mask: rough heuristic — mark the *last len(all_tokens)*
+    # positions as student-generated. Will be refined to account for tool
+    # ack tokens being interleaved.
+    n_student = len(rollout["all_tokens"])
+    mask = [0] * (len(sequence_tokens) - n_student) + [1] * n_student
+    if len(mask) != len(sequence_tokens):
+        # adjust if lengths drifted; pad/clip to match
+        mask = mask[: len(sequence_tokens)] + [0] * max(
+            0, len(sequence_tokens) - len(mask)
+        )
+
+    return {
+        "teacher_logprobs": list(teacher_logprobs),
+        "student_token_mask": mask,
+        "n_assistant_tokens": n_student,
+        "sequence_len": len(sequence_tokens),
+    }
+
+
 async def main(config: OPSDConfig) -> None:
     """Run Phase A OPSD training.
 

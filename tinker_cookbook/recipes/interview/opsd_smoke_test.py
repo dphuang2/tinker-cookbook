@@ -25,7 +25,7 @@ except ImportError:
     def load_dotenv(): pass
 
 from tinker_cookbook import model_info, renderers
-from tinker_cookbook.recipes.interview.opsd_train import roll_out_student
+from tinker_cookbook.recipes.interview.opsd_train import roll_out_student, score_with_teacher
 from tinker_cookbook.tokenizer_utils import get_tokenizer
 
 MODEL_NAME = "Qwen/Qwen3-30B-A3B"
@@ -108,6 +108,52 @@ async def main():
 
     (OUT_DIR / "summary.json").write_text(json.dumps(summary, indent=2))
     print(f"wrote {OUT_DIR}/summary.json")
+
+    # also smoke-test score_with_teacher on the FIRST successful rollout
+    # using the SAME sampling client as the "teacher" (since v3 Phase A
+    # uses the same base model for both teacher and student; the
+    # privileged prompt is what makes the teacher distribution differ).
+    first_ok_idx = None
+    for i, r in enumerate(results):
+        if not isinstance(r, Exception):
+            first_ok_idx = i
+            break
+    if first_ok_idx is not None:
+        idx = TRAIN_INDEX_START + first_ok_idx
+        problem = ds[idx]
+        answer = problem.get("final_answer", problem.get("ground_truth", "?"))
+        print(f"Smoke-testing score_with_teacher on idx={idx} (answer={answer!r})...")
+        scored = await score_with_teacher(
+            rollout=results[first_ok_idx],
+            answer=str(answer),
+            teacher_sampling_client=sc,
+            renderer=renderer,
+        )
+        print(f"  teacher_logprobs len={len(scored['teacher_logprobs'])} "
+              f"n_assistant_tokens={scored['n_assistant_tokens']} "
+              f"sequence_len={scored['sequence_len']} "
+              f"mask_sum={sum(scored['student_token_mask'])}")
+        # log mean teacher logprob on student tokens (sanity: should be
+        # a reasonable per-token log-prob, e.g. -1 to -3)
+        import statistics
+        student_lps = [
+            lp for lp, m in zip(scored["teacher_logprobs"], scored["student_token_mask"])
+            if m == 1 and lp is not None
+        ]
+        if student_lps:
+            print(f"  mean teacher logprob on student tokens: "
+                  f"{statistics.mean(student_lps):.3f} "
+                  f"(over {len(student_lps)} non-None tokens)")
+        (OUT_DIR / f"teacher_score_idx{idx:04d}.json").write_text(
+            json.dumps({
+                "index": idx,
+                "answer": str(answer),
+                "n_assistant_tokens": scored["n_assistant_tokens"],
+                "sequence_len": scored["sequence_len"],
+                "mean_student_logprob": (statistics.mean(student_lps)
+                                         if student_lps else None),
+            }, indent=2)
+        )
 
 
 if __name__ == "__main__":
