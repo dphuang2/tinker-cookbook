@@ -1,0 +1,4 @@
+{"step": 1, "n_datums": 7, "mean_training_logprob": -0.5855265940938678, "error": 0, "overlong": 1}
+{"step": 2, "n_datums": 6, "mean_training_logprob": -0.5488374580939611, "error": 0, "overlong": 2}
+{"step": 3, "n_datums": 8, "mean_training_logprob": -0.4348910115659237, "error": 0, "overlong": 0}
+{"step": 4, "n_datums": 8, "mean_training_logprob": -0.4198927618563175, "error": 0, "overlong": 0}

@@ -79,7 +79,7 @@ TEACHER_SUFFIX_A = (
     "checkpoint should mark a genuine transition in your reasoning, "
     "and the chunks of thinking between checkpoints should be roughly "
     "equal in length."
-)
+)  # 0183: reverted concise wording (no effect in 0182); lowering kl_coef instead
 
 TEACHER_SUFFIX_B = (
     " Structure your reasoning into three roughly equal chunks "
