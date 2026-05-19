@@ -1,0 +1,11 @@
+{
+  "sampler_path": "tinker://6dac22cc-46cf-50a7-bc37-47cf46882c51:train:0/sampler_weights/step_32_final",
+  "n_total": 800,
+  "n_errored": 0,
+  "n_problems": 200,
+  "n_kept": 120,
+  "score_mean": 0.46576501944205106,
+  "score_max": 0.9927291612568164,
+  "frac_correct": 0.865,
+  "frac_interleaved": 0.65875
+}

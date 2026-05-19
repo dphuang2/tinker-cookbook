@@ -1,0 +1,23 @@
+INFO:__main__:Using SFT checkpoint: tinker://41d4a9ad-6daa-52e5-a20f-5e2e18030db5:train:0/sampler_weights/step_30_final
+INFO:__main__:Loading DeepMath-103K dataset...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:tinker.lib.internal_client_holder:Your Tinker SDK version is outdated. Please upgrade to the latest version.
+INFO:tinker.lib.public_interfaces.service_client:ServiceClient initialized for session 908f11cb-babb-5453-91b6-0e3131ebc62b
+INFO:__main__:Running agent loop on 500 problems concurrently...
+INFO:__main__:[50/500] correct so far: 46 (acc=0.920)
+INFO:pylatexenc.latexwalker:Ignoring parse error (tolerant parsing mode): Unexpected mismatching closing brace: '}' @(1,13)
+INFO:__main__:[100/500] correct so far: 87 (acc=0.870)
+INFO:__main__:[150/500] correct so far: 123 (acc=0.820)
+INFO:__main__:[200/500] correct so far: 160 (acc=0.800)
+INFO:__main__:[250/500] correct so far: 200 (acc=0.800)
+INFO:__main__:[300/500] correct so far: 234 (acc=0.780)
+INFO:__main__:[350/500] correct so far: 268 (acc=0.766)
+INFO:__main__:[400/500] correct so far: 307 (acc=0.767)
+INFO:__main__:[450/500] correct so far: 345 (acc=0.767)
+INFO:__main__:[500/500] correct so far: 385 (acc=0.770)
+INFO:__main__:Accuracy: 385/500 = 0.770
+INFO:__main__:Tool-call cadence: [(0, 465), (1, 23), (2, 8), (3, 4)]
+INFO:__main__:in_think_rate: 0.002  turn_split_rate: 0.022  interleaving_rate: 0.022
+INFO:__main__:mean_tokens: 3841 (ref 5500)  efficiency: 1.000  mean_split_balance: 0.302  primary_score: 0.3876
+INFO:__main__:Saved eval to /tmp/tinker-examples/interview/deepmath_agent_eval.json
