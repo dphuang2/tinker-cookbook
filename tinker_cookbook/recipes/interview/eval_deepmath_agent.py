@@ -81,6 +81,12 @@ async def run_agent(
     total_tokens = 0
     final_visible = ""
     final_termination = "no_final"
+    # v2 interleaving instrumentation:
+    # - turns_with_tool_calls counts assistant turns that emitted >=1 tool_call
+    # - in_think_calls counts <tool_call> occurrences that appear before the
+    #   first </think> close in any turn's decoded text (strict mid-thinking)
+    turns_with_tool_calls = 0
+    in_think_calls = 0
     for turn_idx in range(MAX_TURNS):
         prompt = renderer.build_generation_prompt(history)
         result = await sampling_client.sample_async(
@@ -90,12 +96,20 @@ async def run_agent(
         )
         tokens = result.sequences[0].tokens
         total_tokens += len(tokens)
+        decoded_turn = tokenizer.decode(tokens)
+        think_close = decoded_turn.find("</think>")
+        if think_close >= 0:
+            in_think_calls += decoded_turn.count("<tool_call>", 0, think_close)
+        else:
+            # no </think> in this turn — any tool_call here counts as in-think
+            in_think_calls += decoded_turn.count("<tool_call>")
         parsed, termination = renderer.parse_response(tokens)
         final_termination = termination.value
         history.append(parsed)
 
         tool_calls = parsed.get("tool_calls") or []
         if tool_calls:
+            turns_with_tool_calls += 1
             for tc in tool_calls:
                 try:
                     args = json.loads(tc.function.arguments)
@@ -127,6 +141,8 @@ async def run_agent(
         predicted = None
         extract_ok = False
 
+    n_turn_splits = turns_with_tool_calls  # alias for clarity in summary
+    is_interleaved = (in_think_calls >= 1) or (n_turn_splits >= 2)
     return {
         "predicted": predicted,
         "extract_ok": extract_ok,
@@ -136,6 +152,10 @@ async def run_agent(
         "num_tool_calls": len(progress_updates),
         "total_tokens": total_tokens,
         "last_termination": final_termination,
+        # v2 interleaving fields
+        "in_think_calls": in_think_calls,
+        "n_turn_splits": n_turn_splits,
+        "is_interleaved": is_interleaved,
     }
 
 
@@ -185,6 +205,9 @@ async def main():
 
     results = []
     num_correct = 0
+    n_in_think = 0
+    n_turn_split = 0
+    n_interleaved = 0
     cadence_hist: dict[int, int] = {}
     for i, (problem, r) in enumerate(zip(problems, results_raw)):
         gt = problem["final_answer"]
@@ -193,6 +216,12 @@ async def main():
         )
         if is_correct:
             num_correct += 1
+        if r.get("in_think_calls", 0) >= 1:
+            n_in_think += 1
+        if r.get("n_turn_splits", 0) >= 2:
+            n_turn_split += 1
+        if r.get("is_interleaved"):
+            n_interleaved += 1
         cadence_hist[r["num_tool_calls"]] = (
             cadence_hist.get(r["num_tool_calls"], 0) + 1
         )
@@ -212,6 +241,10 @@ async def main():
             )
 
     accuracy = num_correct / NUM_PROBLEMS
+    in_think_rate = n_in_think / NUM_PROBLEMS
+    turn_split_rate = n_turn_split / NUM_PROBLEMS
+    interleaving_rate = n_interleaved / NUM_PROBLEMS
+    primary_score = accuracy * (0.5 + 0.5 * interleaving_rate)
     summary = {
         "model": MODEL_NAME,
         "sampler_path": sampler_path,
@@ -219,12 +252,18 @@ async def main():
         "num_correct": num_correct,
         "accuracy": accuracy,
         "tool_call_cadence": sorted(cadence_hist.items()),
+        "in_think_rate": in_think_rate,
+        "turn_split_rate": turn_split_rate,
+        "interleaving_rate": interleaving_rate,
+        "primary_score": primary_score,
         "temperature": TEMPERATURE,
         "max_tokens_per_turn": MAX_TOKENS_PER_TURN,
         "max_turns": MAX_TURNS,
     }
     logger.info(f"Accuracy: {num_correct}/{NUM_PROBLEMS} = {accuracy:.3f}")
     logger.info(f"Tool-call cadence: {sorted(cadence_hist.items())}")
+    logger.info(f"in_think_rate: {in_think_rate:.3f}  turn_split_rate: {turn_split_rate:.3f}  "
+                f"interleaving_rate: {interleaving_rate:.3f}  primary_score: {primary_score:.4f}")
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(OUTPUT_PATH, "w") as f:
