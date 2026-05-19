@@ -24,7 +24,10 @@ from pathlib import Path
 
 import tinker
 from datasets import load_dataset
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    def load_dotenv(): pass
 
 from tinker_cookbook import model_info, renderers
 from tinker_cookbook.recipes.interview.sft_train import (

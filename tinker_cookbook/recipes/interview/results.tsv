@@ -159,3 +159,4 @@ d100ed9	0.8720	0:251,1:6,3:216,4:10,5:5,6:10,7:1,12:1	-	0	variance	0156 0105 var
 388b936	0.8740	0:251,1:4,2:1,3:212,4:17,5:1,6:5,7:3,12:3,15:1,17:1,21:1	-	0	variance	0157 0105 variance #25: 0.874 (25-sample mean 0.8751)
 6c03948	0.8720	0:254,1:1,2:2,3:220,4:12,5:3,6:1,7:1,9:4,10:1,17:1	-	0	variance	0158 0105 variance #26: 0.872 (26-sample mean 0.8750)
 73b6ce8	0.8740	0.022	0.4466	0:259,1:5,3:212,4:11,5:2,6:5,7:1,9:2,12:1,15:1,18:1	0	-	keep	0161 v2 rebaseline (0105 prompt-only): in_think=0.000, turn_split=0.022 — primary_score baseline for v2
+pending	0.7940	0.274	0.5058	0:42,1:3,2:2,3:272,4:45,5:14,6:42,7:11,8:3,9:13,10:1,11:3,12:6,14:2,15:4,18:1,20:4,22:1,24:25,25:1,27:1,30:1,32:2,40:1	0	-	keep	0162 explicit-between-steps: in_think=0.018, turn_split=0.268 — placement directive lifts interleaving 12x at -8pp accuracy cost

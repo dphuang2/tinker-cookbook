@@ -74,9 +74,11 @@ PROGRESS_TOOL_SPEC: ToolSpec = {
 USER_INSTRUCTION_SUFFIX = (
     " Think step by step, then write your final answer in \\boxed{} format. "
     "Don't think for too long unnecessarily, especially when you have a "
-    "reasonable degree of confidence. Use the checkpoint tool when it "
-    "helps you organize hard multi-step problems -- three checkpoints "
-    "is typical for a multi-step problem."
+    "reasonable degree of confidence. Use the checkpoint tool *between* "
+    "reasoning steps -- pause your thinking, call the tool to record a "
+    "one-sentence summary of where you are, then continue reasoning. "
+    "Three checkpoints spread across your thinking is typical for a "
+    "multi-step problem. Don't batch them all at the end."
 )
 
 SYSTEM_PROMPT = (
