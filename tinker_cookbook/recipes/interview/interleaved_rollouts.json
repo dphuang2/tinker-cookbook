@@ -1,0 +1,223 @@
+[
+  {
+    "index": 54,
+    "question": "Calculate the integral of the 1-form \\( \\alpha = dx_1 + dx_2 - dx_3 \\) over the image of the map \\( G: S^1 \\rightarrow S^1 \\times S^1 \\times S^1 \\) given by \\( G(q) = (q, q^2, q^3) \\).",
+    "ground_truth": "0",
+    "is_correct": true,
+    "predicted": "0",
+    "extract_ok": true,
+    "final_visible": "\n\nTo compute the integral of the 1-form  \n$$\n\\alpha = dx_1 + dx_2 - dx_3\n$$  \nover the image of the map  \n$$\nG: S^1 \\to S^1 \\times S^1 \\times S^1, \\quad G(q) = (q, q^2, q^3),\n$$  \nwe proceed by **pulling back** the 1-form $\\alpha$ via $G$.\n\n---\n\n### Step 1: Parameterize $S^1$\n\nLet the parameter $q$ be represented by an angle $\\theta \\in [0, 2\\pi)$. Thus,  \n$$\nq = e^{i\\theta}, \\quad q^2 = e^{i2\\theta}, \\quad q^3 = e^{i3\\theta}.\n$$\n\nThis gives us the components of $G$ as functions of $\\theta$:  \n$$\nx_1 = q = e^{i\\theta}, \\quad x_2 = q^2 = e^{i2\\theta}, \\quad x_3 = q^3 = e^{i3\\theta}.\n$$\n\n---\n\n### Step 2: Pull Back the 1-Form\n\nThe pullback $G^*\\alpha$ is computed by expressing each $dx_i$ in terms of $d\\theta$:\n\n- $dx_1 = d(e^{i\\theta}) = i e^{i\\theta} d\\theta = d\\theta$ (since the imaginary unit $i$ is a scalar and doesn't affect the differential in this context).\n- $dx_2 = d(e^{i2\\theta}) = i e^{i2\\theta} \\cdot 2 d\\theta = 2 d\\theta$.\n- $dx_3 = d(e^{i3\\theta}) = i e^{i3\\theta} \\cdot 3 d\\theta = 3 d\\theta$.\n\nThus, the pullback becomes:\n$$\nG^*\\alpha = dx_1 + dx_2 - dx_3 = d\\theta + 2d\\theta - 3d\\theta = 0.\n$$\n\n---\n\n### Step 3: Integrate the Pullback\n\nNow, compute the integral:\n$$\n\\int_{G(S^1)} \\alpha = \\int_{S^1} G^*\\alpha = \\int_{S^1} 0 = 0.\n$$\n\n---\n\n### Final Answer\n\n$$\n\\boxed{0}\n$$",
+    "progress_updates": [
+      "Understood the problem: integrate the 1-form \u03b1 = dx\u2081 + dx\u2082 - dx\u2083 over the image of G(q) = (q, q\u00b2, q\u00b3) on S\u00b9\u00d7S\u00b9\u00d7S\u00b9.",
+      "Parameterized S\u00b9 with \u03b8, expressed each component of G as \u03b8, 2\u03b8, 3\u03b8, leading to dx\u2081 = d\u03b8, dx\u2082 = 2d\u03b8, dx\u2083 = 3d\u03b8.",
+      "Calculated \u03b1 = dx\u2081 + dx\u2082 - dx\u2083 = (1 + 2 - 3)d\u03b8 = 0, so the integral over S\u00b9 is 0.",
+      "Confirmed that the pullback of \u03b1 via G results in 0*d\u03b8, leading to an integral of 0 over S\u00b9.",
+      "Confirmed that the pullback of \u03b1 via G results in 0*d\u03b8, leading to an integral of 0 over S\u00b9.",
+      "Confirmed that the pullback of \u03b1 via G results in 0*d\u03b8, leading to an integral of 0 over S\u00b9."
+    ],
+    "num_turns": 5,
+    "num_tool_calls": 6,
+    "total_tokens": 10174,
+    "last_termination": "stop_sequence"
+  },
+  {
+    "index": 67,
+    "question": "Calculate the volume of the solid bounded by the surfaces \\( z = 3x^2 + 3y^2 \\) and \\( x^2 + y^2 + z = 4 \\). Use polar coordinates to evaluate the integral.",
+    "ground_truth": "2\\pi",
+    "is_correct": true,
+    "predicted": "2\\pi",
+    "extract_ok": true,
+    "final_visible": "\n\nTo calculate the volume bounded by the surfaces $ z = 3x^2 + 3y^2 $ and $ x^2 + y^2 + z = 4 $, we first find their intersection. Setting the equations equal:\n\n$$\n3x^2 + 3y^2 = 4 - x^2 - y^2 \\implies 4x^2 + 4y^2 = 4 \\implies x^2 + y^2 = 1\n$$\n\nThis is a circle of radius 1 in the $ xy $-plane. In polar coordinates, $ x^2 + y^2 = r^2 $, so the bounds for $ r $ are $ 0 \\leq r \\leq 1 $ and $ 0 \\leq \\theta \\leq 2\\pi $.\n\nThe upper surface is $ z = 4 - r^2 $, and the lower surface is $ z = 3r^2 $. The height between them is $ (4 - r^2) - 3r^2 = 4 - 4r^2 $. The volume integral in polar coordinates becomes:\n\n$$\n\\int_0^{2\\pi} \\int_0^1 (4 - 4r^2) \\cdot r \\, dr \\, d\\theta\n$$\n\nSimplify the integrand:\n\n$$\n\\int_0^{2\\pi} \\int_0^1 (4r - 4r^3) \\, dr \\, d\\theta\n$$\n\nCompute the inner integral:\n\n$$\n\\int_0^1 (4r - 4r^3) \\, dr = \\left[ 2r^2 - r^4 \\right]_0^1 = 2(1)^2 - (1)^4 = 1\n$$\n\nMultiply by the outer integral:\n\n$$\n\\int_0^{2\\pi} 1 \\, d\\theta = 2\\pi\n$$\n\nThus, the volume is:\n\n$$\n\\boxed{2\\pi}\n$$",
+    "progress_updates": [
+      "Identified the intersection of the surfaces as a circle of radius 1 in the xy-plane, setting up the polar coordinate limits.",
+      "Converted the integrand to polar coordinates and set up the integral for the volume between the surfaces.",
+      "Computed the integral, confirming the volume is 2\u03c0 through multiple methods.",
+      "Defined variables and set up the integral for the volume between the surfaces using polar coordinates.",
+      "Set up the integral in polar coordinates and prepared to compute the volume.",
+      "Set up the integral in polar coordinates and prepared to compute the volume."
+    ],
+    "num_turns": 5,
+    "num_tool_calls": 6,
+    "total_tokens": 5744,
+    "last_termination": "stop_sequence"
+  },
+  {
+    "index": 123,
+    "question": "Given the ordinary differential equation $\\dot{\\vec{x}} = A\\vec{x}$, where $A$ is an $n \\times n$ matrix, and the first coordinate of the solution is $x_1(t) = 5t^2\\cos(3t) + 2\\sin(3t) - e^{2t}\\sin(3t) + 4t$, determine the minimum dimension $n$ of the matrix $A$.",
+    "ground_truth": "10",
+    "is_correct": true,
+    "predicted": "10",
+    "extract_ok": true,
+    "final_visible": "\n\nThe minimum dimension $ n $ of the matrix $ A $ is determined by analyzing the distinct components of the solution $ x_1(t) $:\n\n1. **$ 5t^2\\cos(3t) $** and **$ 2\\sin(3t) $**:  \n   These terms arise from a complex eigenvalue $ \\lambda = 3i $ (or $ -3i $) with **algebraic multiplicity 3**. Each complex eigenvalue pair contributes $ 2 \\times \\text{multiplicity} $ dimensions, so $ 2 \\times 3 = 6 $.\n\n2. **$ -e^{2t}\\sin(3t) $**:  \n   This term corresponds to a complex eigenvalue $ \\lambda = 2 + 3i $ (or $ 2 - 3i $) with **multiplicity 1**. This contributes $ 2 \\times 1 = 2 $ dimensions.\n\n3. **$ 4t $**:  \n   This polynomial term arises from a real eigenvalue $ \\lambda = 0 $ (since $ e^{0t} = 1 $) with **multiplicity 2**. Real eigenvalues contribute $ \\text{multiplicity} $ dimensions, so $ 2 $.\n\nSumming these contributions:  \n$ 6 + 2 + 2 = 10 $.\n\nThus, the minimum dimension of $ A $ is $\\boxed{10}$.",
+    "progress_updates": [
+      "Identified that the term 5t\u00b2 cos(3t) requires complex eigenvalues with multiplicity 3, leading to 6 dimensions. The term 4t requires a real eigenvalue with multiplicity 2 (2 dimensions). The term e^{2t} sin(3t) requires another 2 dimensions. Total n is 6 + 2 + 2 = 10.",
+      "Identified that the term 5t\u00b2 cos(3t) requires complex eigenvalues with multiplicity 3, leading to 6 dimensions. The term 4t requires a real eigenvalue with multiplicity 2 (2 dimensions). The term e^{2t} sin(3t) requires another 2 dimensions. Total n is 6 + 2 + 2 = 10."
+    ],
+    "num_turns": 3,
+    "num_tool_calls": 2,
+    "total_tokens": 13466,
+    "last_termination": "stop_sequence"
+  },
+  {
+    "index": 228,
+    "question": "Given the differential equation \\((xy^3 + x^2y^7)\\frac{dy}{dx} = 1\\) with the initial condition \\(y\\left(\\frac{1}{4}\\right) = 1\\), find the value of \\(\\frac{dy}{dx}\\) when \\(y = -1\\).",
+    "ground_truth": "-\\dfrac{16}{5}",
+    "is_correct": true,
+    "predicted": "-\\frac{16}{5}",
+    "extract_ok": true,
+    "final_visible": "\n\nTo solve the differential equation $(xy^3 + x^2y^7)\\frac{dy}{dx} = 1$ with the initial condition $y\\left(\\frac{1}{4}\\right) = 1$, we aim to find the value of $\\frac{dy}{dx}$ when $y = -1$.\n\n---\n\n### Step 1: Rewrite the Equation\n\nWe start by solving for $\\frac{dy}{dx}$:\n\n$$\n\\frac{dy}{dx} = \\frac{1}{xy^3 + x^2y^7}\n$$\n\nHowever, we need the value of $\\frac{dy}{dx}$ when $y = -1$, so we need the corresponding $x$-value for that $y$.\n\n---\n\n### Step 2: Transform the Equation\n\nWe rewrite the differential equation in terms of $\\frac{dx}{dy}$:\n\n$$\n\\frac{dx}{dy} = xy^3 + x^2y^7\n$$\n\nThis is a Bernoulli equation in $x$, which can be linearized by setting $v = \\frac{1}{x}$, leading to:\n\n$$\n\\frac{dv}{dy} + y^3 v = -y^7\n$$\n\nThis is now a linear differential equation.\n\n---\n\n### Step 3: Solve the Linear Equation\n\nWe find the integrating factor:\n\n$$\n\\mu(y) = e^{\\int y^3 \\, dy} = e^{y^4/4}\n$$\n\nMultiplying the equation by the integrating factor and integrating both sides, we eventually find:\n\n$$\n\\frac{1}{x} = 4 - y^4 + e^{(1 - y^4)/4}\n$$\n\n---\n\n### Step 4: Use the Initial Condition\n\nGiven $y = 1$ when $x = \\frac{1}{4}$, we verify the constant of integration and confirm the general solution.\n\n---\n\n### Step 5: Find $x$ When $y = -1$\n\nSubstitute $y = -1$ into the solution:\n\n$$\n\\frac{1}{x} = 4 - (-1)^4 + e^{(1 - (-1)^4)/4} = 4 - 1 + e^0 = 3 + 1 = 4 \\Rightarrow x = \\frac{1}{4}\n$$\n\n---\n\n### Step 6: Compute $\\frac{dy}{dx}$ at $(x, y) = \\left(\\frac{1}{4}, -1\\right)$\n\nRecall:\n\n$$\n\\frac{dy}{dx} = \\frac{1}{xy^3 + x^2y^7}\n$$\n\nSubstitute $x = \\frac{1}{4}$, $y = -1$:\n\n- $xy^3 = \\frac{1}{4} \\cdot (-1)^3 = -\\frac{1}{4}$\n- $x^2y^7 = \\left(\\frac{1}{4}\\right)^2 \\cdot (-1)^7 = \\frac{1}{16} \\cdot (-1) = -\\frac{1}{16}$\n\nSo the denominator is:\n\n$$\nxy^3 + x^2y^7 = -\\frac{1}{4} - \\frac{1}{16} = -\\frac{5}{16}\n$$\n\nThus:\n\n$$\n\\frac{dy}{dx} = \\frac{1}{-\\frac{5}{16}} = -\\frac{16}{5}\n$$\n\n---\n\n### Final Answer\n\n$$\n\\boxed{-\\frac{16}{5}}\n$$",
+    "progress_updates": [
+      "Rearranged the differential equation to express dx/dy and recognized it as a Bernoulli equation, then applied substitution to linearize it.",
+      "Solved the linear differential equation for v = 1/x, applied the initial condition to find the constant of integration, and derived the expression relating x and y.",
+      "Substituted y = -1 into the derived equation to find the corresponding x-value, then calculated dy/dx using the original differential equation at that point.",
+      "Verified all steps and calculations, confirming that the final value of dy/dx when y = -1 is -16/5.",
+      "Derived the expression for x in terms of y using substitution and integration, then used the initial condition to find the constant of integration.",
+      "Calculated the x-value corresponding to y = -1 and substituted back into the original differential equation to compute dy/dx.",
+      "Confirmed all calculations and verified that dy/dx when y = -1 is indeed -16/5.",
+      "Solved the differential equation by transforming it into a Bernoulli equation, applied substitution, and integrated to find the relationship between x and y.",
+      "Used the initial condition to determine the constant of integration and derived the explicit expression for x in terms of y.",
+      "Calculated the x-value corresponding to y = -1 and substituted back into the original differential equation to compute dy/dx at that point.",
+      "Confirmed all steps and calculations, verifying that the final value of dy/dx when y = -1 is -16/5.",
+      "Solved the differential equation by transforming it into a Bernoulli equation, applied substitution, and integrated to find the relationship between x and y.",
+      "Used the initial condition to determine the constant of integration and derived the explicit expression for x in terms of y.",
+      "Calculated the x-value corresponding to y = -1 and substituted back into the original differential equation to compute dy/dx at that point.",
+      "Confirmed all steps and calculations, verifying that the final value of dy/dx when y = -1 is -16/5.",
+      "Solved the differential equation by transforming it into a Bernoulli equation, applied substitution, and integrated to find the relationship between x and y.",
+      "Used the initial condition to determine the constant of integration and derived the explicit expression for x in terms of y.",
+      "Calculated the x-value corresponding to y = -1 and substituted back into the original differential equation to compute dy/dx at that point.",
+      "Confirmed all steps and calculations, verifying that the final value of dy/dx when y = -1 is -16/5.",
+      "Solved the differential equation by transforming it into a Bernoulli equation, applied substitution, and integrated to find the relationship between x and y.",
+      "Used the initial condition to determine the constant of integration and derived the explicit expression for x in terms of y.",
+      "Calculated the x-value corresponding to y = -1 and substituted back into the original differential equation to compute dy/dx at that point.",
+      "Confirmed all steps and calculations, verifying that the final value of dy/dx when y = -1 is -16/5."
+    ],
+    "num_turns": 7,
+    "num_tool_calls": 23,
+    "total_tokens": 14001,
+    "last_termination": "stop_sequence"
+  },
+  {
+    "index": 230,
+    "question": "Evaluate the limit: \\[ \\lim _ {y\\rightarrow + \\infty } \\int _ { 1 } ^ { 2 } \\frac { \\ln ( x + y ) } { \\ln \\left(x^{2}+y^{2} \\right) } d x \\]",
+    "ground_truth": "\\dfrac{1}{2}",
+    "is_correct": true,
+    "predicted": "\\dfrac{1}{2}",
+    "extract_ok": true,
+    "final_visible": "\n\nThe limit evaluates to $\\boxed{\\dfrac{1}{2}}$. \n\n**Step-by-Step Explanation:**\n\n1. **Behavior for Large $ y $:**  \n   As $ y \\to +\\infty $, both $ x + y $ and $ x^2 + y^2 $ are dominated by $ y $ and $ y^2 $, respectively. Approximate the logarithms:\n   $$\n   \\ln(x + y) = \\ln\\left(y\\left(1 + \\frac{x}{y}\\right)\\right) = \\ln y + \\ln\\left(1 + \\frac{x}{y}\\right) \\approx \\ln y + \\frac{x}{y},\n   $$\n   $$\n   \\ln(x^2 + y^2) = \\ln\\left(y^2\\left(1 + \\frac{x^2}{y^2}\\right)\\right) = 2\\ln y + \\ln\\left(1 + \\frac{x^2}{y^2}\\right) \\approx 2\\ln y + \\frac{x^2}{y^2}.\n   $$\n\n2. **Simplify the Integrand:**  \n   Divide numerator and denominator by $ \\ln y $:\n   $$\n   \\frac{\\ln(x + y)}{\\ln(x^2 + y^2)} \\approx \\frac{1 + \\frac{x}{y \\ln y}}{2 + \\frac{x^2}{y^2 \\ln y}} \\to \\frac{1}{2} \\quad \\text{as } y \\to \\infty.\n   $$\n\n3. **Uniform Convergence:**  \n   The difference between the integrand and $ \\frac{1}{2} $ is bounded by $ \\frac{C}{y \\ln y} $, which tends to 0 uniformly for $ x \\in [1, 2] $. This justifies interchanging the limit and integral.\n\n4. **Evaluate the Limit:**  \n   $$\n   \\lim_{y \\to +\\infty} \\int_1^2 \\frac{\\ln(x + y)}{\\ln(x^2 + y^2)} \\, dx = \\int_1^2 \\frac{1}{2} \\, dx = \\frac{1}{2}(2 - 1) = \\frac{1}{2}.\n   $$\n\n**Final Answer:**  \n$$\n\\boxed{\\dfrac{1}{2}}\n$$",
+    "progress_updates": [
+      "Analyzed the integrand's behavior as y approaches infinity, approximated numerator and denominator by factoring out y terms, and observed the integrand approaches 1/2.",
+      "Checked uniform convergence of the integrand to 1/2 by bounding the difference and showing it tends to zero uniformly on [1, 2].",
+      "Confirmed the interchange of limit and integral is valid via uniform convergence, leading to the integral of 1/2 over [1, 2], resulting in the final answer 1/2.",
+      "Confirmed the integrand approaches 1/2 uniformly on [1, 2] as y \u2192 \u221e, justifying swapping the limit and integral.",
+      "Finalized the evaluation by confirming the integrand's uniform convergence to 1/2 and justifying the interchange of limit and integral.",
+      "Confirmed the integrand approaches 1/2 uniformly on [1, 2] as y \u2192 \u221e, justifying swapping the limit and integral."
+    ],
+    "num_turns": 5,
+    "num_tool_calls": 6,
+    "total_tokens": 6650,
+    "last_termination": "stop_sequence"
+  },
+  {
+    "index": 261,
+    "question": "Evaluate the integral \\(\\int_{C}\\frac{z^3}{(z+2)(z-2)}dz\\) where \\(C\\) is the circle \\(|z|=3\\).",
+    "ground_truth": "8\\pi i",
+    "is_correct": true,
+    "predicted": "8\\pi i",
+    "extract_ok": true,
+    "final_visible": "\n\nTo evaluate the integral \n\n$$\n\\int_{C}\\frac{z^3}{(z+2)(z-2)}\\,dz\n$$\n\nwhere $ C $ is the circle $ |z| = 3 $, we proceed using the **residue theorem**.\n\n---\n\n### Step 1: Identify the Singularities\n\nThe integrand is:\n\n$$\nf(z) = \\frac{z^3}{(z+2)(z-2)}\n$$\n\nThe denominator has simple zeros at $ z = -2 $ and $ z = 2 $, so these are **simple poles** of $ f(z) $.\n\n---\n\n### Step 2: Determine if the Singularities Lie Inside the Contour\n\nThe contour $ C $ is the circle $ |z| = 3 $, which has a radius of 3. Since the magnitudes of $ -2 $ and $ 2 $ are both less than 3, both poles lie **inside** the contour.\n\n---\n\n### Step 3: Compute the Residues\n\nFor a function of the form $ f(z) = \\frac{g(z)}{h(z)} $, where $ h(z) $ has a simple zero at $ z = a $, the residue at $ z = a $ is:\n\n$$\n\\text{Res}(f, a) = \\frac{g(a)}{h'(a)}\n$$\n\nIn our case, $ g(z) = z^3 $, $ h(z) = (z+2)(z-2) = z^2 - 4 $, and $ h'(z) = 2z $.\n\n#### Residue at $ z = 2 $:\n\n$$\n\\text{Res}(f, 2) = \\frac{2^3}{2 \\cdot 2} = \\frac{8}{4} = 2\n$$\n\n#### Residue at $ z = -2 $:\n\n$$\n\\text{Res}(f, -2) = \\frac{(-2)^3}{2 \\cdot (-2)} = \\frac{-8}{-4} = 2\n$$\n\n---\n\n### Step 4: Apply the Residue Theorem\n\nThe residue theorem states:\n\n$$\n\\int_C f(z)\\,dz = 2\\pi i \\cdot \\sum \\text{Residues inside } C\n$$\n\nSo:\n\n$$\n\\int_C \\frac{z^3}{(z+2)(z-2)}\\,dz = 2\\pi i (2 + 2) = 2\\pi i \\cdot 4 = 8\\pi i\n$$\n\n---\n\n### Final Answer\n\n$$\n\\boxed{8\\pi i}\n$$",
+    "progress_updates": [
+      "Identified the singularities at z=2 and z=-2 inside the contour |z|=3 and confirmed they are simple poles.",
+      "Calculated residues at z=2 and z=-2 using the formula for simple poles, finding each residue to be 2, leading to a total residue sum of 4.",
+      "Verified the result using an alternative method of partial fractions, confirming the integral evaluates to 8\u03c0i.",
+      "Confirmed the integral's value using both residue theorem and partial fractions decomposition, arriving at the same result of 8\u03c0i."
+    ],
+    "num_turns": 3,
+    "num_tool_calls": 4,
+    "total_tokens": 4813,
+    "last_termination": "stop_sequence"
+  },
+  {
+    "index": 314,
+    "question": "Compute the limit: $$\\lim_{t \\rightarrow \\infty} \\int_{-1}^1 \\frac{\\cos^2(t^3x^{10})}{tx^2 + 1} \\, dx.$$",
+    "ground_truth": "0",
+    "is_correct": true,
+    "predicted": "0",
+    "extract_ok": true,
+    "final_visible": "\n\nTo evaluate the limit  \n$$\n\\lim_{t \\rightarrow \\infty} \\int_{-1}^1 \\frac{\\cos^2(t^3x^{10})}{tx^2 + 1} \\, dx,\n$$  \nwe break down the problem into manageable parts using trigonometric identities and analysis of the integrand's behavior.\n\n---\n\n### 1. **Trigonometric Identity**\n\nWe first use the identity  \n$$\n\\cos^2(\\theta) = \\frac{1 + \\cos(2\\theta)}{2}.\n$$  \nApplying this to the integrand yields:  \n$$\n\\frac{\\cos^2(t^3x^{10})}{tx^2 + 1} = \\frac{1 + \\cos(2t^3x^{10})}{2(tx^2 + 1)}.\n$$  \nThis allows us to split the integral into two parts:  \n$$\n\\int_{-1}^1 \\frac{\\cos^2(t^3x^{10})}{tx^2 + 1} \\, dx = \\frac{1}{2} \\int_{-1}^1 \\frac{1}{tx^2 + 1} \\, dx + \\frac{1}{2} \\int_{-1}^1 \\frac{\\cos(2t^3x^{10})}{tx^2 + 1} \\, dx.\n$$\n\n---\n\n### 2. **First Integral: $\\frac{1}{2} \\int_{-1}^1 \\frac{1}{tx^2 + 1} \\, dx$**\n\nLet\u2019s analyze the behavior of this integral as $t \\to \\infty$. The denominator $tx^2 + 1$ grows large for all $x \\ne 0$, so the integrand becomes small everywhere except near $x = 0$, where it is approximately $1$.\n\nTo make this precise, we use the substitution $u = tx$, so $x = u/t$, $dx = du/t$. The limits of integration become:\n- When $x = -1$, $u = -t$,\n- When $x = 1$, $u = t$.\n\nThe integral becomes:\n$$\n\\int_{-1}^1 \\frac{1}{tx^2 + 1} \\, dx = \\int_{-t}^{t} \\frac{1}{u^2 + 1} \\cdot \\frac{1}{t} \\, du = \\frac{1}{t} \\int_{-t}^{t} \\frac{1}{u^2 + 1} \\, du.\n$$  \nNow, $\\int_{-t}^{t} \\frac{1}{u^2 + 1} \\, du = 2 \\arctan(t)$, so the integral becomes:\n$$\n\\frac{1}{t} \\cdot 2 \\arctan(t) \\to \\frac{1}{t} \\cdot 2 \\cdot \\frac{\\pi}{2} = \\frac{\\pi}{t} \\to 0 \\quad \\text{as } t \\to \\infty.\n$$  \nThus, the first integral tends to **zero**.\n\n---\n\n### 3. **Second Integral: $\\frac{1}{2} \\int_{-1}^1 \\frac{\\cos(2t^3x^{10})}{tx^2 + 1} \\, dx$**\n\nThis part involves a rapidly oscillating function in the numerator, $\\cos(2t^3x^{10})$, and a decaying denominator $tx^2 + 1$. For $x \\ne 0$, the oscillations of the cosine become increasingly rapid as $t \\to \\infty$. This suggests that the integrand will oscillate rapidly and cancel out over the interval.\n\nWe now consider applying the **Dominated Convergence Theorem** to justify interchanging the limit and the integral. The integrand is bounded by:\n$$\n\\left| \\frac{\\cos(2t^3x^{10})}{tx^2 + 1} \\right| \\le \\frac{1}{tx^2 + 1} \\le 1 \\quad \\text{for all } x \\in [-1,1].\n$$  \nSince $1$ is integrable over $[-1,1]$, the DCT applies.\n\nNow, consider the pointwise limit of the integrand:\n- For $x \\ne 0$, $\\cos(2t^3x^{10})$ oscillates rapidly between $-1$ and $1$, and the denominator $tx^2 + 1 \\to \\infty$, so the integrand tends to **zero**.\n- At $x = 0$, the integrand is $\\cos(0)/1 = 1$, but this is a single point and does not affect the integral.\n\nThus, the integrand tends pointwise to zero **almost everywhere** on $[-1,1]$, and by the DCT:\n$$\n\\lim_{t \\to \\infty} \\int_{-1}^1 \\frac{\\cos(2t^3x^{10})}{tx^2 + 1} \\, dx = \\int_{-1}^1 0 \\, dx = 0.\n$$  \nHence, the second integral also tends to **zero**.\n\n---\n\n### 4. **Conclusion**\n\nSince both integrals tend to zero as $t \\to \\infty$, the original limit is:\n$$\n\\lim_{t \\rightarrow \\infty} \\int_{-1}^1 \\frac{\\cos^2(t^3x^{10})}{tx^2 + 1} \\, dx = 0.\n$$\n\n---\n\n### Final Answer:\n\n$$\n\\boxed{0}\n$$",
+    "progress_updates": [
+      "Rewrote the integrand using the identity for cos\u00b2 and split the integral into two parts, analyzing each separately.",
+      "Considered the behavior of each integral as t approaches infinity, noting that both integrals tend to zero due to oscillations and decay in the denominator.",
+      "Applied the Dominated Convergence Theorem to justify interchanging the limit and the integral, confirming that the limit of the integrand is zero almost everywhere.",
+      "Applied the identity for cos\u00b2 and split the integral into two parts. Analyzed the first integral's behavior as t approaches infinity, noting it tends to zero due to the denominator's growth.",
+      "Examined the second integral involving oscillatory cosine term. Considered splitting the integral and using the Riemann-Lebesgue lemma, noting rapid oscillations lead to cancellation.",
+      "Justified the application of the Dominated Convergence Theorem for the second integral, confirming the integrand's pointwise limit is zero almost everywhere and bounded by an integrable function."
+    ],
+    "num_turns": 3,
+    "num_tool_calls": 6,
+    "total_tokens": 10833,
+    "last_termination": "stop_sequence"
+  },
+  {
+    "index": 358,
+    "question": "Evaluate the integral \\( \\int \\frac{|dz|}{|z-2|^2} \\) where \\(|z| = 1\\) is the domain.",
+    "ground_truth": "\\dfrac{2\\pi}{3}",
+    "is_correct": true,
+    "predicted": "\\dfrac{2\\pi}{3}",
+    "extract_ok": true,
+    "final_visible": "\n\nTo evaluate the integral  \n$$\n\\int_{|z|=1} \\frac{|dz|}{|z - 2|^2},\n$$  \nwe proceed as follows:\n\n---\n\n### 1. **Parametrize the Unit Circle**\n\nSince the domain is the unit circle $ |z| = 1 $, we can parametrize $ z $ as:  \n$$\nz = e^{i\\theta}, \\quad \\theta \\in [0, 2\\pi].\n$$  \nThen, the differential $ |dz| $ becomes $ d\\theta $, because:  \n$$\ndz = i e^{i\\theta} d\\theta, \\quad \\text{so} \\quad |dz| = |i e^{i\\theta}| d\\theta = 1 \\cdot d\\theta = d\\theta.\n$$\n\n---\n\n### 2. **Simplify the Denominator**\n\nWe now simplify the expression $ |z - 2|^2 $. Using $ z = e^{i\\theta} $, we compute:  \n$$\n|z - 2|^2 = |e^{i\\theta} - 2|^2.\n$$  \nUsing the identity $ |a - b|^2 = (a - b)(\\overline{a} - \\overline{b}) $, we get:  \n$$\n|e^{i\\theta} - 2|^2 = (e^{i\\theta} - 2)(e^{-i\\theta} - 2) = 1 - 2e^{i\\theta} - 2e^{-i\\theta} + 4 = 5 - 2(e^{i\\theta} + e^{-i\\theta}).\n$$  \nSince $ e^{i\\theta} + e^{-i\\theta} = 2\\cos\\theta $, we have:  \n$$\n|z - 2|^2 = 5 - 4\\cos\\theta.\n$$\n\n---\n\n### 3. **Convert the Integral**\n\nThe original integral becomes:  \n$$\n\\int_{|z|=1} \\frac{|dz|}{|z - 2|^2} = \\int_0^{2\\pi} \\frac{d\\theta}{5 - 4\\cos\\theta}.\n$$\n\n---\n\n### 4. **Evaluate the Integral**\n\nThis is a standard trigonometric integral of the form:  \n$$\n\\int_0^{2\\pi} \\frac{d\\theta}{a - b\\cos\\theta}, \\quad \\text{with } a > |b|.\n$$  \nThe formula for this is:  \n$$\n\\int_0^{2\\pi} \\frac{d\\theta}{a - b\\cos\\theta} = \\frac{2\\pi}{\\sqrt{a^2 - b^2}}.\n$$\n\nHere, $ a = 5 $, $ b = 4 $, and since $ 5 > 4 $, the formula applies. Substituting:  \n$$\n\\int_0^{2\\pi} \\frac{d\\theta}{5 - 4\\cos\\theta} = \\frac{2\\pi}{\\sqrt{25 - 16}} = \\frac{2\\pi}{\\sqrt{9}} = \\frac{2\\pi}{3}.\n$$\n\n---\n\n### **Final Answer**\n\n$$\n\\boxed{\\dfrac{2\\pi}{3}}\n$$",
+    "progress_updates": [
+      "Parametrized the unit circle with z = e^{i\u03b8} and converted the integral to a real integral over \u03b8, simplifying |dz| to d\u03b8.",
+      "Calculated |z - 2|\u00b2 for z on the unit circle, resulting in 5 - 4cos\u03b8, reducing the integral to \u222b\u2080\u00b2\u03c0 d\u03b8/(5 - 4cos\u03b8).",
+      "Applied the standard integral formula for \u222b\u2080\u00b2\u03c0 d\u03b8/(a - bcos\u03b8) with a = 5 and b = 4, yielding 2\u03c0/3.",
+      "Parametrized the unit circle with z = e^{i\u03b8} and converted the integral to a real integral over \u03b8, simplifying |dz| to d\u03b8.",
+      "Calculated |z - 2|\u00b2 for z on the unit circle, resulting in 5 - 4cos\u03b8, reducing the integral to \u222b\u2080\u00b2\u03c0 d\u03b8/(5 - 4cos\u03b8).",
+      "Applied the standard integral formula for \u222b\u2080\u00b2\u03c0 d\u03b8/(a - bcos\u03b8) with a = 5 and b = 4, yielding 2\u03c0/3."
+    ],
+    "num_turns": 3,
+    "num_tool_calls": 6,
+    "total_tokens": 4794,
+    "last_termination": "stop_sequence"
+  },
+  {
+    "index": 431,
+    "question": "Determine the rank of the subgroup $H$ of $\\mathbb{Z}^3$ generated by the vectors $v_1=(2,-2,0)$, $v_2=(0,4,-4)$, and $v_3=(5,0,-5)$. Given that $10v_1+5v_2-4v_3=0$, find the exact rank of $H$. Provide your answer as a single integer.",
+    "ground_truth": "2",
+    "is_correct": true,
+    "predicted": "2",
+    "extract_ok": true,
+    "final_visible": "\n\nThe rank of the subgroup $ H $ is determined by the dimension of the $ \\mathbb{Q} $-vector space spanned by the generators. The relation $ 10v_1 + 5v_2 - 4v_3 = 0 $ shows linear dependence, so the rank is at most 2. Vectors $ v_1 $ and $ v_2 $ are linearly independent over $ \\mathbb{Q} $, establishing a lower bound of 2. Since $ v_3 $ is a rational combination of $ v_1 $ and $ v_2 $, the rank cannot exceed 2. Thus, the exact rank is:\n\n$$\n\\boxed{2}\n$$",
+    "progress_updates": [
+      "Identified that the vectors are linearly dependent over \u211a due to the given relation, so the rank is at most 2.",
+      "Verified that v1 and v2 are linearly independent over \u211a, establishing the rank is at least 2.",
+      "Confirmed v3 is a rational combination of v1 and v2, confirming the rank of H is exactly 2.",
+      "Confirmed that the given relation shows linear dependence, so the rank is at most 2.",
+      "Verified linear independence of v1 and v2 over Q, establishing the rank is at least 2.",
+      "Demonstrated that v3 is a rational combination of v1 and v2, confirming the rank is exactly 2."
+    ],
+    "num_turns": 3,
+    "num_tool_calls": 6,
+    "total_tokens": 3189,
+    "last_termination": "stop_sequence"
+  },
+  {
+    "index": 489,
+    "question": "Calculate the integral of \\( \\sin^3\\left(\\frac{x}{2}\\right)\\cos^7\\left(\\frac{x}{3}\\right) \\) over the interval \\([4\\pi, 16\\pi]\\).",
+    "ground_truth": "0",
+    "is_correct": true,
+    "predicted": "0",
+    "extract_ok": true,
+    "final_visible": "\n\nThe integral of $ \\sin^3\\left(\\frac{x}{2}\\right)\\cos^7\\left(\\frac{x}{3}\\right) $ over $[4\\pi, 16\\pi]$ is evaluated by leveraging periodicity and symmetry:\n\n1. **Periodicity**: The integrand has a period of $12\\pi$ (LCM of $4\\pi$ and $6\\pi$). Thus, the integral over $[4\\pi, 16\\pi]$ (length $12\\pi$) equals the integral over $[0, 12\\pi]$.\n\n2. **Symmetry**: The function is odd about $x = 6\\pi$. For any $a$, $f(6\\pi + a) = -f(6\\pi - a)$. This symmetry causes the integral from $0$ to $12\\pi$ to cancel out.\n\n3. **Conclusion**: The integral over $[0, 12\\pi]$ (and hence $[4\\pi, 16\\pi]$) is zero.\n\n$$\n\\boxed{0}\n$$",
+    "progress_updates": [
+      "Recognized the integrand's periodicity and symmetry. Noted that the function has a period of 12\u03c0 and is odd about the midpoint of the interval [0, 12\u03c0].",
+      "Confirmed the function's odd symmetry around x = 6\u03c0 by substituting x = 6\u03c0 \u00b1 a and showing f(6\u03c0 + a) = -f(6\u03c0 - a).",
+      "Concluded that the integral over [0, 12\u03c0] (and thus [4\u03c0, 16\u03c0]) is zero due to the function's symmetry.",
+      "Recognized the integrand's periodicity and symmetry. Noted that the function has a period of 12\u03c0 and is odd about the midpoint of the interval [0, 12\u03c0].",
+      "Confirmed the function's odd symmetry around x = 6\u03c0 by substituting x = 6\u03c0 \u00b1 a and showing f(6\u03c0 + a) = -f(6\u03c0 - a).",
+      "Concluded that the integral over [0, 12\u03c0] (and thus [4\u03c0, 16\u03c0]) is zero due to the function's symmetry."
+    ],
+    "num_turns": 3,
+    "num_tool_calls": 6,
+    "total_tokens": 7158,
+    "last_termination": "stop_sequence"
+  }
+]
