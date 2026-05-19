@@ -1,0 +1,29 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-05-19 16:54:46,040 [WARNING] Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-05-19 16:54:46,341 [INFO] Train problem pool: 2000 indices [500..2500)
+2026-05-19 16:54:49,345 [WARNING] Your Tinker SDK version is outdated. Please upgrade to the latest version.
+2026-05-19 16:54:49,346 [INFO] ServiceClient initialized for session e90afa37-d826-52a0-bf31-92bdc5ed30c8
+2026-05-19 16:54:50,389 [INFO] TrainingClient initialized for model e90afa37-d826-52a0-bf31-92bdc5ed30c8:train:0
+2026-05-19 16:54:50,389 [WARNING] Note: Tinker doesn't support direct LoRA weight loading from a sampler_weights path into a fresh training client. For now we START FROM FRESH LORA and use tinker://8b129873-ddc3-5b1a-920b-333749dbb144:train:0/sampler_weights/step_68_final as the INITIAL SAMPLING client (the policy that generates rollouts on step 0). The training client is fresh; after one optim_step we'll have moved away from the warmstart sampler.
+2026-05-19 16:54:50,504 [INFO] === RL step 1/6 ===
+2026-05-19 16:54:50,506 [INFO]   rolling out 64 trajectories...
+2026-05-19 17:04:14,409 [INFO]   step 1: 60 scored, 60 datums, mean_score=0.3267
+2026-05-19 17:04:25,154 [INFO] === RL step 2/6 ===
+2026-05-19 17:04:25,157 [INFO]   rolling out 64 trajectories...
+2026-05-19 17:12:05,666 [INFO]   step 2: 63 scored, 63 datums, mean_score=0.3564
+2026-05-19 17:12:25,746 [INFO]   saved sampler at step 2: tinker://e90afa37-d826-52a0-bf31-92bdc5ed30c8:train:0/sampler_weights/step_2
+2026-05-19 17:12:25,746 [INFO] === RL step 3/6 ===
+2026-05-19 17:12:25,749 [INFO]   rolling out 64 trajectories...
+2026-05-19 17:21:08,174 [INFO]   step 3: 57 scored, 57 datums, mean_score=0.2668
+2026-05-19 17:21:25,047 [INFO] === RL step 4/6 ===
+2026-05-19 17:21:25,050 [INFO]   rolling out 64 trajectories...
+2026-05-19 17:31:57,717 [INFO]   step 4: 58 scored, 58 datums, mean_score=0.2099
+2026-05-19 17:32:16,916 [INFO]   saved sampler at step 4: tinker://e90afa37-d826-52a0-bf31-92bdc5ed30c8:train:0/sampler_weights/step_4
+2026-05-19 17:32:16,916 [INFO] === RL step 5/6 ===
+2026-05-19 17:32:16,919 [INFO]   rolling out 64 trajectories...
+2026-05-19 17:41:13,201 [INFO]   step 5: 58 scored, 58 datums, mean_score=0.3470
+2026-05-19 17:41:26,288 [INFO] === RL step 6/6 ===
+2026-05-19 17:41:26,291 [INFO]   rolling out 64 trajectories...
+2026-05-19 17:56:07,809 [INFO]   step 6: 53 scored, 53 datums, mean_score=0.2285
+2026-05-19 17:56:33,079 [INFO]   saved sampler at step 6: tinker://e90afa37-d826-52a0-bf31-92bdc5ed30c8:train:0/sampler_weights/step_6
+2026-05-19 17:56:33,079 [INFO] RL training complete. 3 sampler checkpoints saved.

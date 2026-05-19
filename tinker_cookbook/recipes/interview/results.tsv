@@ -190,3 +190,4 @@ aad26afe/step_5_final	0.8100	0.968	0.2433	0:10,1:6,2:5,3:149,4:307,5:15,6:3,7:3,
 8b129873/step_68_final	0.8540	0.938	0.2025	0:1,1:30,2:108,3:288,4:72,5:1	266	68	keep	0193 phaseB-rft-large-batch NEW V3 BEST 266 positives accuracy +2pp over 0191 (0.854) mode 3 calls
 61ccd3f4/step_44_final	0.8420	0.910	0.1908	0:7,1:38,2:142,3:260,4:51,5:1,6:1	171	44	discard	0194 phaseB-rft-strict-threshold dataset size beats purity 171 high-q positives worse than 266 mixed-q at 0193
 7f7c3b6a/step_78_final	0.8360	0.896	0.1962	0:2,1:50,2:134,3:252,4:61,5:1	309	78	discard	0195 phaseB-rft-thresh03 600prob 2400 rollouts threshold 0.3 - 309 positives, marginal regression vs 0193
+e90afa37/step_2	0.8200	0.980	0.1488	0:8,1:2,2:7,3:136,4:321,5:16,6:4,7:3,8:3	-	6	discard	0196 phaseC-rl-rloo RL 6 steps from 0193 warmstart on-policy 0.327->0.357->0.267->0.210->0.347->0.229 held-out step2 0.1488 - no KL anchor drift
