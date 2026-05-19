@@ -63,6 +63,14 @@ class RLConfig:
     # momentum starts fresh, which is fine for short RL runs.)
     warmstart_sampler: str | None = None
 
+    # Reference policy for KL anchor — if set, advantages are adjusted
+    # per-token by -kl_anchor_coef * (student_lp − reference_lp), which
+    # discourages the policy from drifting too far from a fixed snapshot.
+    # Defaults to the warmstart_sampler if both are unset on KL but a
+    # warmstart is provided.
+    reference_sampler: str | None = None
+    kl_anchor_coef: float = 0.0  # 0 disables KL anchor
+
     # Data
     train_index_start: int = 500
     train_index_end: int = 2500
@@ -186,6 +194,15 @@ async def main(config: RLConfig) -> None:
         path = (await fut.result_async()).path
         sampling_client = await service.create_sampling_client_async(model_path=path)
 
+    # Reference client for KL anchor (frozen snapshot of the warmstart
+    # policy). Used only to score student rollouts; never trained.
+    ref_path = config.reference_sampler or config.warmstart_sampler
+    reference_client = None
+    if config.kl_anchor_coef > 0 and ref_path:
+        logger.info(f"KL anchor enabled (coef={config.kl_anchor_coef}) "
+                    f"against reference {ref_path}")
+        reference_client = await service.create_sampling_client_async(model_path=ref_path)
+
     sample_params = tinker.SamplingParams(
         max_tokens=config.max_tokens_per_turn,
         temperature=config.temperature,
@@ -275,6 +292,46 @@ async def main(config: RLConfig) -> None:
         if not datums:
             logger.warning(f"  step {step + 1}: no usable datums, skipping")
             continue
+
+        # KL anchor: per-token advantage adjustment = -coef * (student_lp - ref_lp)
+        if reference_client is not None and config.kl_anchor_coef > 0:
+            from tinker_cookbook.renderers.qwen3 import Qwen3Renderer
+            preserve_renderer = Qwen3Renderer(
+                renderer.tokenizer, strip_thinking_from_history=False,
+            )
+            kl_sum = 0.0
+            kl_n = 0
+            for d in datums:
+                model_input = d.model_input
+                # Build full sequence (model_input + last target token) for logprob query
+                target_tokens = d.loss_fn_inputs["target_tokens"].to_torch().tolist()
+                seq = list(model_input.to_ints()) + [target_tokens[-1]]
+                # Get reference logprobs
+                try:
+                    ref_lp = await reference_client.compute_logprobs_async(
+                        tinker.ModelInput.from_ints(seq)
+                    )
+                    ref_lp_aligned = list(ref_lp)[1:]  # align to target_tokens
+                    student_lp = d.loss_fn_inputs["logprobs"].to_torch().tolist()
+                    mask = d.loss_fn_inputs["mask"].to_torch().tolist()
+                    advs = d.loss_fn_inputs["advantages"].to_torch().tolist()
+                    new_advs = []
+                    for s_lp, r_lp, m, a in zip(student_lp, ref_lp_aligned, mask, advs):
+                        if r_lp is None:
+                            new_advs.append(a)
+                            continue
+                        kl = float(s_lp) - float(r_lp)
+                        new_advs.append(a - config.kl_anchor_coef * float(m) * kl)
+                        if m > 0:
+                            kl_sum += kl
+                            kl_n += 1
+                    d.loss_fn_inputs["advantages"] = TensorData.from_torch(
+                        torch.tensor(new_advs, dtype=torch.float32)
+                    )
+                except Exception as e:
+                    logger.warning(f"  KL adjust failed for one datum: {e}")
+            mean_kl = kl_sum / max(kl_n, 1)
+            logger.info(f"  step {step + 1}: KL adjusted, mean_kl_per_token={mean_kl:.4f}")
 
         mean_score = sum_score / max(n_scored, 1)
         logger.info(
