@@ -1,0 +1,12 @@
+{
+  "index": 500,
+  "question": "Let $G$ be a finite group with normal subgroups $M$ and $N$ such that $M \\cap N = \\{e\\}$, where $e$ is the identity element. Suppose $G$ has a subgroup of index 2. Must there exist a subgroup of index",
+  "n_turns": 1,
+  "n_tokens_total": 13231,
+  "n_tool_calls": 0,
+  "n_turn_splits": 0,
+  "in_think_calls": 0,
+  "tool_call_char_positions": [],
+  "decoded_head": "<think>\nOkay, let's try to tackle this problem step by step. The question is about finite groups and their subgroups. We have a group G with normal subgroups M and N, and their intersection is just the identity element. Also, G has a subgroup of index 2. The question is whether there must exist a subgroup of index 2 that contains either M or N.\n\nFirst, I need to recall some group theory concepts. A normal subgroup means that it's invariant under conjugation by elements of G. The index of a subgroup is the number of cosets it has in G. So a subgroup of index 2 is a subgroup H such that G has exactly two cosets with respect to H. That usually implies that H is normal, right? Because if a subgroup has index 2, it's normal. Wait, is that always true? Let me think. Yes, because the left and rig",
+  "decoded_tail": "east one of the factors.\n\nTherefore, $ H \\cap MN $ contains either $ M $ or $ N $, which means that $ M $ or $ N $ is contained in $ H $, as $ H \\cap MN \\subseteq H $.\n\n---\n\n### Final Chunk\n\nThus, in all cases, either $ M \\subseteq H $ or $ N \\subseteq H $, and so there exists a subgroup of index 2 (namely $ H $) that contains $ M $ or $ N $.\n\nTherefore, the answer is:\n\n$$\n\\boxed{Yes}\n$$<|im_end|>"
+}

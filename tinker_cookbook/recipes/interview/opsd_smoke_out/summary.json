@@ -1,0 +1,26 @@
+[
+  {
+    "idx": 500,
+    "turns": 1,
+    "calls": 0,
+    "splits": 0,
+    "in_think": 0,
+    "tokens": 13231
+  },
+  {
+    "idx": 501,
+    "turns": 5,
+    "calls": 4,
+    "splits": 4,
+    "in_think": 0,
+    "tokens": 11165
+  },
+  {
+    "idx": 502,
+    "turns": 4,
+    "calls": 3,
+    "splits": 3,
+    "in_think": 0,
+    "tokens": 5002
+  }
+]

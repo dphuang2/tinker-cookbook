@@ -44,9 +44,12 @@ Usage (once implemented):
 
 from __future__ import annotations
 
+import json
 import logging
+from typing import Any
 
 import chz
+import tinker
 
 from tinker_cookbook.recipes.interview.sft_train import (
     PROGRESS_TOOL_SPEC,
@@ -126,11 +129,126 @@ class OPSDConfig:
     eval_every: int = 20
 
 
+async def roll_out_student(
+    *,
+    sampling_client: tinker.SamplingClient,
+    renderer: Any,
+    tokenizer: Any,
+    sample_params: tinker.SamplingParams,
+    question: str,
+    max_turns: int,
+) -> dict:
+    """One full multi-turn rollout from the student, mirroring exactly the
+    behavior of `eval_deepmath_agent.run_agent`:
+      - PROGRESS_TOOL_SPEC exposed
+      - SYSTEM_PROMPT + USER_INSTRUCTION_SUFFIX (no privileged info)
+      - state-aware ack: "noted; continue your reasoning" until the 4th
+        tool call, then "you've checkpointed enough; finalize your
+        answer now" (matches 0170 best recipe)
+      - returns full token sequence, prompt token boundaries, decoded
+        text, and per-turn metadata so the OPSD training step can do
+        teacher logprob scoring + per-token KL.
+
+    Output dict shape:
+        {
+            "question": str,
+            "history": list[Message],
+            "all_tokens": list[int],   # concatenated assistant tokens
+            "turn_token_ranges": list[(start, end)],  # within all_tokens
+            "decoded": str,            # concat of decoded turns
+            "n_tool_calls": int,
+            "n_turn_splits": int,
+            "in_think_calls": int,
+            "tool_call_char_positions": list[int],
+        }
+    """
+    from tinker_cookbook.renderers import Message
+
+    tools = [PROGRESS_TOOL_SPEC]
+    prefix = renderer.create_conversation_prefix_with_tools(
+        tools=tools, system_prompt=SYSTEM_PROMPT
+    )
+    history: list[Message] = list(prefix)
+    history.append({"role": "user", "content": question + USER_INSTRUCTION_SUFFIX})
+
+    all_tokens: list[int] = []
+    turn_token_ranges: list[tuple[int, int]] = []
+    decoded_concat = ""
+    n_turns_with_tool_calls = 0
+    in_think_calls = 0
+    tool_call_char_positions: list[int] = []
+    total_chars = 0
+
+    for turn_idx in range(max_turns):
+        prompt_input = renderer.build_generation_prompt(history)
+        result = await sampling_client.sample_async(
+            prompt=prompt_input,
+            num_samples=1,
+            sampling_params=sample_params,
+        )
+        tokens = result.sequences[0].tokens
+        start = len(all_tokens)
+        all_tokens.extend(tokens)
+        turn_token_ranges.append((start, len(all_tokens)))
+
+        decoded_turn = tokenizer.decode(tokens)
+        # record tool_call char positions within concatenated decoded stream
+        search_start = 0
+        while True:
+            idx = decoded_turn.find("<tool_call>", search_start)
+            if idx < 0:
+                break
+            tool_call_char_positions.append(total_chars + idx)
+            search_start = idx + 1
+        think_close = decoded_turn.find("</think>")
+        if think_close >= 0:
+            in_think_calls += decoded_turn.count("<tool_call>", 0, think_close)
+        else:
+            in_think_calls += decoded_turn.count("<tool_call>")
+        total_chars += len(decoded_turn)
+        decoded_concat += decoded_turn
+
+        parsed, _termination = renderer.parse_response(tokens)
+        history.append(parsed)
+
+        tool_calls = parsed.get("tool_calls") or []
+        if tool_calls:
+            n_turns_with_tool_calls += 1
+            for tc in tool_calls:
+                # 0170-style state-aware ack throttle
+                ack = (
+                    "you've checkpointed enough; finalize your answer now"
+                    if (sum(1 for _ in tool_call_char_positions) >= 4)
+                    else "noted; continue your reasoning"
+                )
+                history.append({
+                    "role": "tool",
+                    "content": ack,
+                    "tool_call_id": tc.id or f"call_{turn_idx}",
+                })
+            continue
+        break
+
+    return {
+        "question": question,
+        "history": history,
+        "all_tokens": all_tokens,
+        "turn_token_ranges": turn_token_ranges,
+        "decoded": decoded_concat,
+        "n_tool_calls": len(tool_call_char_positions),
+        "n_turn_splits": n_turns_with_tool_calls,
+        "in_think_calls": in_think_calls,
+        "tool_call_char_positions": tool_call_char_positions,
+    }
+
+
 async def main(config: OPSDConfig) -> None:
     """Run Phase A OPSD training.
 
     NOT YET IMPLEMENTED — see module docstring for TODO list. The next
-    autoresearch tick should pick the first TODO and land it.
+    autoresearch tick should pick the first remaining TODO and land it
+    (now: teacher logprob scoring on the rollouts produced by
+    `roll_out_student`).
     """
     raise NotImplementedError(
         "opsd_train.main is scaffolding only. See module docstring for "

@@ -1,0 +1,17 @@
+{
+  "index": 501,
+  "question": "Let $l,$ $m,$ and $n$ be real numbers, and let $A,$ $B,$ $C$ be points such that the midpoint of $\\overline{BC}$ is $(l,0,0),$ the midpoint of $\\overline{AC}$ is $(0,m,0),$ and the midpoint of $\\overl",
+  "n_turns": 5,
+  "n_tokens_total": 11165,
+  "n_tool_calls": 4,
+  "n_turn_splits": 4,
+  "in_think_calls": 0,
+  "tool_call_char_positions": [
+    7675,
+    12499,
+    17445,
+    21769
+  ],
+  "decoded_head": "<think>\nOkay, let's try to solve this problem step by step. The question is about finding the ratio of the sum of the squares of the sides of a triangle to the sum of the squares of some midpoints. The points A, B, C have midpoints given as (l,0,0), (0,m,0), and (0,0,n) for BC, AC, and AB respectively. \n\nFirst, I need to recall that the midpoint of a segment between two points can be found by averaging their coordinates. So maybe I can assign coordinates to points A, B, and C such that the midpoints match the given points. Let me denote the coordinates of A, B, C as (x_A, y_A, z_A), (x_B, y_B, z_B), (x_C, y_C, z_C) respectively.\n\nGiven that the midpoint of BC is (l, 0, 0). The midpoint formula tells me that the coordinates of the midpoint are ((x_B + x_C)/2, (y_B + y_C)/2, (z_B + z_C)/2). ",
+  "decoded_tail": "es to points $ A, B, C $ based on the midpoint conditions and calculating the squared distances, we derive the result.\n\n**Step 1:** Assign coordinates to $ A, B, C $ using midpoint formulas.  \n**Step 2:** Compute $ AB^2, AC^2, BC^2 $ using the distance formula.  \n**Step 3:** Sum the squared distances and simplify to find the ratio.  \n\nThe final ratio simplifies to $ 8 $.\n\n$$\n\\boxed{8}\n$$<|im_end|>"
+}

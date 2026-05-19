@@ -171,3 +171,4 @@ pending	0.8820	0.310	0.5777	0:31,1:1,2:1,3:186,4:149,5:31,6:88,7:6,8:3,9:4	0	-	k
 pending	0.8740	0.048	0.4580	0:34,1:3,3:298,4:123,5:25,6:7,7:2,8:1,9:3,10:2,12:1,15:1	0	-	discard	0171 throttle-at-3: threshold = natural mode collapses turn_split to 0.046; reverted to threshold=4
 pending	0.8620	0.280	0.3444	0:46,1:2,2:3,3:188,4:146,5:21,6:80,7:9,8:1,9:3,15:1	0	-	keep	0172 v2.1 rebaseline (0170 recipe): split_balance=0.029 reveals batched-after-think pathology efficiency=0.793 primary_score drops 0.5777->0.3444
 pending	-	-	-	-	-	-	keep	0173 phaseA-scaffold: opsd_train.py scaffold with privileged-info teacher prompt helper; cookbook on_policy_distillation cannot do split prompts without recipe-level override (TODO list in module docstring)
+pending	-	-	-	-	-	-	keep	0174 phaseA-rollout-fn: roll_out_student smoke-tested on 3 problems (idx 501 produced 5-turn/4-call cross-turn cadence). Next: teacher logprob scoring (TODO 2)
