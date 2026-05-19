@@ -651,18 +651,28 @@ async def main(config: OPSDConfig) -> None:
 
         # Save sampler periodically and rebind sampling_client
         if (step + 1) % config.save_every == 0 or (step + 1) == config.max_steps:
-            save_fut = await training_client.save_weights_for_sampler_async(
+            # Save BOTH sampler weights AND state (state path is needed
+            # to resume training in Phase B RFT).
+            sampler_fut = await training_client.save_weights_for_sampler_async(
                 f"step_{step + 1}", ttl_seconds=86400,
             )
-            sampler_path = (await save_fut.result_async()).path
+            state_fut = await training_client.save_state_async(
+                f"step_{step + 1}", ttl_seconds=86400,
+            )
+            sampler_path = (await sampler_fut.result_async()).path
+            state_path = (await state_fut.result_async()).path
             sampling_client = await service.create_sampling_client_async(
                 model_path=sampler_path,
             )
             teacher_client = sampling_client
-            checkpoints.append({"step": step + 1, "sampler_path": sampler_path})
+            checkpoints.append({
+                "step": step + 1,
+                "sampler_path": sampler_path,
+                "state_path": state_path,
+            })
             with open(log_dir / "checkpoints.jsonl", "a") as f:
                 f.write(json.dumps(checkpoints[-1]) + "\n")
-            logger.info(f"Saved sampler at step {step + 1}: {sampler_path}")
+            logger.info(f"Saved at step {step + 1}: sampler={sampler_path} state={state_path}")
 
     logger.info(f"OPSD training complete. {len(checkpoints)} sampler checkpoints saved.")
 
